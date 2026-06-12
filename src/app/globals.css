@@ -503,25 +503,38 @@ body.revealed .result-layout { opacity: 1; transform: translateY(0); }
     color: rgba(212,175,55,0.055);
     text-shadow: 0 0 24px rgba(212,175,55,0.08);
   }
-  .question-stage { padding: 4vh 6vw 2vh; min-height: 28vh; }
+  .question-stage { padding: 3vh 6vw 1.5vh; min-height: 0; }
   .q-meta {
     font-size: 0.65rem;
     letter-spacing: 0.15em;
-    margin-bottom: 1.5vh;
+    margin-bottom: 1vh;
     color: rgba(212,175,55,0.92);
     text-shadow: 0 0 16px rgba(212,175,55,0.16);
   }
   .q-hint { display: none; }
-  .q-text { font-size: clamp(1.05rem, 4.5vw, 1.4rem); line-height: 1.7; }
+  .q-text { font-size: clamp(1.05rem, 4.5vw, 1.4rem); line-height: 1.6; }
 
-  .options-stage { flex-direction: column; }
-  .opt-block { min-height: 0; }
-  .opt-content { position: relative; width: 100%; max-width: none; padding: 0.8rem 1.2rem; }
-  .opt-index { font-size: 1.8rem; margin-bottom: 0.3rem; opacity: 0.24; color: var(--c-gold); }
-  .opt-text { font-size: clamp(0.85rem, 3.5vw, 1rem); opacity: 0.92; }
+  /* options column sits right under the question, content-sized rather than
+     stretched to viewport height — kills the huge empty gaps between options. */
+  .options-stage {
+    flex: 0 0 auto;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 4vw 2vh;
+    gap: 0.6rem;
+    justify-content: flex-start;
+  }
+  .opt-block {
+    flex: 0 0 auto;
+    min-height: 0;
+    border-radius: 6px;
+  }
+  .opt-content { position: relative; width: 100%; max-width: none; padding: 0.7rem 1rem; display: flex; flex-direction: row; align-items: center; gap: 0.8rem; }
+  .opt-index { font-size: 1.1rem; margin-bottom: 0; opacity: 0.45; color: var(--c-gold); flex: 0 0 auto; }
+  .opt-text { font-size: clamp(0.85rem, 3.6vw, 1rem); opacity: 0.92; text-align: left; flex: 1; }
 
-  .opt-block.is-selected { flex: 3 !important; }
-  .opt-block.is-dimmed { flex: 0.3 !important; min-height: 0; }
+  .opt-block.is-selected { flex: 0 0 auto !important; }
+  .opt-block.is-dimmed { flex: 0 0 auto !important; min-height: 0; }
   .opt-block.is-dimmed .opt-content { max-height: 0; padding: 0; overflow: hidden; }
 
   .gate-badge { font-size: 9px; padding: 0.2rem 0.7rem; }
@@ -571,7 +584,7 @@ body.revealed .result-layout { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 768px), (pointer: coarse) {
-  #test-stage-wrapper { transition: opacity 0.16s ease, transform 0.18s var(--ease-out-expo); }
+  #test-stage-wrapper { transition: opacity 0.16s ease, transform 0.18s var(--ease-out-expo); justify-content: center; }
   .stage-fade-out { transform: translateY(-4px); }
   .opt-block {
     opacity: 1;
@@ -589,7 +602,7 @@ body.revealed .result-layout { opacity: 1; transform: translateY(0); }
   .opt-block:active { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); }
   .opt-block:active .opt-text { opacity: 1; }
   .opt-block.is-selected {
-    flex: 1 !important;
+    flex: 0 0 auto !important;
     transform: scale(0.985);
     background: rgba(212, 175, 55, 0.18) !important;
     box-shadow: inset 0 0 36px rgba(212, 175, 55, 0.12);
@@ -597,7 +610,7 @@ body.revealed .result-layout { opacity: 1; transform: translateY(0); }
   .opt-block.is-selected .opt-index { opacity: 0.48; transform: none; }
   .opt-block.is-selected .opt-text { transform: none; }
   .opt-block.is-dimmed {
-    flex: 1 !important;
+    flex: 0 0 auto !important;
     opacity: 0.42;
     background: rgba(0,0,0,0.18) !important;
     border-color: rgba(255,255,255,0.03) !important;
@@ -612,7 +625,7 @@ body.revealed .result-layout { opacity: 1; transform: translateY(0); }
 @media (pointer: coarse) and (max-width: 768px) {
   .opt-block.is-dimmed .opt-content {
     max-height: none;
-    padding: 0.8rem 1.2rem;
+    padding: 0.7rem 1rem;
     overflow: visible;
   }
 }

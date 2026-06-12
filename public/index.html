@@ -1141,21 +1141,36 @@
 
     // Ring band parameters. Visible region spans ≈ [R-2W, R+W] from cursor.
     // R=240, W=200 → visible from 0 to ~440 px; peak ring at 240 px.
-    // Ring band parameters — responsive to screen size
+    // Ring band parameters — fixed at desktop size; expand animation makes
+    // them feel "screen-spanning" on small viewports without losing detail.
     let ringR = 240, ringW = 200, ringW2 = 90;
     function updateRingParams() {
+      // On small screens the ring is already proportionally larger; keep base
+      // params but slightly widen the band so the donut feels softer.
       const minDim = Math.min(width, height);
-      const scale = minDim < 500 ? 0.5 : minDim < 768 ? 0.7 : 1;
-      ringR  = 240 * scale;
-      ringW  = 200 * scale;
-      ringW2 =  90 * scale;
+      if (minDim < 500) {
+        ringR  = 220;
+        ringW  = 220;
+        ringW2 = 100;
+      } else {
+        ringR  = 240;
+        ringW  = 200;
+        ringW2 =  90;
+      }
     }
 
-    // Expand animation — ring grows outward from center on page load
+    // Expand animation — ring blooms outward to fill the screen, then
+    // settles to its normal radius. Gives the "full-screen unfold" feel.
     let ringExpand = 0;
-    const EXPAND_DURATION = 2500;
+    let expandMaxScale = 1;
     let expandStartTime = 0;
-    function startRingExpand() { expandStartTime = performance.now(); }
+    function startRingExpand() {
+      expandStartTime = performance.now();
+      // Peak scale: ring radius reaches ~55% of the diagonal so the band
+      // sweeps from center past the screen corners.
+      const diag = Math.sqrt(width * width + height * height);
+      expandMaxScale = Math.max(1.4, (diag * 0.55) / ringR);
+    }
 
     function smoothstep(e0, e1, x) {
       if (x <= e0) return 0;
@@ -1244,17 +1259,36 @@
 
       const mx = ringCenter.x, my = ringCenter.y;
 
-      // Expand progress — ring unfolds outward from center
-      if (expandStartTime > 0 && ringExpand < 1) {
-        const t = Math.min(1, (time - expandStartTime) / EXPAND_DURATION);
-        ringExpand = 1 - Math.pow(1 - t, 3); // easeOutCubic
+      // Expand progress — ring unfolds outward from center.
+      // Phase 1 (0 → peak): ringExpand grows from 0 to expandMaxScale,
+      //   sweeping the band from center to screen corners.
+      // Phase 2 (peak → 1):  ringExpand settles back to 1× (normal radius),
+      //   leaving a glowing donut around the cursor.
+      const isMobile = width < 768;
+      const PEAK_MS   = isMobile ? 1800 : 1400;
+      const SETTLE_MS = isMobile ? 2200 : 1600;
+      if (expandStartTime > 0) {
+        const elapsed = time - expandStartTime;
+        if (elapsed < PEAK_MS) {
+          const t = elapsed / PEAK_MS;
+          // easeOutCubic — fast bloom outward.
+          const eased = 1 - Math.pow(1 - t, 3);
+          ringExpand = eased * expandMaxScale;
+        } else if (elapsed < PEAK_MS + SETTLE_MS) {
+          const t = (elapsed - PEAK_MS) / SETTLE_MS;
+          // easeInOutCubic — gentle settle from peak to natural size.
+          const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+          ringExpand = expandMaxScale + (1 - expandMaxScale) * eased;
+        } else {
+          ringExpand = 1;
+        }
       }
       const eR  = ringR  * ringExpand;
       const eW  = ringW  * ringExpand;
       const eW2 = ringW2 * ringExpand;
 
-      // Mobile animation runs slower for dramatic unfold effect
-      const mobileSlow = width < 768 ? 0.6 : 1;
+      // Mobile animation runs slightly slower for dramatic unfold feel.
+      const mobileSlow = isMobile ? 0.7 : 1;
       const tSlow = time * 0.00045 * mobileSlow;
       const tFast = time * 0.0014 * mobileSlow;
       const tColor = time * 0.00035 * mobileSlow;
