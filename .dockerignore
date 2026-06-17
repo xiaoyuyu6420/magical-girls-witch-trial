@@ -10,3 +10,4 @@ tests
 playwright-report
 test-results
 scripts/*.sh
+!scripts/backup.sh
