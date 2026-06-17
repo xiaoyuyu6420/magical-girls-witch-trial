@@ -31,6 +31,21 @@ export default function AdminPage() {
   const [authError, setAuthError] = useState("");
   const [tab, setTab] = useState<Tab>("dashboard");
 
+  // 恢复 body 滚动和文本选择（admin 页面需要）
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalHeight = document.body.style.height;
+    const originalUserSelect = document.body.style.userSelect;
+    document.body.style.overflow = "auto";
+    document.body.style.height = "auto";
+    document.body.style.userSelect = "text";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.height = originalHeight;
+      document.body.style.userSelect = originalUserSelect;
+    };
+  }, []);
+
   const api = useCallback(async (path: string, opts?: RequestInit) => {
     const pw = storedPw || password;
     const res = await fetch(`${API_BASE}${path}`, {
