@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { answerAllQuestions, attachConsoleListeners, waitForWelcomeLoaded } from "./helpers";
+import { attachConsoleListeners, waitForWelcomeLoaded } from "./helpers";
 
 test.describe("Witch Trial Frontend", () => {
   test.beforeEach(async ({ page }) => {

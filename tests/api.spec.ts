@@ -5,7 +5,7 @@ test.describe("API Tests", () => {
   // Use a fixed fake IP to isolate our API tests from other test files
   // that may share the same server and rate-limit buckets.
   const TEST_IP = "api-test.1.2.3.4";
-  let quizData: any;
+  let quizData: { questions: Array<{ id: number; options: Array<{ id: number }> }> };
   let validAnswers: { questionId: number; optionId: number }[];
 
   test.beforeAll(async ({ request }) => {
@@ -14,7 +14,7 @@ test.describe("API Tests", () => {
     });
     expect(res.ok()).toBe(true);
     quizData = await res.json();
-    validAnswers = quizData.questions.map((q: any) => ({
+    validAnswers = quizData.questions.map((q) => ({
       questionId: q.id,
       optionId: q.options[0].id,
     }));
@@ -255,7 +255,7 @@ test.describe("API Tests", () => {
       headers: { "x-forwarded-for": TEST_IP },
     });
     const data = await res.json();
-    const orders = data.questions.map((q: any) => q.order);
+    const orders = data.questions.map((q: { order: number }) => q.order);
     const uniqueOrders = new Set(orders);
     expect(uniqueOrders.size).toBe(orders.length);
   });
@@ -265,7 +265,7 @@ test.describe("API Tests", () => {
       headers: { "x-forwarded-for": TEST_IP },
     });
     const data = await res.json();
-    const codes = data.types.map((t: any) => t.code);
+    const codes = data.types.map((t: { code: string }) => t.code);
     const uniqueCodes = new Set(codes);
     expect(uniqueCodes.size).toBe(codes.length);
   });

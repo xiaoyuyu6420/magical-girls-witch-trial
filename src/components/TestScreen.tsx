@@ -131,15 +131,10 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     });
   }, [questions, locale, gateValue]);
 
-  // 保护 currentIndex 在 displayQuestions 变化后不越界
-  useEffect(() => {
-    if (currentIndex >= displayQuestions.length) {
-      setCurrentIndex(Math.max(0, displayQuestions.length - 1));
-    }
-  }, [displayQuestions, currentIndex]);
-
-  const current = displayQuestions[currentIndex];
-  const progress = displayQuestions.length > 0 ? (currentIndex / displayQuestions.length) * 100 : 0;
+  // 防越界：currentIndex 不能超过 displayQuestions 长度（语言切换后题目数量可能变化）
+  const safeIndex = Math.min(currentIndex, Math.max(0, displayQuestions.length - 1));
+  const current = displayQuestions[safeIndex];
+  const progress = displayQuestions.length > 0 ? (safeIndex / displayQuestions.length) * 100 : 0;
 
   const flushPending = useCallback(() => {
     clearTimeout(timerRef.current);
@@ -181,7 +176,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     const isTouchFeedback = touchFeedbackRef.current;
     if (navigator.vibrate) navigator.vibrate(isTouchFeedback ? 12 : 40);
 
-    const isLast = currentIndex >= displayQuestions.length - 1;
+    const isLast = safeIndex >= displayQuestions.length - 1;
     pendingRef.current = { answers: newAnswers, gateValue: newGateValue, isLast };
 
     const feedbackDelay = isTouchFeedback ? 120 : 400;
@@ -192,7 +187,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     timerRef.current = window.setTimeout(() => {
       flushPending();
     }, totalDelay);
-  }, [current, answers, gateValue, currentIndex, displayQuestions.length, isAnimating, flushPending]);
+  }, [current, answers, gateValue, safeIndex, displayQuestions.length, isAnimating, flushPending]);
 
   // Keyboard support
   useEffect(() => {
@@ -261,13 +256,13 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
       >
         {t("test.exit")}
       </button>
-      <div className="watermark-index" aria-hidden="true">{ROMAN[currentIndex] || (currentIndex + 1)}</div>
+      <div className="watermark-index" aria-hidden="true">{ROMAN[safeIndex] || (safeIndex + 1)}</div>
       <div ref={stageRef} id="test-stage-wrapper" className={stageFadeOut ? "stage-fade-out" : ""}>
         <div className="question-stage">
           <div className="q-meta">
             <span>
               {isGateOrTrigger && <span className="gate-badge">{current.type === "gate" ? t("test.gateBadge") : t("test.triggerBadge")}</span>}
-              {isGateOrTrigger ? "" : `${current.meta || "审判"} \u00B7 ${String(currentIndex + 1).padStart(2, "0")} / ${String(displayQuestions.length).padStart(2, "0")}`}
+              {isGateOrTrigger ? "" : `${current.meta || "审判"} \u00B7 ${String(safeIndex + 1).padStart(2, "0")} / ${String(displayQuestions.length).padStart(2, "0")}`}
             </span>
             <span className="q-hint">{showKeyboardHint ? t("test.keyHint") : ""}</span>
           </div>

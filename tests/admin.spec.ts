@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { adminLogin, adminApi, attachConsoleListeners } from "./helpers";
+import { adminLogin, attachConsoleListeners } from "./helpers";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "test123";
 

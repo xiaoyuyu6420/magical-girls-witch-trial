@@ -5,7 +5,6 @@
 
 import * as XLSX from "xlsx";
 import * as path from "path";
-import * as fs from "fs";
 
 // 动态导入 i18n 文件
 const i18nDir = path.join(process.cwd(), "src/i18n");
@@ -70,8 +69,8 @@ const i18nData: Record<string, I18nData> = {};
 for (const locale of locales) {
   const filePath = path.join(i18nDir, `${locale}.ts`);
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const module = require(filePath);
-  i18nData[locale] = module.default || module;
+  const mod = require(filePath);
+  i18nData[locale] = mod.default || mod;
 }
 
 const workbook = XLSX.utils.book_new();

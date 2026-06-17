@@ -1,5 +1,5 @@
 import { test, expect, Page } from "@playwright/test";
-import { answerAllQuestions, attachConsoleListeners, waitForWelcomeLoaded } from "./helpers";
+import { answerAllQuestions, attachConsoleListeners } from "./helpers";
 
 const STORAGE_KEY = "witch-trial-progress";
 
@@ -23,13 +23,6 @@ async function answerQuestion(page: Page, optionIndex: number, clickDelay = 900)
  */
 async function isResultPage(page: Page) {
   return page.locator(".result-layout").isVisible({ timeout: 100 }).catch(() => false);
-}
-
-/**
- * Check if we are on the welcome page (index.html).
- */
-async function isWelcomePage(page: Page) {
-  return page.locator(".hero").isVisible({ timeout: 100 }).catch(() => false);
 }
 
 /**
@@ -68,13 +61,6 @@ async function getProgressWidth(page: Page) {
  */
 async function hasGateBadge(page: Page) {
   return page.locator(".gate-badge").isVisible({ timeout: 100 }).catch(() => false);
-}
-
-/**
- * Get the number of visible option buttons.
- */
-async function getOptionCount(page: Page) {
-  return page.locator(".opt-block").count();
 }
 
 test.describe("Quiz E2E Tests", () => {
