@@ -88,6 +88,8 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   }, []);
 
   useEffect(() => {
+    // Don't save the empty initial state — readSavedProgress ignores it anyway
+    if (currentIndex === 0 && answers.length === 0) return;
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ currentIndex, answers, gateValue })); } catch { /* ignore */ }
   }, [currentIndex, answers, gateValue]);
 
@@ -217,6 +219,14 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     if (el) el.style.width = `${progress}%`;
   }, [progress]);
 
+  // Toggle body class for progress line visibility
+  useEffect(() => {
+    document.body.classList.add("in-test");
+    return () => {
+      document.body.classList.remove("in-test");
+    };
+  }, []);
+
   if (isCompleted || !current) return null;
 
   const isGateOrTrigger = current.type === "gate" || current.type === "trigger";
@@ -224,6 +234,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
 
   return (
     <div className="view-test" style={{ position: "relative", width: "100%", height: "100%" }}>
+      <div id="progress-line" />
       {/* EXIT button */}
       <button type="button" onClick={() => { localStorage.removeItem(STORAGE_KEY); onExit(); }}
         style={{

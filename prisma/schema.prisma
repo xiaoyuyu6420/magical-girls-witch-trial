@@ -90,6 +90,6 @@ model Answer {
   record     TestRecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
   questionId Int
   question   Question   @relation(fields: [questionId], references: [id])
-  optionId   Int
+  optionId   Int?
   option     Option?    @relation(fields: [optionId], references: [id], onDelete: SetNull)
 }

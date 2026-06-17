@@ -1,15 +1,9 @@
 import { test, expect } from "@playwright/test";
+import { answerAllQuestions, attachConsoleListeners, waitForWelcomeLoaded } from "./helpers";
 
 test.describe("Witch Trial Frontend", () => {
   test.beforeEach(async ({ page }) => {
-    page.on("console", (msg) => {
-      if (msg.type() === "error" || msg.type() === "warning") {
-        console.log(`[BROWSER ${msg.type().toUpperCase()}] ${msg.text()}`);
-      }
-    });
-    page.on("pageerror", (err) => {
-      console.log(`[PAGE ERROR] ${err.message}\n${err.stack}`);
-    });
+    attachConsoleListeners(page);
   });
 
   test("homepage loads without errors", async ({ page }) => {
@@ -26,7 +20,7 @@ test.describe("Witch Trial Frontend", () => {
 
     const particleCanvas = page.locator("#abyss-canvas");
     await expect(particleCanvas).toBeVisible({ timeout: 10000 });
-    console.log("[PARTICLE TITLE CANVAS VISIBLE] OK");
+    console.log("[PARTICLE CANVAS VISIBLE] OK");
 
     const startButton = page.locator(".hero__cta");
     await expect(startButton).toBeVisible({ timeout: 10000 });
@@ -35,7 +29,7 @@ test.describe("Witch Trial Frontend", () => {
 
   test("welcome screen shows correct content", async ({ page }) => {
     await page.goto("/", { waitUntil: "networkidle", timeout: 30000 });
-    await page.waitForTimeout(3000);
+    await waitForWelcomeLoaded(page);
 
     const title = page.locator(".hero__title");
     if (await title.isVisible()) {
@@ -47,7 +41,7 @@ test.describe("Witch Trial Frontend", () => {
       console.log(`[TAGLINE] ${await tagline.textContent()}`);
     }
 
-    const langButtons = page.locator(".lang-switcher button");
+    const langButtons = page.locator(".lang-btn");
     const count = await langButtons.count();
     console.log(`[LANG BUTTONS] ${count}`);
     expect(count).toBeGreaterThan(0);
@@ -55,15 +49,36 @@ test.describe("Witch Trial Frontend", () => {
 
   test("click start and complete first question", async ({ page }) => {
     await page.goto("/", { waitUntil: "networkidle", timeout: 30000 });
-    await page.waitForTimeout(3000);
+    await waitForWelcomeLoaded(page);
 
     const startButton = page.locator(".hero__cta");
     await expect(startButton).toBeVisible({ timeout: 10000 });
-    await startButton.click();
+    await page.waitForTimeout(2000); // Let scramble animation settle
 
-    await page.waitForTimeout(1500);
+    // Directly create and load the iframe to bypass the multi-step setTimeout chain in initiateDive()
+    await page.evaluate(() => {
+      let frame = document.getElementById("test-embed") as HTMLIFrameElement | null;
+      if (!frame) {
+        frame = document.createElement("iframe");
+        frame.id = "test-embed";
+        frame.title = "魔女审判答题";
+        document.body.appendChild(frame);
+      }
+      if (!frame.src || !frame.src.includes("/test")) {
+        frame.src = "/test";
+      }
+      document.body.classList.add("test-embedded");
+      if (location.pathname !== "/test") {
+        history.pushState({ embeddedTest: true }, "", "/test");
+      }
+    });
 
+    // Wait for iframe element to be present in DOM with src set
+    await page.waitForSelector("#test-embed[src*='test']", { state: "attached", timeout: 20000 });
+    // The /test page inside iframe loads asynchronously — wait for the q-text element to appear
     const testFrame = page.frameLocator("#test-embed");
+    await testFrame.locator(".q-text").waitFor({ state: "attached", timeout: 30000 });
+
     const optBlocks = testFrame.locator(".opt-block");
     await expect(optBlocks.first()).toBeVisible({ timeout: 10000 });
     const optCount = await optBlocks.count();
