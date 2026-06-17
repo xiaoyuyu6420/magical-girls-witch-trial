@@ -20,13 +20,13 @@ const TABS: { key: Tab; label: string }[] = [
 
 export default function AdminPage() {
   const [password, setPassword] = useState("");
-  const [storedPw, setStoredPw] = useState<string | null>(() => {
+  const [token, setToken] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
-    return sessionStorage.getItem("admin-pw");
+    return sessionStorage.getItem("admin-token");
   });
   const [authed, setAuthed] = useState(() => {
     if (typeof window === "undefined") return false;
-    return !!sessionStorage.getItem("admin-pw");
+    return !!sessionStorage.getItem("admin-token");
   });
   const [authError, setAuthError] = useState("");
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -47,26 +47,34 @@ export default function AdminPage() {
   }, []);
 
   const api = useCallback(async (path: string, opts?: RequestInit) => {
-    const pw = storedPw || password;
+    const tk = token || "";
     const res = await fetch(`${API_BASE}${path}`, {
       ...opts,
-      headers: { "Content-Type": "application/json", "x-admin-password": pw, ...opts?.headers },
+      headers: { "Content-Type": "application/json", "x-admin-token": tk, ...opts?.headers },
     });
-    if (res.status === 401) { setAuthed(false); setStoredPw(null); sessionStorage.removeItem("admin-pw"); throw new Error("Unauthorized"); }
+    if (res.status === 401) { setAuthed(false); setToken(null); sessionStorage.removeItem("admin-token"); throw new Error("Unauthorized"); }
     return res;
-  }, [storedPw, password]);
+  }, [token]);
 
   const handleLogin = async () => {
     setAuthError("");
     try {
-      const res = await fetch(`${API_BASE}/stats`, { headers: { "x-admin-password": password } });
-      if (res.ok) { sessionStorage.setItem("admin-pw", password); setStoredPw(password); setAuthed(true); }
-      else setAuthError("密码错误");
+      const res = await fetch(`${API_BASE}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-password": password },
+      });
+      if (!res.ok) { setAuthError("密码错误"); return; }
+      const data = await res.json();
+      if (!data.token) { setAuthError("登录失败"); return; }
+      sessionStorage.setItem("admin-token", data.token);
+      setToken(data.token);
+      setAuthed(true);
+      setPassword("");
     } catch { setAuthError("连接失败"); }
   };
 
   const handleLogout = () => {
-    setAuthed(false); setStoredPw(null); setPassword(""); sessionStorage.removeItem("admin-pw");
+    setAuthed(false); setToken(null); setPassword(""); sessionStorage.removeItem("admin-token");
   };
 
   if (!authed) {
@@ -264,12 +272,12 @@ function ExcelToolbar({ api, onImported }: { api: (path: string, opts?: RequestI
     setImporting(true);
     setMsg(null);
     try {
-      const pw = sessionStorage.getItem("admin-pw") || "";
+      const tk = sessionStorage.getItem("admin-token") || "";
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/admin/import", {
         method: "POST",
-        headers: { "x-admin-password": pw },
+        headers: { "x-admin-token": tk },
         body: fd,
       });
       const data = await res.json();

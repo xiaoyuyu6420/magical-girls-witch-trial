@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
     let updatedQuestions = 0;
     let updatedTypes = 0;
 
-    const transactionWork = db.$transaction(async (tx) => {
+    await db.$transaction(async (tx) => {
       // Process Questions
       for (const { order, raw: row } of qRows) {
         const existing = questionMap.get(order) ?? null;
@@ -271,13 +271,7 @@ export async function POST(req: NextRequest) {
         }
         updatedTypes++;
       }
-    });
-
-    // Race transaction against timeout
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("导入超时，请减少数据量后重试")), TRANSACTION_TIMEOUT_MS),
-    );
-    await Promise.race([transactionWork, timeoutPromise]);
+    }, { timeout: TRANSACTION_TIMEOUT_MS });
 
     console.log(`[admin/import] Done: ${updatedQuestions} questions, ${updatedTypes} types`);
 

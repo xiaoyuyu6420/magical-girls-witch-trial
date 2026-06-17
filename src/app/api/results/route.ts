@@ -5,7 +5,12 @@ import { db } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
 import { processAnswers } from "@/lib/answer-processor";
 
-export const dynamic = "force-dynamic";
+function getClientIp(req: NextRequest): string | null {
+  const trusted = process.env.TRUSTED_PROXY?.trim().toLowerCase() ?? "all";
+  const forwarded = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (trusted !== "none" && forwarded) return forwarded;
+  return req.headers.get("x-real-ip") ?? null;
+}
 
 export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { id: "results", capacity: 10, refillPerSec: 0.2 });
@@ -72,7 +77,7 @@ export async function POST(req: NextRequest) {
       gateValue: gateValue ?? null,
       triggerFired: triggerFired ?? null,
       userAgent: userAgent ?? null,
-      ipAddress: null,
+      ipAddress: getClientIp(req),
       screenRes: screenRes ?? null,
       language: language ?? null,
       timezone: timezone ?? null,

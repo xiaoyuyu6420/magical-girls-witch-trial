@@ -36,7 +36,8 @@ rollback() {
   fi
 
   cd "$DEPLOY_DIR"
-  sed -i '' "s|image: .*|image: xiaoyuyu123/magical-girls-witch-trial:$previous|" docker-compose.yml
+  sed -i.bak "s|image: .*|image: xiaoyuyu123/magical-girls-witch-trial:$previous|" docker-compose.yml
+  rm -f docker-compose.yml.bak
   docker compose pull
   docker compose up -d
   echo "$previous" > "$VERSION_FILE"
@@ -83,8 +84,8 @@ if [ ! -f .env ] || ! grep -q "ADMIN_PASSWORD" .env; then
 fi
 echo "[3/4] .env 已存在"
 
-# 记录当前版本
-CURRENT_VERSION="latest"
+# 记录当前版本（从 docker-compose.yml 中提取）
+CURRENT_VERSION=$(grep -o 'image: .*' docker-compose.yml | sed 's/.*://')
 if [ -f "$VERSION_FILE" ]; then
   PREVIOUS_VERSION=$(cat "$VERSION_FILE")
   # 保存到历史记录

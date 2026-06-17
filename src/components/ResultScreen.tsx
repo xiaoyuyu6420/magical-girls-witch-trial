@@ -34,6 +34,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
   const shareCardRef = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
+  const [shareCardReady, setShareCardReady] = useState(false);
   const { t, locale } = useI18n();
   const localized = useLocalizedContent(
     result.code, result.name, result.slogan, result.desc, result.keywords, result.subtitle, result.translations
@@ -82,7 +83,9 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
   }, []);
 
   const handleShare = useCallback(async () => {
-    setSharing(true);
+    setShareCardReady(true);
+    // Allow one tick for the off-screen DOM node to mount
+    await new Promise((resolve) => requestAnimationFrame(resolve));
     try {
       const imageBlob = await generateShareImage();
       const imageFile = imageBlob ? new File([imageBlob], `witch-trial-${result.code}.png`, { type: "image/png" }) : undefined;
@@ -100,6 +103,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
       try { await navigator.clipboard.writeText(shareText); } catch { /* ignore */ }
     } finally {
       setSharing(false);
+      setShareCardReady(false);
     }
   }, [result, shareText, generateShareImage, t]);
 
@@ -231,34 +235,36 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
         </div>
       )}
 
-      <div ref={shareCardRef} aria-hidden="true" style={{ position: "fixed", top: "-9999px", left: "-9999px", width: 390, height: 693, background: "#050308", color: "#e6e6e6", fontFamily: "'Noto Serif SC', serif", padding: "2rem 1.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-        <div>
-          <div style={{ fontFamily: "'Cinzel', serif", fontSize: "0.55rem", letterSpacing: "0.5em", color: "rgba(212,175,55,0.6)", marginBottom: "1.2rem" }}>WITCH TRIAL</div>
-          <div style={{ fontSize: "1.8rem", fontWeight: 900, lineHeight: 1.15, color: "#fff", marginBottom: "0.4rem" }}>{localized.name}</div>
-          {localized.subtitle && <div style={{ fontSize: "0.75rem", color: "#888", letterSpacing: "0.15em", marginBottom: "0.3rem" }}>{localized.subtitle}</div>}
-          <div style={{ fontSize: "0.75rem", fontStyle: "italic", color: "#d4af37", marginTop: "0.8rem", lineHeight: 1.6 }}>{localized.slogan}</div>
-        </div>
-        <div>
-          {localized.keywords && (
-            <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "1rem" }}>
-              {localized.keywords.split(/[、,，]/).map((kw: string, i: number) => (
-                <span key={i} style={{ fontSize: "0.55rem", padding: "0.15rem 0.45rem", border: "1px solid rgba(212,175,55,0.25)", borderRadius: 999, color: "rgba(212,175,55,0.7)" }}>{kw.trim()}</span>
-              ))}
-            </div>
-          )}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "0.8rem" }}>
-            <div>
-              <div style={{ fontFamily: "'Cinzel', serif", fontSize: "1.6rem", fontWeight: 900, color: "#d4af37" }}>{result.similarity}%</div>
-              <div style={{ fontSize: "0.5rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em" }}>SIMILARITY</div>
-            </div>
-            {stats && (
-              <div style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.3)", textAlign: "right", lineHeight: 1.5 }}>
-                {t("result.statsShort", { percentage: stats.typePercentage })}
+      {shareCardReady && (
+        <div ref={shareCardRef} aria-hidden="true" style={{ position: "fixed", top: "-9999px", left: "-9999px", width: 390, height: 693, background: "#050308", color: "#e6e6e6", fontFamily: "'Noto Serif SC', serif", padding: "2rem 1.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: "0.55rem", letterSpacing: "0.5em", color: "rgba(212,175,55,0.6)", marginBottom: "1.2rem" }}>WITCH TRIAL</div>
+            <div style={{ fontSize: "1.8rem", fontWeight: 900, lineHeight: 1.15, color: "#fff", marginBottom: "0.4rem" }}>{localized.name}</div>
+            {localized.subtitle && <div style={{ fontSize: "0.75rem", color: "#888", letterSpacing: "0.15em", marginBottom: "0.3rem" }}>{localized.subtitle}</div>}
+            <div style={{ fontSize: "0.75rem", fontStyle: "italic", color: "#d4af37", marginTop: "0.8rem", lineHeight: 1.6 }}>{localized.slogan}</div>
+          </div>
+          <div>
+            {localized.keywords && (
+              <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "1rem" }}>
+                {localized.keywords.split(/[、,，]/).map((kw: string, i: number) => (
+                  <span key={i} style={{ fontSize: "0.55rem", padding: "0.15rem 0.45rem", border: "1px solid rgba(212,175,55,0.25)", borderRadius: 999, color: "rgba(212,175,55,0.7)" }}>{kw.trim()}</span>
+                ))}
               </div>
             )}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "0.8rem" }}>
+              <div>
+                <div style={{ fontFamily: "'Cinzel', serif", fontSize: "1.6rem", fontWeight: 900, color: "#d4af37" }}>{result.similarity}%</div>
+                <div style={{ fontSize: "0.5rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em" }}>SIMILARITY</div>
+              </div>
+              {stats && (
+                <div style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.3)", textAlign: "right", lineHeight: 1.5 }}>
+                  {t("result.statsShort", { percentage: stats.typePercentage })}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

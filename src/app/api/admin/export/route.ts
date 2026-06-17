@@ -9,11 +9,6 @@ export async function GET(req: NextRequest) {
   const authErr = checkAdminAuth(req);
   if (authErr) return authErr;
   try {
-    const records = await db.testRecord.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { answers: true },
-    });
-
     const headers = [
       "ID",
       "Session",
@@ -37,25 +32,44 @@ export async function GET(req: NextRequest) {
         : s;
     };
 
-    const rows = records.map((r) =>
-      [
-        r.id,
-        r.sessionId,
-        r.resultCode,
-        r.similarity,
-        r.ipAddress,
-        r.userAgent,
-        r.screenRes,
-        r.language,
-        r.timezone,
-        r.duration,
-        r.startedAt?.toISOString(),
-        r.completedAt?.toISOString(),
-        r.createdAt.toISOString(),
-      ]
-        .map(escape)
-        .join(",")
-    );
+    const rows: string[] = [];
+    let cursor: { id: number } | undefined;
+    const batchSize = 500;
+
+    while (true) {
+      const batch = await db.testRecord.findMany({
+        take: batchSize,
+        skip: cursor ? 1 : 0,
+        cursor: cursor,
+        orderBy: { id: "asc" },
+        include: { answers: true },
+      });
+      if (batch.length === 0) break;
+
+      for (const r of batch) {
+        rows.push(
+          [
+            r.id,
+            r.sessionId,
+            r.resultCode,
+            r.similarity,
+            r.ipAddress,
+            r.userAgent,
+            r.screenRes,
+            r.language,
+            r.timezone,
+            r.duration,
+            r.startedAt?.toISOString(),
+            r.completedAt?.toISOString(),
+            r.createdAt.toISOString(),
+          ]
+            .map(escape)
+            .join(",")
+        );
+      }
+
+      cursor = { id: batch[batch.length - 1].id };
+    }
 
     const csv = [headers.join(","), ...rows].join("\n");
 

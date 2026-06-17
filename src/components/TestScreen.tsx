@@ -60,6 +60,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   const [answers, setAnswers] = useState<{ questionId: number; optionId: number }[]>([]);
   const [gateValue, setGateValue] = useState<string | undefined>();
   const [isAnimating, setIsAnimating] = useState(false);
+  const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const { t, locale } = useI18n();
   const [stageFadeOut, setStageFadeOut] = useState(false);
   const [showKeyboardHint, setShowKeyboardHint] = useState(false);
@@ -128,6 +129,13 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     });
   }, [questions, locale, gateValue]);
 
+  // 保护 currentIndex 在 displayQuestions 变化后不越界
+  useEffect(() => {
+    if (currentIndex >= displayQuestions.length) {
+      setCurrentIndex(Math.max(0, displayQuestions.length - 1));
+    }
+  }, [displayQuestions, currentIndex]);
+
   const current = displayQuestions[currentIndex];
   const progress = displayQuestions.length > 0 ? (currentIndex / displayQuestions.length) * 100 : 0;
 
@@ -149,9 +157,10 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
       setStageFadeOut(false);
     }
     setIsAnimating(false);
+    setSelectedOptionId(null);
   }, [onComplete]);
 
-  const handleSelect = useCallback((selectedBlock: HTMLElement, option: QuizOption) => {
+  const handleSelect = useCallback((option: QuizOption) => {
     // If animating, skip current animation and apply pending state first
     if (isAnimating) {
       flushPending();
@@ -159,6 +168,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
       return;
     }
     setIsAnimating(true);
+    setSelectedOptionId(option.id);
     document.body.classList.remove("hovering");
 
     const answer = { questionId: current.id, optionId: option.id };
@@ -166,13 +176,6 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     let newGateValue = gateValue;
     if (current.type === "gate" && option.value) { newGateValue = option.value; setGateValue(option.value); }
 
-    const parent = selectedBlock.parentElement;
-    if (parent) {
-      const allBlocks = Array.from(parent.children) as HTMLElement[];
-      allBlocks.forEach((b) => { b.style.pointerEvents = "none"; });
-      selectedBlock.classList.add("is-selected");
-      allBlocks.forEach((b) => { if (b !== selectedBlock) b.classList.add("is-dimmed"); });
-    }
     const isTouchFeedback = touchFeedbackRef.current;
     if (navigator.vibrate) navigator.vibrate(isTouchFeedback ? 12 : 40);
 
@@ -202,7 +205,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
         return;
       }
       const blocks = stageRef.current?.querySelectorAll(".opt-block");
-      if (blocks && blocks[idx] && current.options[idx]) handleSelect(blocks[idx] as HTMLElement, current.options[idx]);
+      if (blocks && blocks[idx] && current.options[idx]) handleSelect(current.options[idx]);
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
@@ -264,12 +267,12 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
             <button
               type="button"
               key={option.id}
-              className="opt-block"
+              className={`opt-block ${selectedOptionId === option.id ? "is-selected" : ""} ${selectedOptionId !== null && selectedOptionId !== option.id ? "is-dimmed" : ""}`}
               role="radio"
               aria-checked={false}
               aria-label={option.label}
-              style={{ animationDelay: `${idx * 0.1}s` }}
-              onClick={(e) => handleSelect(e.currentTarget, option)}
+              style={{ animationDelay: `${idx * 0.1}s`, pointerEvents: isAnimating ? "none" : "auto" }}
+              onClick={() => handleSelect(option)}
             >
               <div className="opt-content">
                 <div className="opt-index" aria-hidden="true">{ROMAN[idx]}</div>

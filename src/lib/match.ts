@@ -10,12 +10,19 @@ const MAX_DISTANCE = DIM_WEIGHTS.reduce((s, w) => s + w * 3, 0);
 
 /** 将 "LHH-LLM-HHH-LLL" 解析为 [0,2,2, 0,1,0, 2,2,2, 0,0,0] */
 export function parseVector(v: string): number[] {
-  return v.replace(/-/g, "").split("").map((c) => TIER_CHAR_TO_NUM[c] ?? 1);
+  const nums = v.replace(/-/g, "").split("").map((c) => TIER_CHAR_TO_NUM[c] ?? 1);
+  if (nums.length !== 12) {
+    throw new Error(`Invalid vector length: expected 12, got ${nums.length} in "${v}"`);
+  }
+  return nums;
 }
 
 /** 将 12 个数值转为 "LHH-LLM-HHH-LLL" 格式 */
 export function formatVector(values: number[]): string {
-  const chars = values.map((v) => TIER_NUM_TO_CHAR[Math.min(v, 3)]);
+  if (values.length !== 12) {
+    throw new Error(`Invalid vector length: expected 12, got ${values.length}`);
+  }
+  const chars = values.map((v) => TIER_NUM_TO_CHAR[Math.max(0, Math.min(v, 3))]);
   return [chars.slice(0, 3).join(""), chars.slice(3, 6).join(""), chars.slice(6, 9).join(""), chars.slice(9, 12).join("")].join("-");
 }
 
@@ -29,6 +36,9 @@ export function scoreToTier(total: number): number {
 
 /** 加权曼哈顿距离 */
 export function weightedManhattan(a: number[], b: number[]): number {
+  if (a.length !== 12 || b.length !== 12) {
+    throw new Error(`Invalid vector length: a=${a.length}, b=${b.length}`);
+  }
   let dist = 0;
   for (let i = 0; i < 12; i++) {
     dist += DIM_WEIGHTS[i] * Math.abs(a[i] - b[i]);
@@ -110,7 +120,10 @@ export function match(
 
   const regularTypes = allTypes.filter((t) => !t.special && t.group !== "fallback");
   const specialTypes = allTypes.filter((t) => t.special);
-  const unsetType = allTypes.find((t) => t.group === "fallback")!;
+  const unsetType = allTypes.find((t) => t.group === "fallback");
+  if (!unsetType) {
+    throw new Error("Missing fallback personality type in database");
+  }
 
   // ① 特殊触发
   if (input.triggerFired && input.gateValue) {
@@ -121,7 +134,10 @@ export function match(
     const candidates = gateToSpecial[input.gateValue] ?? specialTypes.map((t) => t.code);
     const specialCode = resolveSpecialCode(input.triggerFired, candidates);
     if (specialCode) {
-      const t = allTypes.find((p) => p.code === specialCode)!;
+      const t = allTypes.find((p) => p.code === specialCode);
+      if (!t) {
+        throw new Error(`Missing special personality type ${specialCode} in database`);
+      }
       // Compute user vector for special trigger too
       let specialUserVec = "";
       {

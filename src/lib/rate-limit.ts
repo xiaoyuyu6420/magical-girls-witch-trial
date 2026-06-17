@@ -38,7 +38,6 @@ function getClientId(req: NextRequest): string {
 }
 
 function prune(now: number) {
-  if (buckets.size <= 10_000) return;
   const cutoff = now - 60 * 60 * 1000;
   for (const [key, b] of buckets) {
     if (b.lastRefill < cutoff) buckets.delete(key);

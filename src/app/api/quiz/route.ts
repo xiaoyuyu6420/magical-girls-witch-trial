@@ -1,10 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { DIMENSIONS, WEIGHTS } from "@/data/quiz-content";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const rl = rateLimit(req, { id: "quiz", capacity: 20, refillPerSec: 0.5 });
+  if (!rl.ok) {
+    return NextResponse.json({ error: "Rate limited" }, { status: 429, headers: { "Retry-After": String(rl.retryAfter) } });
+  }
+
   const [questions, types] = await Promise.all([
     db.question.findMany({ orderBy: { order: "asc" }, include: { options: true } }),
     db.personalityType.findMany({ orderBy: { id: "asc" } }),
