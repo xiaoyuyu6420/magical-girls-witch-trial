@@ -2,33 +2,19 @@
 // Quiz Content Data — 人格测试内容数据
 // ============================================================================
 
-export interface DimDef {
-  code: string; name: string; model: string; modelName: string; dir: string;
-}
+import type { DimDef } from "@/pack/types";
+import {
+  DIMENSIONS as PACK_DIMENSIONS,
+  WEIGHTS as PACK_WEIGHTS,
+  ALGO_CONFIG as PACK_ALGO_CONFIG,
+  type DimCode,
+} from "@/content/packs/witch-trial/config";
 
-export const DIMENSIONS: readonly DimDef[] = [
-  { code: "S1", name: "严厉度", model: "S", modelName: "审判", dir: "L=宽容 → H=严苛" },
-  { code: "S2", name: "直觉度", model: "S", modelName: "审判", dir: "L=理性 → H=感性" },
-  { code: "S3", name: "宽恕度", model: "S", modelName: "审判", dir: "L=不宽恕 → H=易宽恕" },
-  { code: "F1", name: "复仇心", model: "F", modelName: "侵蚀", dir: "L=无复仇心 → H=强烈复仇" },
-  { code: "F2", name: "绝望度", model: "F", modelName: "侵蚀", dir: "L=从不绝望 → H=容易绝望" },
-  { code: "F3", name: "执念度", model: "F", modelName: "侵蚀", dir: "L=随遇而安 → H=极度执着" },
-  { code: "B1", name: "信任度", model: "B", modelName: "羁绊", dir: "L=封闭 → H=开放" },
-  { code: "B2", name: "背叛感", model: "B", modelName: "羁绊", dir: "L=不在意 → H=极度敏感" },
-  { code: "B3", name: "犠牲度", model: "B", modelName: "羁绊", dir: "L=自我优先 → H=甘愿牺牲" },
-  { code: "W1", name: "压抑力", model: "W", modelName: "觉醒", dir: "L=不压抑 → H=强力压抑" },
-  { code: "W2", name: "理性力", model: "W", modelName: "觉醒", dir: "L=感性驱动 → H=理性维系" },
-  { code: "W3", name: "本能度", model: "W", modelName: "觉醒", dir: "L=克制 → H=放任" },
-];
-
-export type DimCode = (typeof DIMENSIONS)[number]["code"];
-
-export const WEIGHTS: Record<DimCode, number> = {
-  S1: 1.5, S2: 1.0, S3: 1.0,
-  F1: 1.5, F2: 1.0, F3: 1.0,
-  B1: 1.0, B2: 1.0, B3: 1.5,
-  W1: 1.0, W2: 1.0, W3: 1.5,
-};
+export type { DimDef, DimCode };
+/** Re-export pack engine config for seed/tests/back-compat */
+export const DIMENSIONS = PACK_DIMENSIONS;
+export const WEIGHTS = PACK_WEIGHTS;
+export const ALGO_CONFIG = PACK_ALGO_CONFIG;
 
 export interface PersonalityTypeDef {
   code: string; name: string; subtitle?: string; group: string; vector: string;
@@ -121,9 +107,13 @@ export interface QuestionDef {
   options: { label: string; score?: number; value?: string; trigger?: string }[];
 }
 
-const Q = (dim: string, meta: string, text: string, options: string[]): QuestionDef => ({
+/** Build a normal question. scores defaults to 1..n; pass explicit scores for reverse items. */
+const Q = (dim: string, meta: string, text: string, options: string[], scores?: number[]): QuestionDef => ({
   dim, meta, text, type: "normal",
-  options: options.map((label, i) => ({ label, score: i + 1 })),
+  options: options.map((label, i) => ({
+    label,
+    score: scores?.[i] ?? i + 1,
+  })),
 });
 
 export const QUESTIONS: QuestionDef[] = [
@@ -142,12 +132,12 @@ export const QUESTIONS: QuestionDef[] = [
     "谢谢。在这里，多一个同伴就多一份希望。",
     "接过食物，但保持着警惕。她为什么第一个来找我？",
     "……为什么要帮我？在这座岛上，没有人会无条件对别人好。",
-  ]),
+  ], [3, 2, 1]),
   Q("W1", "觉醒·共鸣", "深夜独处时，你突然想起所有被伤害的记忆。因子在你的悲伤中共鸣，魔法在指尖不受控地闪烁，家具开始轻微震动。你意识到自己的情绪正在加速因子的侵蚀。", [
     "让眼泪流一会儿，但深呼吸控制住魔法的输出。",
     "放手吧。让一切涌出来。也许这才是因子想要的。",
     "握紧拳头，一个一个地把记忆压回去。绝不能让因子吞噬自己。",
-  ]),
+  ], [2, 1, 3]),
   Q("S2", "审判·低语", "监牢里的物资被人偷走了。十三名预备魔女围坐在宅邸大厅里，所有人都在否认。你心里有一个直觉——但没有任何证据。典狱长的使魔在角落里冷冷地注视着一切。", [
     "用逻辑分析：谁有动机、谁有机会接近物资室、谁最近行为异常。",
     "我的直觉告诉我就是她，但没有证据的指控只会让大家分裂。",
@@ -182,7 +172,7 @@ export const QUESTIONS: QuestionDef[] = [
     "犹豫了一下，先确认她本人的意愿。",
     "……对不起，我还不能死。一定还有别的办法。",
     "毫不犹豫地伸出了手。",
-  ]),
+  ], [2, 1, 3]),
   Q("W3", "觉醒·本能", "深夜，因子在血管里涌动，你感到一股前所未有的力量正在觉醒。你的身体开始出现魔女化的征兆，但那感觉很……舒服。像是终于找回了自己。", [
     "咬紧牙关，把那股力量压制下去。我不是魔女。",
     "试着和它对话，感受它的诉求。也许因子并不完全是敌人。",
@@ -194,7 +184,7 @@ export const QUESTIONS: QuestionDef[] = [
     "帮她？她当初可没帮过我。让她自生自灭。",
     "先看看伤势，但之后我们得把账算清楚。",
     "她受伤和我没关系，但在这里放任不管，她的因子侵蚀会加速……",
-  ]),
+  ], [3, 2, 1]),
   Q("F1", "侵蚀·悖论", "一个和你一样被冤枉送进这座孤岛的少女选择了原谅加害者。她说恨只会让因子侵蚀得更快，最终把自己也变成加害者。你的想法是？", [
     "她说得对。恨是一个无底洞，只会加速魔女化。",
     "理解她的选择，但我做不到放下。",
@@ -243,7 +233,7 @@ export const QUESTIONS: QuestionDef[] = [
     "跪在地上很久。因子的余波在身体里翻涌，但最终你慢慢站了起来。",
     "世界在那一刻崩塌了。你再也不想站起来了。",
     "……即使如此，我也要活下去。连同她的份一起。",
-  ]),
+  ], [2, 3, 1]),
   Q("B2", "羁绊·利刃", "有人对你说：「在这座岛上信任别人就是在给自己递刀子。你永远不知道谁的因子会先失控。」你觉得呢？", [
     "说得有道理。我不会轻易把刀递出去。",
     "也许吧。但完全不信任人的日子，比因子侵蚀还难熬。",
@@ -258,7 +248,7 @@ export const QUESTIONS: QuestionDef[] = [
     "假的就假的，我不会因为她救过我就原谅欺骗。",
     "……即使目的是监视，那份温柔对我而言是真实的。",
     "那些温暖是假的，但救命是真的……我不知道该怎么想。",
-  ]),
+  ], [1, 3, 2]),
   Q("F3", "侵蚀·抗拒", "有人说：「放下吧，在这座岛上有些事注定做不到。因子在一点点吞噬你的理智。」你的第一反应是？", [
     "也许吧。该放手的时候就得放手。",
     "……谢谢你的关心，但我想自己决定什么时候放手。",
@@ -275,14 +265,3 @@ export const QUESTIONS: QuestionDef[] = [
     "……不后悔。那个人该受到惩罚。",
   ]),
 ];
-
-export const ALGO_CONFIG = {
-  tiers: [
-    { max: 2, label: "L", value: 0 },
-    { max: 4, label: "M", value: 1 },
-    { max: 5, label: "H", value: 2 },
-    { max: 6, label: "X", value: 3 },
-  ] as const,
-  delta: 3,
-  threshold: 40,
-};

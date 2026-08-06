@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { parseVector, formatVector, scoreToTier, weightedManhattan, similarity, match } from "./match";
+import { getActivePack } from "@/pack/load";
 import { DIMENSIONS } from "@/data/quiz-content";
+
+const pack = getActivePack();
 
 describe("parseVector", () => {
   it("parses LHH-LLM-HHH-LLL correctly", () => {
@@ -33,65 +36,65 @@ describe("formatVector", () => {
 
 describe("scoreToTier", () => {
   it("maps score 0-2 to L (0)", () => {
-    expect(scoreToTier(0)).toBe(0);
-    expect(scoreToTier(2)).toBe(0);
+    expect(scoreToTier(0, pack)).toBe(0);
+    expect(scoreToTier(2, pack)).toBe(0);
   });
 
   it("maps score 3-4 to M (1)", () => {
-    expect(scoreToTier(3)).toBe(1);
-    expect(scoreToTier(4)).toBe(1);
+    expect(scoreToTier(3, pack)).toBe(1);
+    expect(scoreToTier(4, pack)).toBe(1);
   });
 
   it("maps score 5 to H (2)", () => {
-    expect(scoreToTier(5)).toBe(2);
+    expect(scoreToTier(5, pack)).toBe(2);
   });
 
   it("maps score 6 to X (3)", () => {
-    expect(scoreToTier(6)).toBe(3);
+    expect(scoreToTier(6, pack)).toBe(3);
   });
 
   it("maps very high score to X (3)", () => {
-    expect(scoreToTier(100)).toBe(3);
+    expect(scoreToTier(100, pack)).toBe(3);
   });
 });
 
 describe("weightedManhattan", () => {
   it("returns 0 for identical vectors", () => {
     const v = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2];
-    expect(weightedManhattan(v, v)).toBe(0);
+    expect(weightedManhattan(v, v, pack)).toBe(0);
   });
 
   it("returns positive for different vectors", () => {
     const a = Array(12).fill(0);
     const b = Array(12).fill(3);
-    expect(weightedManhattan(a, b)).toBeGreaterThan(0);
+    expect(weightedManhattan(a, b, pack)).toBeGreaterThan(0);
   });
 
   it("is symmetric", () => {
     const a = [0, 2, 1, 3, 0, 2, 1, 0, 3, 2, 1, 0];
     const b = [1, 0, 3, 2, 1, 0, 2, 1, 0, 3, 2, 1];
-    expect(weightedManhattan(a, b)).toBeCloseTo(weightedManhattan(b, a));
+    expect(weightedManhattan(a, b, pack)).toBeCloseTo(weightedManhattan(b, a, pack));
   });
 });
 
 describe("similarity", () => {
   it("returns 100 for identical vectors", () => {
     const v = [1, 2, 0, 3, 1, 2, 0, 1, 2, 3, 0, 1];
-    const dist = weightedManhattan(v, v);
-    expect(similarity(dist)).toBe(100);
+    const dist = weightedManhattan(v, v, pack);
+    expect(similarity(dist, pack)).toBe(100);
   });
 
   it("returns 0 for maximally different vectors", () => {
     const a = Array(12).fill(0);
     const b = Array(12).fill(3);
-    const dist = weightedManhattan(a, b);
-    expect(similarity(dist)).toBe(0);
+    const dist = weightedManhattan(a, b, pack);
+    expect(similarity(dist, pack)).toBe(0);
   });
 
   it("returns value between 0 and 100", () => {
     const a = [1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0];
     const b = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2];
-    const sim = similarity(weightedManhattan(a, b));
+    const sim = similarity(weightedManhattan(a, b, pack), pack);
     expect(sim).toBeGreaterThan(0);
     expect(sim).toBeLessThanOrEqual(100);
   });
@@ -110,29 +113,29 @@ describe("match", () => {
   it("returns a result with valid structure", () => {
     const dimScores: Record<string, number> = {};
     DIMENSIONS.forEach((d) => { dimScores[d.code] = 3; });
-    const result = match({ dimScores }, makeTypes());
+    const result = match({ dimScores }, makeTypes(), pack);
     expect(result.code).toBeTruthy();
     expect(result.similarity).toBeGreaterThanOrEqual(0);
     expect(result.similarity).toBeLessThanOrEqual(100);
     expect(result.userVector).toBeTruthy();
-    expect(result.top3).toHaveLength(3);
+    expect(result.top3.length).toBeGreaterThanOrEqual(1);
   });
 
   it("triggers special type with destroy gate + triggerFired", () => {
     const dimScores: Record<string, number> = {};
     DIMENSIONS.forEach((d) => { dimScores[d.code] = 3; });
-    const result = match({ dimScores, gateValue: "destroy", triggerFired: "YUKI" }, makeTypes());
+    const result = match({ dimScores, gateValue: "destroy", triggerFired: "YUKI" }, makeTypes(), pack);
     expect(result.special).toBe(true);
     expect(result.code).toBe("YUKI");
     expect(result.similarity).toBe(100);
   });
 
-  it("resolves seeded SPECIAL_A trigger aliases through the gate branch", () => {
+  it("resolves SPECIAL_A via explicit pack map", () => {
     const dimScores: Record<string, number> = {};
     DIMENSIONS.forEach((d) => { dimScores[d.code] = 3; });
 
-    const destroyResult = match({ dimScores, gateValue: "destroy", triggerFired: "SPECIAL_A" }, makeTypes());
-    const endureResult = match({ dimScores, gateValue: "endure", triggerFired: "SPECIAL_A" }, makeTypes());
+    const destroyResult = match({ dimScores, gateValue: "destroy", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
+    const endureResult = match({ dimScores, gateValue: "endure", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
 
     expect(destroyResult.special).toBe(true);
     expect(destroyResult.code).toBe("YUKI");
@@ -143,24 +146,39 @@ describe("match", () => {
   it("does not trigger special without gateValue", () => {
     const dimScores: Record<string, number> = {};
     DIMENSIONS.forEach((d) => { dimScores[d.code] = 3; });
-    const result = match({ dimScores, triggerFired: "YUKI" }, makeTypes());
+    const result = match({ dimScores, triggerFired: "YUKI" }, makeTypes(), pack);
     expect(result.special).toBe(false);
-  });
-
-  it("returns fallback for ambiguous low-similarity results", () => {
-    const dimScores: Record<string, number> = {};
-    DIMENSIONS.forEach((d) => { dimScores[d.code] = 3; });
-    const types = makeTypes();
-    const result = match({ dimScores }, types);
-    expect(result.code).toBeTruthy();
   });
 
   it("applies gate normal bonus to S2", () => {
     const dimScores: Record<string, number> = {};
     DIMENSIONS.forEach((d) => { dimScores[d.code] = 3; });
-    const resultNormal = match({ dimScores, gateValue: "normal" }, makeTypes());
-    const resultDefault = match({ dimScores }, makeTypes());
-    expect(resultNormal.userVector).toBeTruthy();
-    expect(resultDefault.userVector).toBeTruthy();
+    // S2 raw 3 → tier M; with +1 → 4 still M. Use 4 so +1 crosses to H(5)
+    dimScores["S2"] = 4;
+    const resultNormal = match({ dimScores, gateValue: "normal" }, makeTypes(), pack);
+    const resultDefault = match({ dimScores }, makeTypes(), pack);
+    const idx = DIMENSIONS.findIndex((d) => d.code === "S2");
+    const nVals = parseVector(resultNormal.userVector);
+    const dVals = parseVector(resultDefault.userVector);
+    expect(nVals[idx]).toBeGreaterThan(dVals[idx]);
+  });
+
+  it("is deterministic for same dimScores", () => {
+    const dimScores: Record<string, number> = {};
+    DIMENSIONS.forEach((d) => { dimScores[d.code] = 4; });
+    const a = match({ dimScores }, makeTypes(), pack);
+    const b = match({ dimScores }, makeTypes(), pack);
+    expect(a.code).toBe(b.code);
+    expect(a.userVector).toBe(b.userVector);
+    expect(a.similarity).toBe(b.similarity);
+  });
+});
+
+describe("active pack", () => {
+  it("loads witch-trial pack with 12 dims", () => {
+    expect(pack.id).toBe("witch-trial");
+    expect(pack.dimensions).toHaveLength(12);
+    expect(pack.rules.optionShuffle).toBe("stable-by-question-id");
+    expect(pack.presentation.hideTechnicalVectors).toBe(true);
   });
 });

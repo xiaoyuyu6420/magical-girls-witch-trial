@@ -5,9 +5,13 @@ const prisma = new PrismaClient();
 
 async function main() {
   const existingQuestions = await prisma.question.count();
-  if (existingQuestions > 0) {
-    console.log(`Seed skipped: ${existingQuestions} questions already exist in DB`);
+  const force = process.env.FORCE_RESEED === "1";
+  if (existingQuestions > 0 && !force) {
+    console.log(`Seed skipped: ${existingQuestions} questions already exist in DB (set FORCE_RESEED=1 to rebuild)`);
     return;
+  }
+  if (force && existingQuestions > 0) {
+    console.log("FORCE_RESEED=1 — wiping answers/options/questions before reseed");
   }
 
   console.log("Seeding personality types...");

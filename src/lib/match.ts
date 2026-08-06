@@ -1,59 +1,77 @@
-import { DIMENSIONS, WEIGHTS, ALGO_CONFIG, type DimCode } from "@/data/quiz-content";
+import type { QuizPack } from "@/pack/types";
+import { getActivePack } from "@/pack/load";
 
 // --- 向量解析与计算 ---
 
 const TIER_CHAR_TO_NUM: Record<string, number> = { L: 0, M: 1, H: 2, X: 3 };
 const TIER_NUM_TO_CHAR = ["L", "M", "H", "X"] as const;
-const DIM_CODES = DIMENSIONS.map((d) => d.code) as DimCode[];
-const DIM_WEIGHTS = DIM_CODES.map((c) => WEIGHTS[c] ?? 1.0);
-const MAX_DISTANCE = DIM_WEIGHTS.reduce((s, w) => s + w * 3, 0);
 
-/** 将 "LHH-LLM-HHH-LLL" 解析为 [0,2,2, 0,1,0, 2,2,2, 0,0,0] */
-export function parseVector(v: string): number[] {
+function dimCodes(pack: QuizPack): string[] {
+  return pack.dimensions.map((d) => d.code);
+}
+
+function dimWeights(pack: QuizPack): number[] {
+  return dimCodes(pack).map((c) => pack.weights[c] ?? 1.0);
+}
+
+function maxDistanceOf(pack: QuizPack): number {
+  return dimWeights(pack).reduce((s, w) => s + w * 3, 0);
+}
+
+/** 将 "LHH-LLM-HHH-LLL" 解析为数值数组（长度 = 维度数，默认 12） */
+export function parseVector(v: string, expectedLen = 12): number[] {
   const nums = v.replace(/-/g, "").split("").map((c) => TIER_CHAR_TO_NUM[c] ?? 1);
-  if (nums.length !== 12) {
-    throw new Error(`Invalid vector length: expected 12, got ${nums.length} in "${v}"`);
+  if (nums.length !== expectedLen) {
+    throw new Error(`Invalid vector length: expected ${expectedLen}, got ${nums.length} in "${v}"`);
   }
   return nums;
 }
 
-/** 将 12 个数值转为 "LHH-LLM-HHH-LLL" 格式 */
+/** 将档位数值转为 "LHH-LLM-HHH-LLL" 格式（按 3 维一组） */
 export function formatVector(values: number[]): string {
-  if (values.length !== 12) {
-    throw new Error(`Invalid vector length: expected 12, got ${values.length}`);
+  if (values.length === 0) {
+    throw new Error("Invalid vector length: expected at least 1");
   }
   const chars = values.map((v) => TIER_NUM_TO_CHAR[Math.max(0, Math.min(v, 3))]);
-  return [chars.slice(0, 3).join(""), chars.slice(3, 6).join(""), chars.slice(6, 9).join(""), chars.slice(9, 12).join("")].join("-");
+  const groups: string[] = [];
+  for (let i = 0; i < chars.length; i += 3) {
+    groups.push(chars.slice(i, i + 3).join(""));
+  }
+  return groups.join("-");
 }
 
-/** 分数转档位 */
-export function scoreToTier(total: number): number {
-  for (const tier of ALGO_CONFIG.tiers) {
+/** 分数转档位（依赖 pack.algo.tiers） */
+export function scoreToTier(total: number, pack: QuizPack = getActivePack()): number {
+  for (const tier of pack.algo.tiers) {
     if (total <= tier.max) return tier.value;
   }
   return 3;
 }
 
 /** 加权曼哈顿距离 */
-export function weightedManhattan(a: number[], b: number[]): number {
-  if (a.length !== 12 || b.length !== 12) {
-    throw new Error(`Invalid vector length: a=${a.length}, b=${b.length}`);
+export function weightedManhattan(a: number[], b: number[], pack: QuizPack = getActivePack()): number {
+  const codes = dimCodes(pack);
+  const weights = dimWeights(pack);
+  if (a.length !== codes.length || b.length !== codes.length) {
+    throw new Error(`Invalid vector length: a=${a.length}, b=${b.length}, dims=${codes.length}`);
   }
   let dist = 0;
-  for (let i = 0; i < 12; i++) {
-    dist += DIM_WEIGHTS[i] * Math.abs(a[i] - b[i]);
+  for (let i = 0; i < codes.length; i++) {
+    dist += weights[i] * Math.abs(a[i] - b[i]);
   }
   return dist;
 }
 
 /** 最大可能距离 */
-export function maxDistance(): number {
-  return MAX_DISTANCE;
+export function maxDistance(pack: QuizPack = getActivePack()): number {
+  return maxDistanceOf(pack);
 }
 
 /** 相似度 % */
-export function similarity(dist: number): number {
-  return Math.round(((1 - dist / MAX_DISTANCE) * 100) * 10) / 10;
+export function similarity(dist: number, pack: QuizPack = getActivePack()): number {
+  const maxD = maxDistanceOf(pack);
+  if (maxD <= 0) return 0;
+  return Math.round(((1 - dist / maxD) * 100) * 10) / 10;
 }
 
 // --- 匹配主函数 ---
@@ -61,8 +79,8 @@ export function similarity(dist: number): number {
 export interface MatchInput {
   // dimCode → sum of scores (raw, before tier conversion)
   dimScores: Record<string, number>;
-  gateValue?: string;   // "destroy" | "endure" | "normal" | "normal_alt"
-  triggerFired?: string; // "SPECIAL_A" | "SPECIAL_B" etc
+  gateValue?: string;
+  triggerFired?: string;
 }
 
 export interface MatchResult {
@@ -82,9 +100,57 @@ export interface MatchResult {
   translations?: string;
 }
 
-function resolveSpecialCode(trigger: string, candidates: string[]): string | undefined {
-  if (candidates.includes(trigger)) return trigger;
+export interface PersonalityTypeInput {
+  code: string;
+  name: string;
+  subtitle?: string | null;
+  group: string;
+  vector: string;
+  slogan: string;
+  desc: string;
+  keywords?: string | null;
+  special: boolean;
+  translations?: string;
+}
 
+function applyGateBonus(
+  dimScores: Record<string, number>,
+  gateValue: string | undefined,
+  pack: QuizPack,
+): Record<string, number> {
+  const scores = { ...dimScores };
+  if (!gateValue) return scores;
+  const bonus = pack.rules.gateBonus[gateValue];
+  if (!bonus) return scores;
+  for (const [dim, add] of Object.entries(bonus)) {
+    scores[dim] = Math.min((scores[dim] ?? 0) + add, 6);
+  }
+  return scores;
+}
+
+function buildUserValues(dimScores: Record<string, number>, pack: QuizPack): number[] {
+  const scores = dimScores;
+  return dimCodes(pack).map((code) => {
+    const total = scores[code] ?? 3; // default mid
+    return scoreToTier(total, pack);
+  });
+}
+
+function resolveSpecialCode(
+  trigger: string,
+  gateValue: string,
+  specialTypes: { code: string }[],
+  pack: QuizPack,
+): string | undefined {
+  // 1) Explicit pack map: SPECIAL_A.destroy → YUKI
+  const mapped = pack.rules.specialTriggers[trigger]?.[gateValue]
+    ?? pack.rules.specialTriggers[trigger.toUpperCase()]?.[gateValue];
+  if (mapped && specialTypes.some((t) => t.code === mapped)) return mapped;
+
+  // 2) Direct personality code
+  if (specialTypes.some((t) => t.code === trigger)) return trigger;
+
+  // 3) Legacy SPECIAL_A / SPECIAL_1 index into candidate list (stable sort by code)
   const match = /^SPECIAL_([A-Z]|\d+)$/i.exec(trigger);
   if (!match) return undefined;
 
@@ -93,25 +159,17 @@ function resolveSpecialCode(trigger: string, candidates: string[]): string | und
     ? Number(token) - 1
     : token.charCodeAt(0) - "A".charCodeAt(0);
 
-  return index >= 0 ? candidates[index] : undefined;
+  const sorted = [...specialTypes].sort((a, b) => a.code.localeCompare(b.code));
+  // Historical gate filtering: endure → odd indices in insertion order was used;
+  // keep pack map as primary; legacy fallback uses full sorted list.
+  return index >= 0 ? sorted[index]?.code : undefined;
 }
 
 export function match(
   input: MatchInput,
-  types: {
-    code: string;
-    name: string;
-    subtitle?: string | null;
-    group: string;
-    vector: string;
-    slogan: string;
-    desc: string;
-    keywords?: string | null;
-    special: boolean;
-    translations?: string;
-  }[],
+  types: PersonalityTypeInput[],
+  pack: QuizPack = getActivePack(),
 ): MatchResult {
-  // Convert DB type objects (null → undefined for optional fields)
   const allTypes = types.map((t) => ({
     ...t,
     subtitle: t.subtitle ?? undefined,
@@ -125,30 +183,23 @@ export function match(
     throw new Error("Missing fallback personality type in database");
   }
 
+  const dimLen = pack.dimensions.length;
+
   // ① 特殊触发
   if (input.triggerFired && input.gateValue) {
-    const gateToSpecial: Record<string, string[]> = {
-      destroy: specialTypes.map((t) => t.code),
-      endure: specialTypes.filter((_, i) => i % 2 === 1).map((t) => t.code),
-    };
-    const candidates = gateToSpecial[input.gateValue] ?? specialTypes.map((t) => t.code);
-    const specialCode = resolveSpecialCode(input.triggerFired, candidates);
+    const specialCode = resolveSpecialCode(
+      input.triggerFired,
+      input.gateValue,
+      specialTypes,
+      pack,
+    );
     if (specialCode) {
       const t = allTypes.find((p) => p.code === specialCode);
       if (!t) {
         throw new Error(`Missing special personality type ${specialCode} in database`);
       }
-      // Compute user vector for special trigger too
-      let specialUserVec = "";
-      {
-        const scores = { ...input.dimScores };
-        if (input.gateValue === "normal") {
-          scores["S2"] = Math.min((scores["S2"] ?? 0) + 1, 6);
-        } else if (input.gateValue === "normal_alt") {
-          scores["W1"] = Math.min((scores["W1"] ?? 0) + 1, 6);
-        }
-        specialUserVec = formatVector(DIM_CODES.map((code) => scoreToTier(scores[code] ?? 3)));
-      }
+      const scored = applyGateBonus(input.dimScores, input.gateValue, pack);
+      const specialUserVec = formatVector(buildUserValues(scored, pack));
 
       return {
         code: t.code,
@@ -170,44 +221,43 @@ export function match(
   }
 
   // ② 计算用户向量
-  let userValues: number[];
-
-  {
-    // 微调：门控题 normal 选项
-    const scores = { ...input.dimScores };
-    if (input.gateValue === "normal") {
-      // S2 +1 (直觉度微调)
-      const key = "S2";
-      scores[key] = Math.min((scores[key] ?? 0) + 1, 6);
-    } else if (input.gateValue === "normal_alt") {
-      // W1 +1 (压抑力微调)
-      const key = "W1";
-      scores[key] = Math.min((scores[key] ?? 0) + 1, 6);
-    }
-
-    userValues = DIM_CODES.map((code) => {
-      const total = scores[code] ?? 3; // default mid
-      return scoreToTier(total);
-    });
-  }
-
+  const scored = applyGateBonus(input.dimScores, input.gateValue, pack);
+  const userValues = buildUserValues(scored, pack);
   const userVec = formatVector(userValues);
 
   // ③ 向量匹配
   const ranked = regularTypes
     .map((t) => {
-      const tplValues = parseVector(t.vector);
-      const dist = weightedManhattan(userValues, tplValues);
-      return { type: t, dist, sim: similarity(dist) };
+      const tplValues = parseVector(t.vector, dimLen);
+      const dist = weightedManhattan(userValues, tplValues, pack);
+      return { type: t, dist, sim: similarity(dist, pack) };
     })
     .sort((a, b) => a.dist - b.dist);
 
   const top3 = ranked.slice(0, 3);
   const best = top3[0];
+  if (!best) {
+    return {
+      code: unsetType.code,
+      name: unsetType.name,
+      subtitle: unsetType.subtitle,
+      slogan: unsetType.slogan,
+      desc: unsetType.desc,
+      keywords: unsetType.keywords,
+      similarity: 0,
+      userVector: userVec,
+      templateVector: unsetType.vector,
+      top3: [],
+      group: "fallback",
+      borderType: true,
+      special: false,
+      translations: unsetType.translations,
+    };
+  }
 
   // ④ 边界检查
-  const delta = ALGO_CONFIG.delta;
-  const threshold = ALGO_CONFIG.threshold;
+  const delta = pack.algo.delta;
+  const threshold = pack.algo.threshold;
   let borderType = false;
   const resultCode = best.type.code;
 
@@ -215,7 +265,6 @@ export function match(
     const gap = best.sim - top3[1].sim;
     if (gap < delta) {
       if (best.sim < threshold) {
-        // 兜底
         return {
           code: unsetType.code,
           name: unsetType.name,
@@ -226,7 +275,12 @@ export function match(
           similarity: best.sim,
           userVector: userVec,
           templateVector: unsetType.vector,
-          top3: top3.map((r) => ({ code: r.type.code, name: r.type.name, similarity: r.sim, translations: r.type.translations })),
+          top3: top3.map((r) => ({
+            code: r.type.code,
+            name: r.type.name,
+            similarity: r.sim,
+            translations: r.type.translations,
+          })),
           group: "fallback",
           borderType: true,
           special: false,
@@ -247,7 +301,12 @@ export function match(
     similarity: best.sim,
     userVector: userVec,
     templateVector: best.type.vector,
-    top3: top3.map((r) => ({ code: r.type.code, name: r.type.name, similarity: r.sim, translations: r.type.translations })),
+    top3: top3.map((r) => ({
+      code: r.type.code,
+      name: r.type.name,
+      similarity: r.sim,
+      translations: r.type.translations,
+    })),
     group: best.type.group,
     borderType,
     special: false,

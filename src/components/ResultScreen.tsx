@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import RadarChart from "./RadarChart";
 import DimensionBar from "./DimensionBar";
-import { DIMENSIONS } from "@/data/quiz-content";
 import { parseVector } from "@/lib/match";
+import { getActivePack } from "@/pack/load";
 import { useLocalizedContent } from "@/lib/use-localized-content";
 import { toPng } from "html-to-image";
 import { useI18n } from "@/lib/i18n";
@@ -23,14 +23,23 @@ interface ResultScreenProps {
   onRestart: () => void;
 }
 
-const MODEL_GROUPS = [
-  { model: "S", label: "罪业之秤 · 审判", dims: ["S1", "S2", "S3"] },
-  { model: "F", label: "堕落之翼 · 侵蚀", dims: ["F1", "F2", "F3"] },
-  { model: "B", label: "羁绊之锁 · 羁绊", dims: ["B1", "B2", "B3"] },
-  { model: "W", label: "因子觉醒 · 觉醒", dims: ["W1", "W2", "W3"] },
-] as const;
-
 export default function ResultScreen({ result, stats, onRestart }: ResultScreenProps) {
+  const pack = getActivePack();
+  const DIMENSIONS = pack.dimensions;
+  const MODEL_GROUPS = (() => {
+    const order: string[] = [];
+    const map = new Map<string, { model: string; dims: string[] }>();
+    for (const d of DIMENSIONS) {
+      if (!map.has(d.model)) {
+        order.push(d.model);
+        map.set(d.model, { model: d.model, dims: [] });
+      }
+      map.get(d.model)!.dims.push(d.code);
+    }
+    return order.map((m) => map.get(m)!);
+  })();
+  const tierLabels = pack.presentation.tierLabels;
+  const hideVectors = pack.presentation.hideTechnicalVectors;
   const shareCardRef = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
@@ -65,8 +74,15 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  const userVals = parseVector(result.userVector || "");
-  const tplVals = parseVector(result.templateVector || "");
+  let userVals: number[] = [];
+  let tplVals: number[] = [];
+  try {
+    if (result.userVector) userVals = parseVector(result.userVector, DIMENSIONS.length);
+    if (result.templateVector) tplVals = parseVector(result.templateVector, DIMENSIONS.length);
+  } catch {
+    userVals = [];
+    tplVals = [];
+  }
 
   const shareText = t("result.shareText", { name: localized.name, slogan: localized.slogan, url: typeof window !== "undefined" ? window.location.href : "" });
 
@@ -217,18 +233,20 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
                       const uv = userVals[idx] ?? 1;
                       const tv = tplVals[idx] ?? uv;
                       return (
-                        <DimensionBar key={dimCode} label={t(`dims.${dimCode}`)} value={uv} compareValue={tv} />
+                        <DimensionBar key={dimCode} label={t(`dims.${dimCode}`)} value={uv} compareValue={tv} tierLabels={tierLabels} />
                       );
                     })}
                   </div>
                 ))}
 
+                {!hideVectors && (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "1rem", paddingTop: "0.8rem", borderTop: "1px solid rgba(0,0,0,0.06)", fontSize: "0.75rem" }}>
                   <span style={{ color: "#888", fontFamily: "var(--f-title)", letterSpacing: "0.1em" }}>{t("result.you").toUpperCase()}</span>
                   <span style={{ fontFamily: "var(--f-title)", fontWeight: 600, letterSpacing: "0.1em" }}>{result.userVector || "—"}</span>
                   <span style={{ color: "#888", fontFamily: "var(--f-title)", letterSpacing: "0.1em" }}>{t("result.ideal")}</span>
                   <span style={{ fontFamily: "var(--f-title)", fontWeight: 600, letterSpacing: "0.1em" }}>{result.templateVector}</span>
                 </div>
+                )}
               </>
             )}
           </div>
@@ -254,7 +272,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "0.8rem" }}>
               <div>
                 <div style={{ fontFamily: "'Cinzel', serif", fontSize: "1.6rem", fontWeight: 900, color: "#d4af37" }}>{result.similarity}%</div>
-                <div style={{ fontSize: "0.5rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em" }}>SIMILARITY</div>
+                <div style={{ fontSize: "0.5rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em" }}>RESONANCE</div>
               </div>
               {stats && (
                 <div style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.3)", textAlign: "right", lineHeight: 1.5 }}>

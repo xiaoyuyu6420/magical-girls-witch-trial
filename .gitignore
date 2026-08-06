@@ -72,3 +72,6 @@ playwright-report/
 # allow committed static assets in public/
 !public/
 !public/**
+# crucible workflow artifacts (local only)
+.git.bak.*/
+smoke-result.txt

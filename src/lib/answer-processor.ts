@@ -1,4 +1,6 @@
 import type { MatchInput } from "./match";
+import type { QuizPack } from "@/pack/types";
+import { getActivePack } from "@/pack/load";
 
 export interface AnswerInput {
   questionId: number;
@@ -15,10 +17,6 @@ export interface ProcessedAnswers {
 /**
  * Process answers from client and derive dimScores, gateValue, triggerFired from DB.
  * This ensures client-side tampering cannot forge results.
- *
- * @param answers - Raw answers from client
- * @param options - Options fetched from DB with question data
- * @returns Processed data ready for match function
  */
 export function processAnswers(
   answers: AnswerInput[],
@@ -30,6 +28,7 @@ export function processAnswers(
     trigger: string | null;
     question: { id: number; dim: string; type: string };
   }>,
+  pack: QuizPack = getActivePack(),
 ): ProcessedAnswers {
   const optionMap = new Map(options.map((o) => [o.id, o]));
   const validAnswers: AnswerInput[] = [];
@@ -37,6 +36,7 @@ export function processAnswers(
   const dimScores: Record<string, number> = {};
   let gateValue: MatchInput["gateValue"];
   let triggerFired: string | undefined;
+  const gateSet = new Set(pack.rules.gateValues);
 
   for (const a of answers) {
     const opt = optionMap.get(a.optionId);
@@ -46,7 +46,7 @@ export function processAnswers(
     const qType = opt.question.type;
     if (qType === "gate") {
       const v = opt.value;
-      if (v === "destroy" || v === "endure" || v === "normal" || v === "normal_alt") {
+      if (v && gateSet.has(v)) {
         gateValue = v;
       }
       continue;

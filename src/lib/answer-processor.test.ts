@@ -106,3 +106,11 @@ describe("processAnswers", () => {
     }
   });
 });
+
+  it("rejects unknown gate values not in pack", () => {
+    const options = [
+      makeOption({ id: 1, questionId: 1, value: "explode", dim: "GATE", type: "gate" }),
+    ];
+    const result = processAnswers([{ questionId: 1, optionId: 1 }], options);
+    expect(result.gateValue).toBeUndefined();
+  });
