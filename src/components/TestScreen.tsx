@@ -2,9 +2,11 @@
 
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useI18n } from "@/lib/i18n";
+import type { AnnotationNode } from "@/lib/annotations";
 
 export interface QuizQuestion {
   id: number; dim: string; text: string; order: number; type: string; meta: string;
+  renderType: string;
   translations?: string;
   options: QuizOption[];
 }
@@ -24,6 +26,31 @@ interface TestScreenProps {
 
 const STORAGE_KEY = "witch-trial-progress";
 const ROMAN = ["I", "II", "III", "IV", "V"];
+const INTERJECTION_NODES: AnnotationNode[] = [5, 10, 15];
+
+/** 砝码题：解析 weight::a|b|c 格式的 label */
+function parseWeightLabel(label: string): [number, number, number] | null {
+  if (!label.startsWith("weight::")) return null;
+  const parts = label.slice(8).split("|");
+  if (parts.length !== 3) return null;
+  const nums = parts.map(Number);
+  if (nums.some((n) => isNaN(n))) return null;
+  return nums as [number, number, number];
+}
+
+/** 砝码题：解析 question.text 里的三槽主题文案 */
+function parseSlotThemes(text: string): [string, string, string] {
+  // text 格式：... A：「...」\nB：「...」\nC：「...」
+  const lines = text.split("\n");
+  const themes: string[] = [];
+  for (const line of lines) {
+    const m = line.match(/^[ABC]：「(.+?)」$/);
+    if (m) themes.push(m[1]);
+  }
+  if (themes.length === 3) return themes as [string, string, string];
+  // fallback：用 A/B/C
+  return ["审判之秤 · A", "审判之秤 · B", "审判之秤 · C"];
+}
 
 function readSavedProgress(): {
   currentIndex: number;
@@ -74,6 +101,14 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   const touchFeedbackRef = useRef(false);
   const timerRef = useRef<number>(0);
   const fadeTimerRef = useRef<number>(0);
+
+  // ── 批注插页：独立 state，不改 currentIndex ──
+  const [interjection, setInterjection] = useState<AnnotationNode | null>(null);
+  const [interjectionText, setInterjectionText] = useState<string>("");
+  const interjectionFetchedRef = useRef(false);
+
+  // ── 砝码题：三槽分配值 ──
+  const [weightSlots, setWeightSlots] = useState<[number, number, number]>([1, 1, 1]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -136,6 +171,51 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   const current = displayQuestions[safeIndex];
   const progress = displayQuestions.length > 0 ? (safeIndex / displayQuestions.length) * 100 : 0;
 
+  // ── 砝码题：当题切换时重置 slots 为均分 ──
+  useEffect(() => {
+    if (current?.renderType === "weight") {
+      setWeightSlots([1, 1, 1]);
+    }
+  }, [safeIndex, current?.renderType]);
+
+  // ── 批注插页：answers.length 命中 5/10/15 且未显示时触发 ──
+  useEffect(() => {
+    if (interjection !== null) return; // 已在显示
+    if (isAnimating) return;
+    const node = INTERJECTION_NODES.find((n) => n === answers.length);
+    if (node !== undefined) {
+      setInterjection(node);
+      interjectionFetchedRef.current = false;
+    }
+  }, [answers.length, interjection, isAnimating]);
+
+  // ── 批注插页：fetch /api/annotation ──
+  useEffect(() => {
+    if (interjection === null || interjectionFetchedRef.current) return;
+    interjectionFetchedRef.current = true;
+    fetch(`/api/annotation?node=${interjection}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answers }),
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((data: { text: string }) => {
+        setInterjectionText(data.text);
+      })
+      .catch(() => {
+        // fallback 静态文案
+        const fallbacks: Record<number, string> = {
+          5: "前五题，你已经在审讯室里坐定。让我们继续。",
+          10: "十题了。你和我，都还没松口。",
+          15: "十五题。审判快要落锤——你准备好了吗？",
+        };
+        setInterjectionText(fallbacks[interjection] ?? "");
+      });
+  }, [interjection, answers]);
+
   const flushPending = useCallback(() => {
     clearTimeout(timerRef.current);
     clearTimeout(fadeTimerRef.current);
@@ -189,10 +269,49 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     }, totalDelay);
   }, [current, answers, gateValue, safeIndex, displayQuestions.length, isAnimating, flushPending]);
 
+  // ── 砝码题：9确认提交（查找匹配的 optionId）──
+  const handleWeightConfirm = useCallback(() => {
+    if (!current) return;
+    const [a, b, c] = weightSlots;
+    if (a + b + c !== 3) return;
+    const targetLabel = `weight::${a}|${b}|${c}`;
+    const matched = current.options.find((o) => o.label === targetLabel);
+    if (matched) {
+      handleSelect(matched);
+    }
+  }, [current, weightSlots, handleSelect]);
+
   // Keyboard support
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
+      // ── 批注插页：任意键继续 ──
+      if (interjection !== null) {
+        if (e.key === "Enter" || e.key === " " || e.key.length === 1) {
+          e.preventDefault();
+          setInterjection(null);
+          setInterjectionText("");
+        }
+        return;
+      }
+
       if (!current) return;
+      const rt = current.renderType ?? current.type;
+
+      // ── 天平题：1=左, 2=右 ──
+      if (rt === "scale") {
+        if (isAnimating) { flushPending(); return; }
+        if (e.key === "1" && current.options[0]) handleSelect(current.options[0]);
+        if (e.key === "2" && current.options[1]) handleSelect(current.options[1]);
+        return;
+      }
+
+      // ── 砝码题：禁用数字键（用 +/- 按钮）──
+      if (rt === "weight") {
+        // 不处理数字键
+        return;
+      }
+
+      // ── normal/gate/trigger：原有 1/2/3/4 映射 ──
       const keyMap: Record<string, number> = { "1": 0, "2": 1, "3": 2, "4": 3 };
       const idx = keyMap[e.key];
       if (idx === undefined) return;
@@ -206,7 +325,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [current, isAnimating, handleSelect, flushPending]);
+  }, [current, isAnimating, handleSelect, flushPending, interjection]);
 
   // Update progress line
   useEffect(() => {
@@ -226,6 +345,251 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
 
   const isGateOrTrigger = current.type === "gate" || current.type === "trigger";
   const questionLabelId = `q-text-${current.id}`;
+  const renderType = current.renderType ?? current.type;
+
+  // ── renderType 分发：渲染 options 区域 ──
+  const renderOptions = () => {
+    switch (renderType) {
+      case "scale":
+        // 天平题：2 个 option，左右对峙，复用 opt-block 时序推开
+        return (
+          <div className="options-stage" role="radiogroup" aria-labelledby={questionLabelId}>
+            {current.options.map((option, idx) => (
+              <button
+                type="button"
+                key={option.id}
+                className={`opt-block ${selectedOptionId === option.id ? "is-selected" : ""} ${selectedOptionId !== null && selectedOptionId !== option.id ? "is-dimmed" : ""}`}
+                role="radio"
+                aria-checked={false}
+                aria-label={option.label}
+                style={{ animationDelay: `${idx * 0.1}s`, pointerEvents: isAnimating ? "none" : "auto" }}
+                onClick={() => handleSelect(option)}
+              >
+                <div className="opt-content">
+                  <div className="opt-index" aria-hidden="true">{ROMAN[idx]}</div>
+                  <div className="opt-text">{option.label}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        );
+
+      case "weight":
+        // 砝码题：三槽 +/- UI
+        return renderWeightUI();
+
+      default:
+        // normal/gate/trigger：原有纵向推开
+        return (
+          <div className="options-stage" role="radiogroup" aria-labelledby={questionLabelId}>
+            {current.options.map((option, idx) => (
+              <button
+                type="button"
+                key={option.id}
+                className={`opt-block ${selectedOptionId === option.id ? "is-selected" : ""} ${selectedOptionId !== null && selectedOptionId !== option.id ? "is-dimmed" : ""}`}
+                role="radio"
+                aria-checked={false}
+                aria-label={option.label}
+                style={{ animationDelay: `${idx * 0.1}s`, pointerEvents: isAnimating ? "none" : "auto" }}
+                onClick={() => handleSelect(option)}
+              >
+                <div className="opt-content">
+                  <div className="opt-index" aria-hidden="true">{ROMAN[idx]}</div>
+                  <div className="opt-text">{option.label}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        );
+    }
+  };
+
+  // ── 砝码题 UI ──
+  const renderWeightUI = () => {
+    const slotLabels: [string, string, string] = ["A", "B", "C"];
+    const themes = parseSlotThemes(current.text);
+    const total = weightSlots[0] + weightSlots[1] + weightSlots[2];
+    const isValid = total === 3;
+
+    const adjustSlot = (slotIdx: number, delta: number) => {
+      setWeightSlots((prev) => {
+        const next: [number, number, number] = [...prev];
+        const newVal = next[slotIdx] + delta;
+        if (newVal < 0 || newVal > 2) return prev;
+        next[slotIdx] = newVal;
+        return next;
+      });
+    };
+
+    return (
+      <div className="options-stage weight-stage" role="group" aria-label="砝码分配">
+        <div style={{
+          display: "flex", flexDirection: "column", width: "100%", height: "100%",
+          justifyContent: "center", alignItems: "center", padding: "2vh 4vw", gap: "2vh",
+        }}>
+          {/* 三槽 */}
+          <div style={{
+            display: "flex", gap: "3vw", width: "100%", maxWidth: 600,
+            justifyContent: "center", alignItems: "stretch",
+          }}>
+            {weightSlots.map((val, slotIdx) => (
+              <div key={slotIdx} style={{
+                flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+                border: "1px solid rgba(212,175,55,0.15)",
+                background: "rgba(10,5,20,0.35)",
+                backdropFilter: "blur(8px)",
+                padding: "1.5vh 0",
+                borderRadius: 2,
+                opacity: 0, transform: "translateY(20px)",
+                animation: `staggerIn 0.6s var(--ease-out-expo) ${slotIdx * 0.1}s forwards`,
+              }}>
+                <div style={{
+                  fontFamily: "var(--f-title)", fontSize: "clamp(0.7rem,1.5vw,0.9rem)",
+                  color: "var(--c-gold)", letterSpacing: "0.2em", marginBottom: "0.5vh",
+                }}>
+                  {slotLabels[slotIdx]}
+                </div>
+                <div style={{
+                  fontSize: "clamp(0.8rem,1.8vw,1rem)", color: "rgba(255,255,255,0.6)",
+                  textAlign: "center", lineHeight: 1.5, marginBottom: "1vh",
+                  padding: "0 0.5rem", fontStyle: "italic",
+                }}>
+                  {themes[slotIdx]}
+                </div>
+                <div style={{
+                  fontSize: "clamp(2rem,5vw,3.5rem)", fontFamily: "var(--f-title)",
+                  color: "#fff", lineHeight: 1, margin: "0.5vh 0",
+                  textShadow: "0 0 20px rgba(212,175,55,0.3)",
+                }}>
+                  {val}
+                </div>
+                <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5vh" }}>
+                  <button
+                    type="button"
+                    onClick={() => adjustSlot(slotIdx, -1)}
+                    disabled={val <= 0}
+                    style={{
+                      width: 36, height: 36, fontSize: "1.2rem", lineHeight: 1,
+                      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                      color: val <= 0 ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.7)",
+                      cursor: val <= 0 ? "not-allowed" : "pointer",
+                      borderRadius: 2, transition: "all 0.2s",
+                      font: "inherit", padding: 0, appearance: "none", WebkitAppearance: "none",
+                    }}
+                    aria-label={`${slotLabels[slotIdx]} 减少`}
+                  >
+                    −
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => adjustSlot(slotIdx, 1)}
+                    disabled={val >= 2}
+                    style={{
+                      width: 36, height: 36, fontSize: "1.2rem", lineHeight: 1,
+                      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                      color: val >= 2 ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.7)",
+                      cursor: val >= 2 ? "not-allowed" : "pointer",
+                      borderRadius: 2, transition: "all 0.2s",
+                      font: "inherit", padding: 0, appearance: "none", WebkitAppearance: "none",
+                    }}
+                    aria-label={`${slotLabels[slotIdx]} 增加`}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* 总和 + 确认按钮 */}
+          <div style={{
+            display: "flex", flexDirection: "column", alignItems: "center", gap: "0.8vh",
+          }}>
+            <div style={{
+              fontFamily: "var(--f-title)", fontSize: "clamp(0.65rem,1.2vw,0.8rem)",
+              color: isValid ? "var(--c-gold)" : "rgba(184,10,31,0.8)",
+              letterSpacing: "0.15em",
+              transition: "color 0.3s",
+            }}>
+              {isValid ? "天平已定" : `尚余 ${3 - total} 枚砝码未放`}
+            </div>
+            <button
+              type="button"
+              onClick={handleWeightConfirm}
+              disabled={!isValid || isAnimating}
+              style={{
+                fontFamily: "var(--f-title)", fontSize: "clamp(0.75rem,1.5vw,0.95rem)",
+                letterSpacing: "0.2em",
+                color: isValid ? "var(--c-gold)" : "rgba(255,255,255,0.15)",
+                background: "none",
+                border: isValid ? "1px solid rgba(212,175,55,0.4)" : "1px solid rgba(255,255,255,0.05)",
+                padding: "0.6rem 2rem", cursor: isValid && !isAnimating ? "pointer" : "not-allowed",
+                borderRadius: 2, transition: "all 0.3s",
+                opacity: 0, transform: "translateY(20px)",
+                animation: "staggerIn 0.6s var(--ease-out-expo) 0.3s forwards",
+              }}
+            >
+              落锤
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ── 批注插页 overlay ──
+  const renderInterjection = () => {
+    if (interjection === null) return null;
+    const nodeLabels: Record<number, string> = { 5: "I", 10: "II", 15: "III" };
+    return (
+      <div
+        className="interjection-overlay"
+        role="dialog"
+        aria-label="审判官批注"
+        style={{
+          position: "absolute", inset: 0, zIndex: 40,
+          display: "flex", flexDirection: "column",
+          justifyContent: "center", alignItems: "center",
+          background: "rgba(3,3,3,0.95)",
+          padding: "4vh 8vw",
+          cursor: "pointer",
+          animation: "staggerIn 0.6s var(--ease-out-expo) forwards",
+        }}
+        onClick={() => { setInterjection(null); setInterjectionText(""); }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setInterjection(null);
+            setInterjectionText("");
+          }
+        }}
+        tabIndex={0}
+      >
+        <div style={{
+          fontFamily: "var(--f-title)", fontSize: "clamp(0.7rem,1.2vw,0.85rem)",
+          color: "var(--c-gold)", letterSpacing: "0.3em", marginBottom: "3vh",
+          opacity: 0.6,
+        }}>
+          审判官批注 · {nodeLabels[interjection] ?? interjection}
+        </div>
+        <div style={{
+          fontSize: "clamp(1.1rem,2.5vw,1.6rem)", fontWeight: 400,
+          lineHeight: 1.8, textAlign: "center", maxWidth: 480,
+          color: "#EFEFEF",
+          textShadow: "0 4px 20px rgba(0,0,0,0.8)",
+        }}>
+          {interjectionText || "…"}
+        </div>
+        <div style={{
+          marginTop: "4vh", fontFamily: "var(--f-title)",
+          fontSize: "0.65rem", color: "rgba(255,255,255,0.25)",
+          letterSpacing: "0.2em",
+        }}>
+          {t("test.keyHint") ? "按任意键继续" : "点击继续"}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="view-test" style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -264,30 +628,13 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
               {isGateOrTrigger && <span className="gate-badge">{current.type === "gate" ? t("test.gateBadge") : t("test.triggerBadge")}</span>}
               {isGateOrTrigger ? "" : `${current.meta || "审判"} \u00B7 ${String(safeIndex + 1).padStart(2, "0")} / ${String(displayQuestions.length).padStart(2, "0")}`}
             </span>
-            <span className="q-hint">{showKeyboardHint ? t("test.keyHint") : ""}</span>
+            <span className="q-hint">{showKeyboardHint ? (renderType === "weight" ? "用 +/- 调整砝码" : t("test.keyHint")) : ""}</span>
           </div>
           <div className="q-text" id={questionLabelId}>{current.text}</div>
         </div>
-        <div className="options-stage" role="radiogroup" aria-labelledby={questionLabelId}>
-          {current.options.map((option, idx) => (
-            <button
-              type="button"
-              key={option.id}
-              className={`opt-block ${selectedOptionId === option.id ? "is-selected" : ""} ${selectedOptionId !== null && selectedOptionId !== option.id ? "is-dimmed" : ""}`}
-              role="radio"
-              aria-checked={false}
-              aria-label={option.label}
-              style={{ animationDelay: `${idx * 0.1}s`, pointerEvents: isAnimating ? "none" : "auto" }}
-              onClick={() => handleSelect(option)}
-            >
-              <div className="opt-content">
-                <div className="opt-index" aria-hidden="true">{ROMAN[idx]}</div>
-                <div className="opt-text">{option.label}</div>
-              </div>
-            </button>
-          ))}
-        </div>
+        {renderOptions()}
       </div>
+      {renderInterjection()}
     </div>
   );
 }

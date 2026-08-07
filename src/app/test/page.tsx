@@ -39,6 +39,7 @@ export default function TestPage() {
         const qs: QuizQuestion[] = data.questions.map((q: Record<string, unknown>) => ({
           id: q.id as number, dim: q.dim as string, text: q.text as string,
           order: q.order as number, type: q.type as string, meta: (q.meta as string) || "",
+          renderType: (q.renderType as string) || "normal",
           translations: (q.translations as string) || "{}",
           options: (q.options as Record<string, unknown>[]).map((o) => ({
             id: o.id as number, label: o.label as string,

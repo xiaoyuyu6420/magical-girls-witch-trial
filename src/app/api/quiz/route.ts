@@ -35,16 +35,19 @@ export async function GET(req: NextRequest) {
           ? { id: o.id, label: o.label, value: o.value ?? null }
           : { id: o.id, label: o.label }
       ));
-      const options =
-        pack.rules.optionShuffle === "stable-by-question-id" && q.type === "normal"
-          ? shuffleOptionsStable(q.id, rawOptions)
-          : rawOptions;
+      // optionShuffle 只对"普通 normal 题"生效；scale/weight 变奏题的 label 顺序
+      // 携带语义（weight::a|b|c 编码、scale 的左右对峙），洗牌会破坏前端映射。
+      const renderType = (q as { renderType?: string }).renderType ?? "normal";
+      const shuffleable = pack.rules.optionShuffle === "stable-by-question-id"
+        && q.type === "normal" && renderType === "normal";
+      const options = shuffleable ? shuffleOptionsStable(q.id, rawOptions) : rawOptions;
       return {
         id: q.id,
         dim: q.dim,
         text: q.text,
         order: q.order,
         type: q.type,
+        renderType,
         meta: q.meta || "",
         translations: q.translations,
         options,
