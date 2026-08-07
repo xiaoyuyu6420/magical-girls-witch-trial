@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { attachConsoleListeners } from "./helpers";
+import { answerAllQuestions, attachConsoleListeners } from "./helpers";
 
 test.describe("Keyboard Navigation", () => {
   test.beforeEach(async ({ page }) => {
@@ -78,9 +78,26 @@ test.describe("Keyboard Navigation", () => {
     const maxQuestions = 30;
 
     while (answered < maxQuestions) {
+      // 消化批注插页（任意键关闭）
+      const interjection = page.locator(".interjection-overlay");
+      if (await interjection.isVisible({ timeout: 100 }).catch(() => false)) {
+        await page.keyboard.press("Enter");
+        await page.waitForTimeout(400);
+        continue;
+      }
+
       const resultLayout = page.locator(".result-layout");
       if (await resultLayout.isVisible({ timeout: 100 }).catch(() => false)) {
         break;
+      }
+
+      // 砝码题：键盘无法操作+/-按钮，用鼠标点击落锤
+      const hammer = page.locator("button", { hasText: "落锤" });
+      if (await hammer.first().isVisible({ timeout: 100 }).catch(() => false)) {
+        await hammer.first().click({ force: true });
+        await page.waitForTimeout(1000);
+        answered++;
+        continue;
       }
 
       const options = page.locator(".opt-block");
@@ -102,50 +119,26 @@ test.describe("Keyboard Navigation", () => {
     console.log(`[KEYBOARD QUIZ] Completed after ${answered} questions`);
   });
 
-  test("pressing Escape closes the analysis modal on result page", async ({ page }) => {
+  test("pressing Escape on result page has no side effect", async ({ page }) => {
     await page.goto("/test", { waitUntil: "networkidle", timeout: 30000 });
     await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
 
-    let answered = 0;
-    const maxQuestions = 30;
+    // Complete the quiz using the helper (handles interjections + weight questions)
+    const { reachedResult } = await answerAllQuestions(page, 30, 900);
+    expect(reachedResult).toBe(true);
 
-    while (answered < maxQuestions) {
-      const resultLayout = page.locator(".result-layout");
-      if (await resultLayout.isVisible({ timeout: 100 }).catch(() => false)) {
-        break;
-      }
-
-      const options = page.locator(".opt-block");
-      const optCount = await options.count();
-      if (optCount === 0) {
-        await page.waitForTimeout(500);
-        if (await resultLayout.isVisible({ timeout: 100 }).catch(() => false)) {
-          break;
-        }
-        break;
-      }
-
-      await page.keyboard.press("1");
-      await page.waitForTimeout(1000);
-      answered++;
-    }
-
+    // Wait for reveal sequence
+    await page.waitForTimeout(5000);
     await expect(page.locator(".result-layout")).toBeVisible({ timeout: 10000 });
 
-    // Click the analysis button in the result page (the only button in .r-right)
-    await page.locator(".r-right button").first().click();
-    await page.waitForTimeout(500);
-
-    // The modal close button should be visible (Unicode multiplication sign)
-    const closeButton = page.locator("button", { hasText: /×/ });
-    await expect(closeButton).toBeVisible({ timeout: 5000 });
-
-    // Press Escape to close the modal
+    // Press Escape — should not navigate away or close anything
     await page.keyboard.press("Escape");
     await page.waitForTimeout(500);
 
-    // The modal close button should be gone
-    await expect(closeButton).not.toBeVisible({ timeout: 5000 });
+    // Result page should still be visible
+    await expect(page.locator(".result-layout")).toBeVisible();
+    // URL should still be /test (no navigation occurred)
+    expect(page.url()).toContain("/test");
   });
 
   test("invalid keys do not select options", async ({ page }) => {

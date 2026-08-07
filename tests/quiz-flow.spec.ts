@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { answerAllQuestions } from "./helpers";
 
 test.describe("Quiz Flow Test", () => {
   test("complete all questions and reach result page", async ({ page }) => {
@@ -23,57 +24,13 @@ test.describe("Quiz Flow Test", () => {
     await expect(questionText).toBeVisible({ timeout: 10000 });
     console.log("[TEST] First question loaded");
 
-    // 获取总题数
-    const metaText = await page.locator(".q-meta span").first().textContent();
-    console.log(`[TEST] Meta text: ${metaText}`);
-
-    // 循环答题
-    let questionCount = 0;
-    const maxQuestions = 30; // 安全上限
-
-    while (questionCount < maxQuestions) {
-      // 检查是否在结果页面 (使用正确的类名)
-      const resultLayout = page.locator(".result-layout");
-      if (await resultLayout.isVisible({ timeout: 100 }).catch(() => false)) {
-        console.log(`[TEST] Reached result page after ${questionCount} questions!`);
-        break;
-      }
-
-      // 检查是否有问题
-      const optBlocks = page.locator(".opt-block");
-      const optCount = await optBlocks.count();
-
-      if (optCount === 0) {
-        console.log(`[TEST] No options found at question ${questionCount}, waiting...`);
-        await page.waitForTimeout(1000);
-
-        // 再次检查结果页面
-        if (await resultLayout.isVisible({ timeout: 100 }).catch(() => false)) {
-          console.log(`[TEST] Reached result page after ${questionCount} questions!`);
-          break;
-        }
-
-        // 截图当前状态
-        await page.screenshot({ path: `test-results/quiz-stuck-q${questionCount}.png` });
-        console.log(`[TEST] Stuck at question ${questionCount}, screenshot saved`);
-        break;
-      }
-
-      // 获取当前问题文本
-      const qText = await questionText.textContent();
-      const qMeta = await page.locator(".q-meta span").first().textContent();
-      console.log(`[Q${questionCount + 1}] ${qMeta} | ${qText?.slice(0, 50)}... | Options: ${optCount}`);
-
-      // 点击第一个选项
-      await optBlocks.first().click();
-
-      // 等待动画
-      await page.waitForTimeout(800);
-
-      questionCount++;
-    }
+    // 使用 helper 答题（自动处理批注插页和砝码题）
+    const { questionCount, reachedResult } = await answerAllQuestions(page, 30, 900);
+    console.log(`[TEST] Answered ${questionCount} questions, reachedResult: ${reachedResult}`);
 
     // 最终检查
+    // 等待揭晓序列完成
+    await page.waitForTimeout(5000);
     const resultLayout = page.locator(".result-layout");
     const isResultVisible = await resultLayout.isVisible({ timeout: 5000 }).catch(() => false);
 

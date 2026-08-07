@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { answerAllQuestions } from "./helpers";
 
 test("clear storage and test fresh", async ({ page }) => {
   page.on("console", (msg) => {
@@ -24,40 +25,17 @@ test("clear storage and test fresh", async ({ page }) => {
   await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
   console.log("[TEST] First question loaded after clearing storage");
 
-  // 快速答题
-  let questionCount = 0;
-  while (questionCount < 30) {
-    const resultLayout = page.locator(".result-layout");
-    if (await resultLayout.isVisible({ timeout: 100 }).catch(() => false)) {
-      console.log(`[SUCCESS] Result page visible after ${questionCount} questions`);
-      const name = await page.locator(".r-name").textContent();
-      console.log(`[RESULT] ${name}`);
-      expect(name).toBeTruthy();
-      return;
-    }
+  // 使用 helper 答题（自动处理批注插页和砝码题）
+  const { questionCount, reachedResult } = await answerAllQuestions(page, 30, 900);
+  console.log(`[TEST] Answered ${questionCount} questions, reachedResult: ${reachedResult}`);
 
-    const optBlocks = page.locator(".opt-block");
-    const count = await optBlocks.count();
-
-    if (count === 0) {
-      await page.waitForTimeout(1000);
-      if (await resultLayout.isVisible({ timeout: 100 }).catch(() => false)) {
-        console.log(`[SUCCESS] Result page visible after ${questionCount} questions`);
-        const name = await page.locator(".r-name").textContent();
-        console.log(`[RESULT] ${name}`);
-        expect(name).toBeTruthy();
-        return;
-      }
-      console.log(`[STUCK] No options at question ${questionCount}`);
-      break;
-    }
-
-    await optBlocks.first().click();
-    await page.waitForTimeout(700);
-    questionCount++;
+  if (reachedResult) {
+    // 等待揭晓序列完成
+    await page.waitForTimeout(5000);
+    const name = await page.locator(".r-name").textContent();
+    console.log(`[RESULT] ${name}`);
+    expect(name).toBeTruthy();
   }
 
-  const resultLayout = page.locator(".result-layout");
-  const isVisible = await resultLayout.isVisible({ timeout: 5000 }).catch(() => false);
-  expect(isVisible).toBe(true);
+  expect(reachedResult).toBe(true);
 });

@@ -3,6 +3,44 @@ import { attachConsoleListeners, answerAllQuestions } from "./helpers";
 
 const STORAGE_KEY = "witch-trial-progress";
 
+/**
+ * Dismiss any pending interjection overlay and handle weight questions.
+ * For fine-grained tests that answer questions one at a time.
+ */
+async function dismissInterjection(page: import("@playwright/test").Page) {
+  while (await page.locator(".interjection-overlay").isVisible({ timeout: 100 }).catch(() => false)) {
+    await page.locator(".interjection-overlay").click({ force: true }).catch(() => {});
+    await page.waitForTimeout(400);
+  }
+}
+
+/**
+ * Click the first option, handling interjection overlays and weight questions.
+ */
+async function answerFirstOption(page: import("@playwright/test").Page, delay = 700) {
+  // Dismiss interjection overlays first
+  await dismissInterjection(page);
+
+  // Weight question: click "落锤" button
+  const hammer = page.locator("button", { hasText: "落锤" });
+  if (await hammer.first().isVisible({ timeout: 100 }).catch(() => false)) {
+    await hammer.first().click({ force: true });
+    await page.waitForTimeout(delay);
+    return;
+  }
+
+  // Normal/scale/gate/trigger: click first opt-block
+  const optBlocks = page.locator(".opt-block");
+  const count = await optBlocks.count();
+  if (count > 0) {
+    await optBlocks.first().click({ force: true });
+    await page.waitForTimeout(delay);
+  }
+
+  // Dismiss any interjection that appeared after answering
+  await dismissInterjection(page);
+}
+
 test.describe("localStorage Progress Persistence", () => {
   test.beforeEach(async ({ page }) => {
     attachConsoleListeners(page);
@@ -19,9 +57,8 @@ test.describe("localStorage Progress Persistence", () => {
     const qText = page.locator(".q-text");
     const firstQuestionText = await qText.textContent();
 
-    // Answer one question
-    await page.locator(".opt-block").first().click();
-    await page.waitForTimeout(1000);
+    // Answer one question (handles interjection + weight)
+    await answerFirstOption(page, 1000);
 
     // After answering, the next question should be showing
     const secondQuestionText = await qText.textContent();
@@ -44,9 +81,8 @@ test.describe("localStorage Progress Persistence", () => {
     let saved = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
     expect(saved).toBeNull();
 
-    // Answer one question
-    await page.locator(".opt-block").first().click();
-    await page.waitForTimeout(1000);
+    // Answer one question (handles interjection + weight)
+    await answerFirstOption(page, 1000);
 
     // Progress should now be saved
     saved = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
@@ -62,11 +98,9 @@ test.describe("localStorage Progress Persistence", () => {
     await page.goto("/test", { waitUntil: "networkidle", timeout: 30000 });
     await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
 
-    // Answer two questions
-    await page.locator(".opt-block").first().click();
-    await page.waitForTimeout(1000);
-    await page.locator(".opt-block").first().click();
-    await page.waitForTimeout(1000);
+    // Answer two questions (handles interjection + weight)
+    await answerFirstOption(page, 1000);
+    await answerFirstOption(page, 1000);
 
     const saved = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
     expect(saved).not.toBeNull();
@@ -89,9 +123,8 @@ test.describe("localStorage Progress Persistence", () => {
     await page.goto("/test", { waitUntil: "networkidle", timeout: 30000 });
     await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
 
-    // Answer a question to create progress
-    await page.locator(".opt-block").first().click();
-    await page.waitForTimeout(1000);
+    // Answer a question to create progress (handles interjection + weight)
+    await answerFirstOption(page, 1000);
 
     let saved = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
     expect(saved).not.toBeNull();
@@ -157,11 +190,9 @@ test.describe("localStorage Progress Persistence", () => {
     await page.goto("/test", { waitUntil: "networkidle", timeout: 30000 });
     await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
 
-    // Answer two questions
-    await page.locator(".opt-block").first().click();
-    await page.waitForTimeout(1000);
-    await page.locator(".opt-block").first().click();
-    await page.waitForTimeout(1000);
+    // Answer two questions (handles interjection + weight)
+    await answerFirstOption(page, 1000);
+    await answerFirstOption(page, 1000);
 
     // Capture progress before reload
     const beforeReload = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);

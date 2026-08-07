@@ -107,6 +107,8 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   const [interjection, setInterjection] = useState<AnnotationNode | null>(null);
   const [interjectionText, setInterjectionText] = useState<string>("");
   const interjectionFetchedRef = useRef(false);
+  // 记录已展示过的批注节点，避免点击关闭后 useEffect 因 answers.length 未变而重新触发（无限重开 bug）
+  const shownInterjectionsRef = useRef<Set<AnnotationNode>>(new Set());
 
   // ── 砝码题：三槽分配值 ──
   const [weightSlots, setWeightSlots] = useState<[number, number, number]>([1, 1, 1]);
@@ -179,12 +181,13 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     }
   }, [safeIndex, current?.renderType]);
 
-  // ── 批注插页：answers.length 命中 5/10/15 且未显示时触发 ──
+  // ── 批注插页：answers.length 命中 5/10/15 且未显示过时触发 ──
   useEffect(() => {
     if (interjection !== null) return; // 已在显示
     if (isAnimating) return;
     const node = INTERJECTION_NODES.find((n) => n === answers.length);
-    if (node !== undefined) {
+    if (node !== undefined && !shownInterjectionsRef.current.has(node)) {
+      shownInterjectionsRef.current.add(node);
       setInterjection(node);
       interjectionFetchedRef.current = false;
     }

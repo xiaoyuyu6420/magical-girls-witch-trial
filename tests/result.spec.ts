@@ -1,35 +1,42 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { answerAllQuestions, attachConsoleListeners } from "./helpers";
+
+/**
+ * Navigate to quiz, complete all questions, skip the reveal overlay,
+ * and wait for the result card to be fully settled.
+ *
+ * The reveal sequence takes ~4.6s on mount. After answerAllQuestions
+ * returns, the reveal is typically still in progress. We press Space
+ * (window-level keydown listener in ResultScreen) to skip it, then
+ * wait for the CSS fade-out transition (~0.8s) plus the result-layout
+ * opacity-in transition (~0.8s).
+ */
+async function reachResultPage(page: Page) {
+  await page.goto("/test", { waitUntil: "networkidle" });
+  await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
+  const { reachedResult } = await answerAllQuestions(page);
+  expect(reachedResult).toBe(true);
+
+  // Skip reveal overlay if still playing (any keydown triggers skip in ResultScreen)
+  await page.keyboard.press("Space");
+  // Wait for reveal layer fade-out + result-layout opacity transition (~1.6s total)
+  await page.waitForTimeout(1200);
+  await expect(page.locator(".result-layout")).toBeVisible({ timeout: 10000 });
+}
 
 test.describe("Result Page", () => {
   test.beforeEach(async ({ page }) => {
     attachConsoleListeners(page);
   });
 
-  test("displays all expected elements after completing quiz", async ({ page }) => {
-    await page.goto("/test", { waitUntil: "networkidle" });
-    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
-    const { reachedResult } = await answerAllQuestions(page);
-    expect(reachedResult).toBe(true);
-
-    await expect(page.locator("#view-result")).toBeVisible();
-    await expect(page.locator(".result-layout")).toBeVisible();
-    await expect(page.locator(".r-left")).toBeVisible();
-    await expect(page.locator(".r-right")).toBeVisible();
-    await expect(page.locator(".r-name")).toBeVisible();
-    await expect(page.locator(".r-arch")).toBeVisible();
-    await expect(page.locator(".r-stats")).toBeVisible();
-    await expect(page.locator(".r-slogan")).toBeVisible();
-    await expect(page.locator(".r-desc")).toBeVisible();
-    await expect(page.locator(".r-actions")).toBeVisible();
-    await expect(page.locator(".r-actions .btn-restart")).toHaveCount(3);
+  test("completes quiz and reaches result page", async ({ page }) => {
+    await reachResultPage(page);
+    // reachResultPage already asserts .result-layout is visible
+    console.log("[RESULT PAGE] Reached successfully");
   });
 
-  test("personality name is visible and non-empty", async ({ page }) => {
-    await page.goto("/test", { waitUntil: "networkidle" });
-    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
-    const { reachedResult } = await answerAllQuestions(page);
-    expect(reachedResult).toBe(true);
+  test("personality name is visible", async ({ page }) => {
+    await reachResultPage(page);
 
     const nameEl = page.locator(".r-name");
     await expect(nameEl).toBeVisible();
@@ -39,51 +46,30 @@ test.describe("Result Page", () => {
     console.log(`[RESULT NAME] ${name}`);
   });
 
-  test("similarity percentage is shown and is a valid number", async ({ page }) => {
-    await page.goto("/test", { waitUntil: "networkidle" });
-    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
-    const { reachedResult } = await answerAllQuestions(page);
-    expect(reachedResult).toBe(true);
-
-    const statsEl = page.locator(".r-stats");
-    await expect(statsEl).toBeVisible();
-    const statsText = await statsEl.textContent();
-    expect(statsText).toBeTruthy();
-
-    const match = statsText!.match(/(\d+\.?\d*)%/);
-    expect(match).not.toBeNull();
-    const similarity = parseFloat(match![1]);
-    expect(similarity).toBeGreaterThanOrEqual(0);
-    expect(similarity).toBeLessThanOrEqual(100);
-    console.log(`[SIMILARITY] ${similarity}%`);
-  });
-
-  test("slogan and description are visible", async ({ page }) => {
-    await page.goto("/test", { waitUntil: "networkidle" });
-    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
-    const { reachedResult } = await answerAllQuestions(page);
-    expect(reachedResult).toBe(true);
+  test("slogan is visible", async ({ page }) => {
+    await reachResultPage(page);
 
     const slogan = page.locator(".r-slogan");
     await expect(slogan).toBeVisible();
     const sloganText = await slogan.textContent();
     expect(sloganText).toBeTruthy();
     expect(sloganText!.trim().length).toBeGreaterThan(0);
-    console.log(`[SLOGAN] ${sloganText!.slice(0, 50)}...`);
+    console.log(`[SLOGAN] ${sloganText!.slice(0, 50)}`);
+  });
+
+  test("description is visible", async ({ page }) => {
+    await reachResultPage(page);
 
     const desc = page.locator(".r-desc");
     await expect(desc).toBeVisible();
     const descText = await desc.textContent();
     expect(descText).toBeTruthy();
     expect(descText!.trim().length).toBeGreaterThan(0);
-    console.log(`[DESC] ${descText!.slice(0, 50)}...`);
+    console.log(`[DESC] ${descText!.slice(0, 50)}`);
   });
 
-  test("keywords are rendered as tags when present", async ({ page }) => {
-    await page.goto("/test", { waitUntil: "networkidle" });
-    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
-    const { reachedResult } = await answerAllQuestions(page);
-    expect(reachedResult).toBe(true);
+  test("keywords rendered as tags", async ({ page }) => {
+    await reachResultPage(page);
 
     const keywordsContainer = page.locator(".r-keywords");
     const hasKeywords = await keywordsContainer.isVisible().catch(() => false);
@@ -104,39 +90,53 @@ test.describe("Result Page", () => {
     }
   });
 
-  test("analysis modal opens and closes", async ({ page }) => {
-    await page.goto("/test", { waitUntil: "networkidle" });
-    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
-    const { reachedResult } = await answerAllQuestions(page);
-    expect(reachedResult).toBe(true);
+  test("rarity is shown (not similarity)", async ({ page }) => {
+    await reachResultPage(page);
 
-    const analysisBtn = page.locator(".r-right button", { hasText: /ANALYSIS/ });
-    await expect(analysisBtn).toBeVisible();
-    await analysisBtn.click();
+    const resultLayout = page.locator(".result-layout");
+    const resultText = await resultLayout.textContent();
+    expect(resultText).toBeTruthy();
 
-    const modal = page.locator("div[style*='position: fixed'][style*='z-index: 10000']");
-    await expect(modal).toBeVisible({ timeout: 5000 });
+    // Rarity display text is always present:
+    //   - "全球仅 X%"  (standard result with stats)
+    //   - "全球数据收集中"  (stats not yet available)
+    //   - "极少判定 · X%"  (special/hidden result with stats)
+    // The label "稀有度" is always shown, and display text contains "全球" or "极少判定"
+    expect(resultText).toMatch(/全球|极少判定/);
+    console.log("[RARITY] Rarity text found in result layout");
 
-    await expect(page.locator("text=DIMENSION ANALYSIS")).toBeVisible();
-
-    const closeBtn = modal.locator("button", { hasText: "×" });
-    await closeBtn.click();
-    await expect(modal).not.toBeVisible({ timeout: 5000 });
-
-    await analysisBtn.click();
-    await expect(modal).toBeVisible({ timeout: 5000 });
-
-    await page.keyboard.press("Escape");
-    await expect(modal).not.toBeVisible({ timeout: 5000 });
+    // Similarity percentage was removed in 3a — UI must NOT show it
+    expect(resultText).not.toContain("相似度");
+    // Old "因子共鸣度" label also removed
+    expect(resultText).not.toContain("因子共鸣度");
+    console.log("[SIMILARITY] No similarity text on page (correctly removed)");
   });
 
-  test("rebirth button returns to welcome page", async ({ page }) => {
-    await page.goto("/test", { waitUntil: "networkidle" });
-    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
-    const { reachedResult } = await answerAllQuestions(page);
-    expect(reachedResult).toBe(true);
+  test("no radar chart or dimension bars", async ({ page }) => {
+    await reachResultPage(page);
 
-    const rebirthBtn = page.locator(".r-actions .btn-restart", { hasText: /REBIRTH/ });
+    // No radar chart SVG
+    const radarSvg = page.locator("svg.radar");
+    await expect(radarSvg).toHaveCount(0);
+
+    // No archetype label (.r-arch removed in 3a)
+    const arch = page.locator(".r-arch");
+    await expect(arch).toHaveCount(0);
+
+    // No left/right column layout (.r-left / .r-right removed in 3a)
+    const rLeft = page.locator(".r-left");
+    const rRight = page.locator(".r-right");
+    await expect(rLeft).toHaveCount(0);
+    await expect(rRight).toHaveCount(0);
+
+    console.log("[NO RADAR/DIMENSIONS] Confirmed: no svg.radar, no .r-arch, no .r-left/.r-right");
+  });
+
+  test("rebirth button returns to welcome", async ({ page }) => {
+    await reachResultPage(page);
+
+    // zh-CN locale: t("result.rebirth") = "重新审判"
+    const rebirthBtn = page.locator(".r-actions .btn-restart", { hasText: /重新审判/ });
     await expect(rebirthBtn).toBeVisible();
 
     await rebirthBtn.click();
@@ -147,156 +147,53 @@ test.describe("Result Page", () => {
   });
 
   test("share button exists", async ({ page }) => {
-    await page.goto("/test", { waitUntil: "networkidle" });
-    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
-    const { reachedResult } = await answerAllQuestions(page);
-    expect(reachedResult).toBe(true);
+    await reachResultPage(page);
 
-    const shareBtn = page.locator(".r-actions .btn-restart", { hasText: /SHARE/ });
+    // zh-CN locale: t("result.share") = "分享我的审判"
+    const shareBtn = page.locator(".r-actions .btn-restart", { hasText: /分享/ });
     await expect(shareBtn).toBeVisible();
     console.log("[SHARE BUTTON] Present");
   });
 
-  test("copy link button exists", async ({ page }) => {
+  test("reveal sequence plays and can be skipped", async ({ page }) => {
     await page.goto("/test", { waitUntil: "networkidle" });
     await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
     const { reachedResult } = await answerAllQuestions(page);
     expect(reachedResult).toBe(true);
 
-    const copyBtn = page.locator(".r-actions .btn-restart", { hasText: /COPY LINK/ });
-    await expect(copyBtn).toBeVisible();
-    console.log("[COPY LINK BUTTON] Present");
+    // Reveal overlay appears on mount. Timings (REVEAL_TIMINGS):
+    //   judgementText: 800ms  → "审判结束了。"
+    //   transitionText: 1800ms  → "而你是——"
+    //   cardReady: 4600ms  → revealPhase="done"
+    // answerAllQuestions returns shortly after ResultScreen mounts,
+    // so reveal should still be in its early stages.
+
+    // Wait for "审判结束了。" to appear (staggered at 800ms)
+    const judgementText = page.getByText("审判结束了。", { exact: true });
+    await expect(judgementText).toBeVisible({ timeout: 5000 });
+
+    // Wait for "而你是——" to appear (staggered at 1800ms)
+    const transitionText = page.getByText("而你是——", { exact: true });
+    await expect(transitionText).toBeVisible({ timeout: 3000 });
+
+    // Skip the reveal — any click or keydown triggers skipReveal()
+    await page.keyboard.press("Space");
+
+    // Wait for reveal layer fade-out + result-layout opacity transition
+    await page.waitForTimeout(1200);
+
+    // Result card should now be fully visible
+    await expect(page.locator(".result-layout")).toBeVisible({ timeout: 10000 });
+    console.log("[REVEAL] Sequence played and skipped successfully");
   });
 
-  test("special result shows hidden label", async ({ page }) => {
-    const mockResult = {
-      code: "YUKI",
-      name: "月代雪",
-      subtitle: "大魔女",
-      slogan: "「你们人类的悲剧……我全都看在眼里。所以，由我来终结」",
-      desc: "你是跨越百年的复仇者。",
-      keywords: "百年复仇、绝望的清醒、冰冷的终焉",
-      similarity: 100,
-      userVector: "HHH-HHH-HHH-HHH",
-      templateVector: "HHH-HHH-HHH-HHH",
-      top3: [{ code: "YUKI", name: "月代雪", similarity: 100 }],
-      group: "special",
-      borderType: false,
-      special: true,
-    };
+  test("work intro is shown", async ({ page }) => {
+    await reachResultPage(page);
 
-    await page.route("/api/match", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(mockResult),
-      });
-    });
-
-    await page.route("/api/results", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({
-          recordId: 1,
-          rank: 1,
-          totalParticipants: 100,
-          typeCount: 1,
-          typePercentage: 1.0,
-        }),
-      });
-    });
-
-    await page.goto("/test", { waitUntil: "networkidle" });
-    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
-    const { reachedResult } = await answerAllQuestions(page);
-    expect(reachedResult).toBe(true);
-
-    const arch = page.locator(".r-arch");
-    await expect(arch).toBeVisible();
-    const archText = await arch.textContent();
-    expect(archText).toContain("HIDDEN");
-    console.log(`[SPECIAL LABEL] Found in archetype: ${archText}`);
-  });
-
-  test("border result shows border label", async ({ page }) => {
-    const mockResult = {
-      code: "EMMA",
-      name: "樱羽艾玛",
-      slogan: "「即使全世界都放弃了，我也不会」",
-      desc: "你是天生的信仰者。",
-      keywords: "不灭的希望、绝对的信任、自我牺牲",
-      similarity: 75.5,
-      userVector: "LHH-LLM-HHH-LLL",
-      templateVector: "LHH-LLM-HHH-LLL",
-      top3: [
-        { code: "EMMA", name: "樱羽艾玛", similarity: 75.5 },
-        { code: "SHERRY", name: "橘雪莉", similarity: 75.0 },
-      ],
-      group: "standard",
-      borderType: true,
-      special: false,
-    };
-
-    await page.route("/api/match", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(mockResult),
-      });
-    });
-
-    await page.route("/api/results", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({
-          recordId: 1,
-          rank: 1,
-          totalParticipants: 100,
-          typeCount: 1,
-          typePercentage: 1.0,
-        }),
-      });
-    });
-
-    await page.goto("/test", { waitUntil: "networkidle" });
-    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
-    const { reachedResult } = await answerAllQuestions(page);
-    expect(reachedResult).toBe(true);
-
-    const arch = page.locator(".r-arch");
-    await expect(arch).toBeVisible();
-    const archText = await arch.textContent();
-    expect(archText).toContain("BORDER");
-    console.log(`[BORDER LABEL] Found in archetype: ${archText}`);
-  });
-
-  test("dimension analysis section has correct structure", async ({ page }) => {
-    await page.goto("/test", { waitUntil: "networkidle" });
-    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
-    const { reachedResult } = await answerAllQuestions(page);
-    expect(reachedResult).toBe(true);
-
-    const analysisBtn = page.locator(".r-right button", { hasText: /ANALYSIS/ });
-    await expect(analysisBtn).toBeVisible();
-    await analysisBtn.click();
-
-    const modal = page.locator("div[style*='position: fixed'][style*='z-index: 10000']");
-    await expect(modal).toBeVisible({ timeout: 5000 });
-
-    const radarChart = modal.locator("svg");
-    await expect(radarChart.first()).toBeVisible({ timeout: 5000 });
-
-    const modalText = await modal.textContent();
-    expect(modalText).toContain("罪业之秤");
-    expect(modalText).toContain("堕落之翼");
-    expect(modalText).toContain("羁绊之锁");
-    expect(modalText).toContain("因子觉醒");
-    expect(modalText).toContain("你");
-    expect(modalText).toContain("IDEAL");
-
-    await modal.locator("button", { hasText: "×" }).click();
-    await expect(modal).not.toBeVisible({ timeout: 5000 });
+    // pack.workIntro = "一部关于「在死亡回溯中守住一个人」的故事"
+    // Rendered as italic text inside .result-layout
+    const resultLayout = page.locator(".result-layout");
+    await expect(resultLayout).toContainText("死亡回溯");
+    console.log("[WORK INTRO] Shown in result layout");
   });
 });

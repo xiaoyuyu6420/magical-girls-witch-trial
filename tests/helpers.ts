@@ -17,6 +17,10 @@ export function attachConsoleListeners(page: Page) {
 
 /**
  * Answer all quiz questions by clicking the first option each time.
+ * Handles 阶段1 变奏题（天平 scale / 砝码 weight）和审判官批注插页：
+ * - scale 题：复用 .opt-block，点第一个
+ * - weight 题：初始三槽 [1,1,1] 已合法（总和=3），点"落锤"确认按钮
+ * - 批注插页（.interjection-overlay）：第5/10/15题后出现，点击关闭
  * Returns the number of questions answered and whether the result page was reached.
  */
 export async function answerAllQuestions(
@@ -26,12 +30,37 @@ export async function answerAllQuestions(
 ) {
   let questionCount = 0;
   let reachedResult = false;
+  let stallGuard = 0;
 
   while (questionCount < maxQuestions) {
+    stallGuard = 0;
+    // 先消化所有待处理的批注插页（不计题数）
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const interjection = page.locator(".interjection-overlay");
+      if (await interjection.isVisible({ timeout: 100 }).catch(() => false)) {
+        await interjection.click({ force: true, timeout: 3000 }).catch(() => {});
+        await page.waitForTimeout(400);
+        stallGuard++;
+        if (stallGuard > 5) break;
+        continue;
+      }
+      break;
+    }
+
     const resultLayout = page.locator(".result-layout");
     if (await resultLayout.isVisible({ timeout: 100 }).catch(() => false)) {
       reachedResult = true;
       break;
+    }
+
+    // 砝码题：检测"落锤"确认按钮（初始 [1,1,1] 合法，直接落锤）
+    const weightConfirm = page.locator("button", { hasText: "落锤" });
+    if (await weightConfirm.first().isVisible({ timeout: 100 }).catch(() => false)) {
+      await weightConfirm.first().click({ force: true, timeout: 5000 });
+      await page.waitForTimeout(clickDelay);
+      questionCount++;
+      continue;
     }
 
     const optBlocks = page.locator(".opt-block");
@@ -43,7 +72,13 @@ export async function answerAllQuestions(
         reachedResult = true;
         break;
       }
-      break;
+      // 可能是动画中，再等一轮
+      await page.waitForTimeout(500);
+      if ((await page.locator(".opt-block").count()) === 0
+        && !(await page.locator("button", { hasText: "落锤" }).first().isVisible({ timeout: 100 }).catch(() => false))) {
+        break;
+      }
+      continue;
     }
 
     await optBlocks.first().waitFor({ state: "visible", timeout: 5000 });
@@ -88,8 +123,10 @@ export function adminApi(page: Page) {
       "x-admin-token": token,
       ...opts?.headers,
     };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { signal, ...rest } = opts ?? {};
     return page.request.fetch(`http://127.0.0.1:3010/api/admin${path}`, {
-      ...opts,
+      ...rest,
       headers,
     });
   };
