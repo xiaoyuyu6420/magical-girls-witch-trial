@@ -335,8 +335,9 @@ test.describe("Quiz E2E Tests", () => {
       }
 
       const text = await getQuestionText(page);
-      const isTrigger = text && text.includes("因子在你的体内剧烈共鸣");
+      // 阶段3a 触发题文案已改写，用 meta 检测更稳（触发题 meta="最终抉择"）
       const meta = await getQuestionMeta(page);
+      const isTrigger = meta && meta.includes("最终抉择");
       const isGate = meta && meta.includes("命运分歧");
 
       if (isTrigger) {

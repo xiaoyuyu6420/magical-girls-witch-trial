@@ -28,7 +28,8 @@ test.describe("API Tests", () => {
     const data = await res.json();
 
     expect(data).toHaveProperty("dimensions");
-    expect(data).toHaveProperty("weights");
+    // weights 是防篡改刻意不下发的（quiz API route 注释明确），检查实际下发的 pack 元信息
+    expect(data).toHaveProperty("packId");
     expect(data).toHaveProperty("types");
     expect(data).toHaveProperty("questions");
 
