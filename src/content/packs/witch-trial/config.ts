@@ -1,18 +1,18 @@
 import type { DimDef, AlgoConfig } from "@/pack/types";
 
 export const DIMENSIONS: readonly DimDef[] = [
-  { code: "S1", name: "严厉度", model: "S", modelName: "审判", dir: "L=宽容 → H=严苛" },
-  { code: "S2", name: "直觉度", model: "S", modelName: "审判", dir: "L=理性 → H=感性" },
-  { code: "S3", name: "宽恕度", model: "S", modelName: "审判", dir: "L=不宽恕 → H=易宽恕" },
-  { code: "F1", name: "复仇心", model: "F", modelName: "侵蚀", dir: "L=无复仇心 → H=强烈复仇" },
-  { code: "F2", name: "绝望度", model: "F", modelName: "侵蚀", dir: "L=从不绝望 → H=容易绝望" },
-  { code: "F3", name: "执念度", model: "F", modelName: "侵蚀", dir: "L=随遇而安 → H=极度执着" },
-  { code: "B1", name: "信任度", model: "B", modelName: "羁绊", dir: "L=封闭 → H=开放" },
-  { code: "B2", name: "背叛感", model: "B", modelName: "羁绊", dir: "L=不在意 → H=极度敏感" },
-  { code: "B3", name: "犠牲度", model: "B", modelName: "羁绊", dir: "L=自我优先 → H=甘愿牺牲" },
-  { code: "W1", name: "压抑力", model: "W", modelName: "觉醒", dir: "L=不压抑 → H=强力压抑" },
-  { code: "W2", name: "理性力", model: "W", modelName: "觉醒", dir: "L=感性驱动 → H=理性维系" },
-  { code: "W3", name: "本能度", model: "W", modelName: "觉醒", dir: "L=克制 → H=放任" },
+  { code: "S1", name: "严厉/宽容倾向", model: "S", modelName: "评判", dir: "L=宽容 → H=严苛" },
+  { code: "S2", name: "直觉/理性倾向", model: "S", modelName: "评判", dir: "L=理性 → H=感性" },
+  { code: "S3", name: "宽恕/惩戒倾向", model: "S", modelName: "评判", dir: "L=不宽恕 → H=易宽恕" },
+  { code: "F1", name: "复仇/释怀倾向", model: "F", modelName: "执念", dir: "L=无复仇心 → H=强烈复仇" },
+  { code: "F2", name: "绝望/韧性倾向", model: "F", modelName: "执念", dir: "L=从不绝望 → H=容易绝望" },
+  { code: "F3", name: "执念/放下倾向", model: "F", modelName: "执念", dir: "L=随遇而安 → H=极度执着" },
+  { code: "B1", name: "信任/防备倾向", model: "B", modelName: "羁绊", dir: "L=封闭 → H=开放" },
+  { code: "B2", name: "背叛敏感度", model: "B", modelName: "羁绊", dir: "L=不在意 → H=极度敏感" },
+  { code: "B3", name: "自我牺牲倾向", model: "B", modelName: "羁绊", dir: "L=自我优先 → H=甘愿牺牲" },
+  { code: "W1", name: "情绪压抑倾向", model: "W", modelName: "自持", dir: "L=不压抑 → H=强力压抑" },
+  { code: "W2", name: "理性维系倾向", model: "W", modelName: "自持", dir: "L=感性驱动 → H=理性维系" },
+  { code: "W3", name: "本能释放倾向", model: "W", modelName: "自持", dir: "L=克制 → H=放任" },
 ];
 
 export type DimCode = (typeof DIMENSIONS)[number]["code"];
