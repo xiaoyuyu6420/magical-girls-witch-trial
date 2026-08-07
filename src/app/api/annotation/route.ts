@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { processAnswers } from "@/lib/answer-processor";
-import { pickAnnotation } from "@/lib/annotations";
+import { pickAnnotation, ANNOTATION_FALLBACKS } from "@/lib/annotations";
 import { getActivePack } from "@/pack/load";
 import { rateLimit } from "@/lib/rate-limit";
 import type { AnnotationNode } from "@/lib/annotations";
@@ -41,12 +41,7 @@ export async function POST(req: NextRequest) {
   const answers = body.answers;
   if (answers.length === 0) {
     // 没有 answers，返回 fallback
-    const fallbacks: Record<number, string> = {
-      5: "前五题，你已经在审讯室里坐定。让我们继续。",
-      10: "十题了。你和我，都还没松口。",
-      15: "十五题。审判快要落锤——你准备好了吗？",
-    };
-    return NextResponse.json({ text: fallbacks[node] });
+    return NextResponse.json({ text: ANNOTATION_FALLBACKS[node as AnnotationNode] });
   }
 
   try {
@@ -74,11 +69,6 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("Annotation error:", err);
     // fallback
-    const fallbacks: Record<number, string> = {
-      5: "前五题，你已经在审讯室里坐定。让我们继续。",
-      10: "十题了。你和我，都还没松口。",
-      15: "十五题。审判快要落锤——你准备好了吗？",
-    };
-    return NextResponse.json({ text: fallbacks[node] });
+    return NextResponse.json({ text: ANNOTATION_FALLBACKS[node as AnnotationNode] });
   }
 }

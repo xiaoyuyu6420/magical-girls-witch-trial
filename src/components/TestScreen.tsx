@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useI18n } from "@/lib/i18n";
 import type { AnnotationNode } from "@/lib/annotations";
+import { ANNOTATION_FALLBACKS } from "@/lib/annotations";
 
 export interface QuizQuestion {
   id: number; dim: string; text: string; order: number; type: string; meta: string;
@@ -207,12 +208,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
       })
       .catch(() => {
         // fallback 静态文案
-        const fallbacks: Record<number, string> = {
-          5: "前五题，你已经在审讯室里坐定。让我们继续。",
-          10: "十题了。你和我，都还没松口。",
-          15: "十五题。审判快要落锤——你准备好了吗？",
-        };
-        setInterjectionText(fallbacks[interjection] ?? "");
+        setInterjectionText(ANNOTATION_FALLBACKS[interjection] ?? "");
       });
   }, [interjection, answers]);
 

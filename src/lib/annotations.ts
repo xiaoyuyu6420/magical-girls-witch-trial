@@ -69,8 +69,8 @@ const POOLS: Record<AnnotationNode, Record<Tier, string[]>> = {
   },
 };
 
-/** fallback 档位（理论不应触达，纯防御） */
-const FALLBACK: Record<AnnotationNode, string> = {
+/** fallback 档位（理论不应触达，纯防御）——单一来源，供 route/TestScreen 共享 */
+export const ANNOTATION_FALLBACKS: Record<AnnotationNode, string> = {
   5: "前五题，你已经在审讯室里坐定。让我们继续。",
   10: "十题了。你和我，都还没松口。",
   15: "十五题。审判快要落锤——你准备好了吗？",
@@ -104,7 +104,7 @@ export function pickAnnotation(
 
   // 空输入或无主导维度 → fallback
   if (!dominantDim || maxSum < 0) {
-    return FALLBACK[node];
+    return ANNOTATION_FALLBACKS[node];
   }
 
   // 主导维度档位：scoreToTier 用 pack.algo.tiers（tiers=[2,4,5,6]→[0,1,2,3]=L/M/H/X）
@@ -114,7 +114,7 @@ export function pickAnnotation(
 
   const pool = POOLS[node][tier];
   if (!pool || pool.length === 0) {
-    return FALLBACK[node];
+    return ANNOTATION_FALLBACKS[node];
   }
 
   const idx = Math.floor(rng() * pool.length) % pool.length;

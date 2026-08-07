@@ -195,20 +195,21 @@ export const QUESTIONS: QuestionDef[] = [
   ], [3, 2, 1]),
   // ===== 砝码题（第14题，F1反向，A1/A2/A3：替换原"侵蚀·悖论"，三槽拖拽，每槽{0,1,2}总和=3）=====
   // 三槽都是 F1（复仇/释怀倾向）的子方面：A=记得多深、B=恨得多久、C=愿不愿动手
-  // 7个合法组合 → 7个option，label编码 weight::a|b|c，score=主槽值+1（满足[1,3]断言）
-  // score=2 表示均匀分配(1,1,1)→中F1；score=3 表示有主槽(值2)→强F1；不存在score=1（无合法组合主槽为0）
-  // 注：min score 实际是2，符合 quiz-content.scores.test.ts 的 score>=1 断言
+  // 7个合法组合 → 7个option，label编码 weight::a|b|c
+  // score映射：主槽(值=2)在A(记得多深)→3(最强F1)；主槽在B/C→2(中F1)；均匀(1,1,1)→1(最弱F1)
+  // score分布={1,2,2,2,2,3,3}，覆盖{1,2,3}，满足[1,3]断言
+  // F1总分范围：min=1(Q2最低)+1(砝码最低)=2→L档可达；max=3+3=6→X档可达
   {
     dim: "F1", meta: "执念·称量", type: "normal", renderType: "weight",
     text: "「这台秤，你来拨。把分量，给你心里真正认同的那句话。总得是3——一分不多，一分不少。」\nA：「我记得每一个伤害过我的人的脸。」\nB：「这股恨意，从被伤害那天起就没消退过。」\nC：「如果有办法，我想让他们付出代价。」",
     options: [
       { label: "weight::2|1|0", score: 3 },
       { label: "weight::2|0|1", score: 3 },
-      { label: "weight::1|2|0", score: 3 },
-      { label: "weight::0|2|1", score: 3 },
-      { label: "weight::1|0|2", score: 3 },
-      { label: "weight::0|1|2", score: 3 },
-      { label: "weight::1|1|1", score: 2 },
+      { label: "weight::1|2|0", score: 2 },
+      { label: "weight::0|2|1", score: 2 },
+      { label: "weight::1|0|2", score: 2 },
+      { label: "weight::0|1|2", score: 2 },
+      { label: "weight::1|1|1", score: 1 },
     ],
   },
   Q("B1", "羁绊·赌局", "「你的同伴要你把魔法能力全盘告诉她，说'只有互相信任才能打破这座岛的规则'。而你心里第一个念头不是'好'，是'凭什么'。你从来没有完整地信任过任何人——你总是留一半底牌，一半真心。」", [
