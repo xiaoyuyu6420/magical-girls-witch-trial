@@ -41,6 +41,7 @@ export const witchTrialPack: QuizPack = {
       idealLabelKey: "result.ideal",
     },
   },
+  workIntro: "一部关于「在死亡回溯中守住一个人」的故事",
 };
 
 export default witchTrialPack;

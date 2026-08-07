@@ -1,113 +1,106 @@
-# 意图契约 — 阶段1：核心体验
+# 意图契约 — 阶段3a：结果页揭晓时刻
 
-> discoverer 产出，2026-08-07。依据 `docs/REDESIGN.md`。
+> discoverer 产出，2026-08-07。依据 REDESIGN 第五节 + interface-details skill。
 
 ## BLUF
-
-Spec 主体方向清晰、可执行，但有 **5 处真分叉**全部集中在第六节（配套机制）和第八节（编号）——其中 **A1（题目总数与节奏）和 A3（天平题打分）是耦合的，是最关键的歧义**：它决定维度覆盖是否被破坏、数据模型是否要扩展。算法层、角色向量、服务端匹配这三个高风险区 spec 已明确"不动"，无需再问。砝码题算术错误（A2）是 spec 笔误，但影响数据模型，必须锁定。
+spec 第五节清晰高质量。真正分叉只有 A1（揭晓序列组件归属），其余是实施细节真空。最关键：A1（衔接架构）+ A3（稀有度语义）+ A4（作品字段来源）。
 
 ## 核心意图
+把传统结果页（百分比/雷达图/top3）重做为"揭晓时刻"——错峰动效把紧张反转为惊喜，稀有度替代相似度，角色档案卡承载情绪，分享卡驱动传播。
 
-把"魔女审判"重构为"灵魂审判器"的**阶段1**：通过题目心理指向翻转（扮演→面对）、12 维度去 IP 化命名、审判官批注 + 交互变奏，让"面对自己"的核心体验立住并可独立验证——**不触碰加权曼哈顿算法、15 个角色向量、服务端匹配**。
+## EARS 需求
 
-## EARS 需求契约
+### 揭晓序列（R1-R5）
+- **R1**(Event-driven) 当用户答完最后一题并收到匹配结果，系统播放 6 元素错峰揭晓序列（t=0.0/0.8/1.8/2.4/3.0/3.8/4.2s）。时间轴提取为可调常量 REVEAL_TIMINGS。`[§5.3]`
+- **R2**(Ubiquitous) 揭晓期间任意点击/按键立即跳到档案卡完整可用状态。`[§5.3 + M-11]`
+- **R3**(Ubiquitous) 用 motion-7（cross-fade through blur）实现答题页→结果页、角色名浮现，不得硬切。`[§5.6 + M-7]`
+- **R4**(Ubiquitous) ease-out-expo 曲线 cubic-bezier(0.16,1,0.3,1) 贯穿揭晓全程。`[§5.6 决策门#4]`
+- **R5**(State-driven) 若 prefers-reduced-motion:reduce，跳过所有揭晓动画直接呈现完整档案卡。`[§5.6 决策门#3]`
 
-### 题目改写（spec §2）
-- **R1**（Ubiquitous）系统应当将全部 26 道题干从"第三人称场景叙述"改写为"审判官对'你'的直接断言式逼问"。`[§2 技法2 / F1 样例]`
-- **R2**（Ubiquitous）系统应当将全部正常题选项从"角色反应台词"改写为"承认/否认/狡辩（合理化）"三态剖白，每题保持 3 选项。`[§2 技法3 / 设计共性]`
-- **R3**（State-driven）**在**阶段1期间，系统应当**仅**提供 zh-CN 文案，不产出 en/ja/zh-TW 翻译。`[§8 阶段1]`
-- **R4**（Ubiquitous）题干叙事主体是审判官对用户的逼问；监牢/因子等 IP 元素可作氛围背景保留，但**不得**作为叙事主体或决策对象。`[§2 技法4]`
+### 角色档案卡（R6-R10）
+- **R6**(Ubiquitous) 档案卡含 7 元素：角色名(中文+英文subtitle)、标语、「来自《魔女审判》」、一句话作品介绍、第二人称描述、灵魂特质(关键词)、稀有度条。`[§5.4]`
+- **R7**(Ubiquitous) 「一句话作品介绍」字段当前不存在，需新增。`[§5.4/§5.5]` `[需澄清 A4]`
+- **R8**(Ubiquitous) 复用现有 MatchResult.desc（第二人称描述）与 keywords（灵魂特质）。`[现状]`
+- **R9**(State-driven) 档案卡若超出单屏则可滚动并应用 motion-6（bleed blurred edges）；一屏放下则不触发。`[§5.6 + M-6]`
+- **R10**(Ubiquitous) 呈现「分享我的审判」「重新审判」两个按钮。`[§5.4]`
 
-### 维度改名（spec §3）
-- **R5**（Ubiquitous）按 §3 对照表修改 12 维度的 `name`/`modelName`/`dir`；`code`（S1..W3）、`WEIGHTS`、`ALGO_CONFIG` **不得**改动。`[§3 / §7]`
-- **R6**（Unwanted）改名**不得**改动 15 个角色 vector 数值，也**不得**改动 `match.ts` 加权曼哈顿算法逻辑。`[§3 关键句 / §7]`
-- **R7**（Ubiquitous）`src/i18n/zh-CN.ts` 的 `dims`/`dimGroups`/`questions`/`gate`/`trigger` 应当与新命名和新题干同步。`[项目上下文]`
+### 稀有度（R11）
+- **R11**(Ubiquitous) 稀有度替代相似度：进度条 + 「全球仅 X%」文案，越小越稀有，填充越少。`[§5.2/§5.4]` `[需澄清 A3 填充映射]`
 
-### 审判官批注（spec §6）
-- **R8**（Event-driven）**当**用户答完第 5、10、15 题**后**，系统应当插入审判官批注插页（行为素描，三次递进：试探→逼近→审判）。`[§6 审判官批注]`
-- **R9**（Unwanted）批注**不得**输出维度标签、角色名、百分比或任何剧透性信息。`[§6]`
+### 砍除项（R12-R13）
+- **R12**(Ubiquitous) 主视图移除 similarity%、DimensionBar、RadarChart、top3 排行。`[§5.2]` `[需澄清 A2 彻底/保留入口]`
+- **R13**(Ubiquitous) 分享卡移除 similarity%/RESONANCE，仅保留稀有度数字。`[§5.7]`
 
-### 天平题（spec §6）
-- **R10**（State-driven）**在第 8、22 题位置**，系统应当呈现天平题：左右二选一迫选，选中一个→另一个被推开，复用 ease-out-expo 曲线与 is-selected/is-dimmed 推开逻辑。`[§6 天平题]`
+### 分享卡（R14-R15）
+- **R14**(Ubiquitous) 分享卡含：钩子文案「我接受了灵魂审判」、角色名、标语、「来自《魔女审判》」、稀有度数字、行动召唤。`[§5.7]`
+- **R15**(Ubiquitous) 分享卡用角色主题色渐变背景（阶段3a 用现有深色主题，主题色差异为后续打磨）。`[§5.7]`
 
-### 砝码题（spec §6）
-- **R11**（State-driven）**在第 14 题位置**，系统应当呈现砝码题：三槽拖拽分配，总和必须 = 3，作为流程中段重头戏，只出现 1 次。`[§6 砝码题]` `[需澄清 A2]`
+### 隐藏角色（R16）
+- **R16**(State-driven) 若 MatchResult.special===true，做轻量文案区分（特殊文案+「极少判定」），不做完整粒子裂缝光效。`[§5.6 + 待定]` `[需澄清 A5]`
 
-### 不可变区（spec §7）
-- **R12**（Ubiquitous）保留 700ms 单题时序、cubic-bezier(0.16,1,0.3,1) 曲线、opt-block 推开视觉、服务端匹配、防篡改、feature flag 可回退。`[§7]`
+### 动效（R17-R18）
+- **R17**(Ubiquitous) 必须动效：motion-7/18/11/6 + ease-out-expo + reduced-motion降级。`[§5.6]`
+- **R18**(Optional) 可选动效 motion-3(标语逐字)/motion-22(稀有度光呼吸)；阶段3a 不做，用标准淡入替代。`[§5.6]`
 
-### Git 纪律（用户额外要求）
-- **R13**（Event-driven）**当**完成一个有意义的改动单元后，开发者应当创建独立 git commit（粒度=按改动单元，约 5 类：题目/维度/批注/天平/砝码）。`[用户要求]`
+### 保留与git（R19-R20）
+- **R19**(Ubiquitous) 保留 match.ts(MatchResult含similarity/top3为锁死区不动)、分享功能、重新审判。UI不显示similarity/top3但字段保留。`[§5.2]`
+- **R20**(Event-driven) 完成有意义改动单元后 git commit。`[用户要求]`
 
-## 非目标（阶段1 不做）
-
-- 跨 IP 扩展（pack 多 IP、小圆等接入）——§8 阶段2。
-- 结果页揭晓时刻重做（稀有度/档案卡/动效）——§8 阶段3。
-- 多语言翻译（en/ja/zh-TW）——§8 阶段3。
-- A/B 实验设施——§8 阶段3。
-- 15 个角色向量重算（锁死）。
-- 加权曼哈顿算法、WEIGHTS、ALGO_CONFIG 调整（锁死）。
-- 维度 code 重命名（S1..W3 不变）。
-- IP 版权合规策略（开放问题，归阶段2 前置）。
+## 非目标
+- N1 不填充跨IP作品介绍内容（仅魔女审判单一IP）。
+- N2 不做多语言（仅zh-CN）。
+- N3 不做A/B测试。
+- N4 不做不同IP视觉风格差异（统一风格）。
+- N5 不实现隐藏角色完整粒子裂缝光效。
+- N6 不改 match.ts 算法与 MatchResult 结构。
 
 ## 验收锚点
+1. V1 揭晓序列：t=0.8「审判结束了」/t=2.4角色名浮现/t=4.2档案卡可交互。
+2. V2 跳过：t=2.0点击→立即t=4.2状态。
+3. V3 reduced-motion：直接显示档案卡不播动画。
+4. V4 砍除：主视图无similarity%/雷达图/维度条/top3。
+5. V5 分享卡：含钩子+角色+标语+稀有度+行动召唤，无similarity%。
+6. V6 稀有度兜底：stats为null时优雅降级不崩溃。
 
-1. 维度改名后 `match.test.ts`/`answer-processor.test.ts`/`quiz-content.scores.test.ts` 仍通过。
-2. F1 题干以审判官断言式逼问呈现，3 选项为否认/承认/狡辩三态。
-3. `config.ts` S1.name 与 `zh-CN.ts` dims.S1 同步为通用心理维度名。
-4. 第 5/10/15 题后出现批注插页，无维度标签/角色/百分比。
-5. 第 8/22 题为天平题（左右对峙二选一），第 14 题为砝码题（三槽总和=3）。
-6. Git 历史 ≥5 个语义化 commit。
+## 假设
+- H1 时间轴=可调常量 REVEAL_TIMINGS。
+- H2 复用 desc/keywords 字段。
+- H3 钩子文案 i18n key result.shareHook。
+- H4 分享卡现有深色主题。
+- H5 不做 motion-3/22。
+- H6 隐藏角色轻量文案区分。
+- H7 match.ts 锁死，similarity 供内部 trackEvent。
 
-## 开放假设（待人确认/推翻）
+## 歧义（需用户拍板）
 
-- `[假设]` 维度 code 不变（spec §3 已明确，列此防误改）。
-- `[假设]` 现有测试若硬编码旧维度 name（如"严厉度"），允许同步更新测试断言（改名必要同步，非逻辑改动）。
-- `[假设]` git commit 粒度 = 按改动单元（5 类），非文件粒度，也不全塞 1 个 commit。
-- `[假设]` pack 架构阶段1 不扩展，只改内容不改架构。
-- `[假设]` 触发题 value/trigger 映射保持不变。
+### A1 揭晓序列组件归属 ⭐最高风险
+- 读法1(内联)：ResultScreen 内部 phase，挂载即播放。改动小，状态闭环。
+- 读法2(独立组件)：新建 RevealSequence 插 TestScreen/ResultScreen 间，page 加 revealPhase 状态机。职责分离但改动大。
+- 推荐：读法1（内联）——spec 定义揭晓为"结果页第一秒"，result 数据就近可用。
+
+### A2 砍除彻底程度
+- 读法1(彻底删除)：删 r-stats/top3/详情按钮/弹窗(RadarChart+DimensionBar)。
+- 读法2(隐藏保留入口)：主视图砍但保留"详细分析"弹窗入口。
+- 推荐：读法1（彻底删除）——spec"砍掉所有"明确；保留弹窗制造判决书vs揭晓时刻认知矛盾。
+
+### A3 稀有度数字语义+填充映射
+- 数字=stats.typePercentage（直接，越小越稀有）。
+- 填充映射待定：spec ASCII `▓▓░░░░░░░░`(2满8空)倾向"越稀有填充越少"。
+- stats为null兜底待定。
+
+### A4 作品介绍字段来源
+- 读法1(共用一句)：15角色共用一句魔女审判介绍，存 pack.meta.workIntro。改动小，跨IP阶段再扩每角色字段。
+- 读法2(每角色一句)：PersonalityTypeInput 加 workIntro 字段，15句+DB列+admin改造。
+- 推荐：读法1（共用一句 + pack.meta.workIntro）——单一IP符合spec"为跨IP预留"语义，不侵入MatchResult锁死区。
 
 ---
 
 ## 歧义决策（用户已拍板 2026-08-07）
 
-### A1 — 题目总数与节奏 → **替换26题内 + 继续打分**
-26 题总数不变。第 8、14、22 题**被**天平/砝码题**替换**（不是额外插入）。批注是 3 个题间插页，不计入 26 题。变奏题继续给原维度打分（见 A3），保住 W2/F1 维度覆盖。
-
-### A2 — 砝码取值 → **每槽 {0,1,2}，总和 = 3**
-每槽可分配 0/1/2，三槽总和必须 = 3。合法组合：0+1+2、1+1+1。spec 示例 [3][1][0] 按笔误处理（正确是 [2][1][0]）。
-
-### A3 — 变奏打分 → **硬编码加分挂回原维度**
-- 天平第 8 题（原 W2）：左/右两选项分别硬编码给 W2 加不同分（如左=W2 低分=1、右=W2 高分=3，或其他映射，由实现者按 W2 方向定义"理性维系"倾向）。
-- 天平第 22 题（原 W2 反向）：同上，分数方向相反（反向题规则）。
-- 砝码第 14 题（原 F1 反向）：三槽分配值 {0,1,2} 直接作为 F1 的得分贡献（用户称量结果即 F1 倾向）。
-- 打分通过现有 `score` 字段走 answer-processor，不引入新数据模型。
-
-### A4 — 批注信号 → **维度总分档位（H/M/L）选池中文案**
-批注动态生成。信号 = 用户当前各维度总分。规则：
-- 第 5 题后：读前 5 题各维度总分，取最高/最低或主导维度，按 H/M/L 档位从预设文案池选对应递进文案（试探语气）。
-- 第 10 题后：读前 10 题，档位判断更稳定，文案递进到"逼近"。
-- 第 15 题后：读前 15 题，文案递进到"审判"。
-- 每节点 × 档位组合预设若干变体文案（避免每次完全一样）。
-- **仍不输出维度标签/角色名/百分比**（R9 不变）——只输出行为描写，档位只是内部选文案的依据，不外显。
-
-### A5 — 门控 value → **语义重命名 + 同步下游 4 处**
-新 value（语义贴 REDESIGN §2 门控样例：毁灭/被看见/平静/未想好）：
-- `destroy`（毁灭路径）— key 保持 `destroy`
-- `endure`（被看见路径）— key 改为 `seen`
-- `normal`（平静路径）— key 改为 `peace`
-- `normal_alt`（未想好/第四选项）— key 改为 `undecided`
-
-**同步下游（全部要改）：**
-1. `src/content/packs/witch-trial/index.ts`：
-   - `gateValues: ["destroy", "seen", "peace", "undecided"]`
-   - `gateBonus`: 原 normal→peace、normal_alt→undecided
-   - `specialTriggers`: endure→seen（destroy 不变）
-   - `triggerGates: ["destroy", "seen"]`
-2. `src/components/TestScreen.tsx`: `gateValue === "destroy" || "seen"`（两处，第 106/129 行）
-3. `src/data/quiz-content.ts`: 门控题 4 个选项的 `value` 字段同步新 key
-4. DB 种子（prisma/seed）：如硬编码了旧 value 需同步；admin 导入/统计显示也跟随
-5. `src/i18n/zh-CN.ts`: `gate.options` 文案跟随新语义
-
-### A6 — 触发题 → **改文案保留触发逻辑**
-第 19 题触发题（dim=TRIGGER, trigger=SPECIAL_A→YUKI/ETL）文案改写为审判官语（去掉"因子/魔女"主体），但 `trigger` 字段（SPECIAL_A）和触发链路不变。triggerGates 已在 A5 同步为 destroy/seen。
+- **A1 = ResultScreen 内联 phase**：揭晓序列作为 ResultScreen 内部阶段，挂载即播放，播完揭晓层消失露出档案卡。状态单组件闭环。
+- **A2 = 彻底删除**：删除 r-stats(百分比+top3)、详情按钮、整个 showDetail 弹窗(含 RadarChart/DimensionBar 引用)。RadarChart.tsx/DimensionBar.tsx 文件保留但不被 ResultScreen 引用（未来可能他用）。
+- **A3 = 直接=typePercentage，越稀有越空**：数字=stats.typePercentage，填充条填充比例 = min(typePercentage, 100) / 100 但映射到"越稀有越空"——即填充 = typePercentage%（3.4%→约0.3格满）。实际：用 typePercentage 直接作填充百分比但语义反转显示（"全球仅3.4%"配几乎空的条）。stats为null→显示"全球数据收集中"+空条禁用。
+- **A4 = 共用一句 + pack.meta.workIntro**：pack 配置加 meta.workIntro 字段（"一部关于'在死亡回溯中守住一个人'的故事"），所有15角色共用。不侵入 MatchResult/PersonalityTypeInput。
+- **A5 = 轻量文案区分**：隐藏角色(special=true)揭晓时多一行"……审判庭从未见过这样的受审者"，稀有度文案"极少判定"，不做粒子裂缝光效。
+- **A6 = 可调常量 REVEAL_TIMINGS**。
+- **A7 = 一屏放下优先，motion-6 条件触发**（溢出时才应用边缘模糊）。

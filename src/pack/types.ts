@@ -62,6 +62,8 @@ export interface QuizPack {
   algo: AlgoConfig;
   rules: PackRules;
   presentation: PresentationConfig;
+  /** 作品介绍（角色档案卡"一句话作品介绍"，跨IP阶段可扩展为每角色字段） */
+  workIntro?: string;
 }
 
 export type DimCodeOf<P extends QuizPack> = P["dimensions"][number]["code"];
