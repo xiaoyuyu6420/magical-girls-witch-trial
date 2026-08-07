@@ -42,6 +42,7 @@ async function main() {
     await prisma.question.create({
       data: {
         dim: q.dim, text: q.text, order: i + 1, type: q.type, meta: q.meta ?? "",
+        renderType: q.renderType ?? "normal",
         options: {
           create: q.options.map((o, j) => ({
             label: o.label,

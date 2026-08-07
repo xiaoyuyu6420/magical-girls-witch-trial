@@ -20,6 +20,10 @@ model Question {
   text         String
   order        Int
   type         QuestionType @default(normal)
+  /// 渲染类型（内容层字段，与 DB type 解耦）：normal/gate/trigger/scale/weight
+  /// type 仍是 enum(normal/gate/trigger)，决定打分语义；renderType 决定前端如何渲染。
+  /// scale=天平题(2 option 左右对峙)、weight=砝码题(多 option 拖拽分配)
+  renderType   String       @default("normal")
   meta         String       @default("")
   translations String       @default("{}")
   options      Option[]
