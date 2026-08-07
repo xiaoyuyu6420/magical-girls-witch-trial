@@ -419,12 +419,14 @@ body.revealed .result-layout { opacity: 1; transform: translateY(0); }
 
 .btn-restart {
   margin-top: 2rem; display: inline-block; font-family: var(--f-title); font-size: 1.1rem;
-  color: #000; border-bottom: 2px solid #000; padding-bottom: 5px; transition: all 0.4s var(--ease-out-expo);
+  color: #000; border-bottom: 2px solid #000; padding: 0.5rem 1rem; transition: all 0.4s var(--ease-out-expo);
   cursor: none; align-self: flex-start; text-decoration: none; font-weight: 600;
   background: none; border-top: none; border-left: none; border-right: none;
+  min-height: 44px;
 }
 @media (max-width: 768px) { .btn-restart { align-self: center; } }
 .btn-restart:active { transform: scale(0.95); color: var(--c-blood); border-color: var(--c-blood); }
+.btn-restart:focus-visible { outline: 2px solid var(--c-gold); outline-offset: 2px; }
 @media (hover: hover) { .btn-restart:hover { letter-spacing: 0.2em; border-color: var(--c-blood); color: var(--c-blood); } }
 
 /* Result: slogan */

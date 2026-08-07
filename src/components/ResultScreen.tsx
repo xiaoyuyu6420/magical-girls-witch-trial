@@ -16,6 +16,7 @@ const REVEAL_TIMINGS = {
   nameReveal: 2400,
   slogan: 3000,
   fromWork: 3800,
+  hiddenReveal: 4000,
   cardReady: 4200,
 } as const;
 
@@ -49,6 +50,7 @@ interface RevealVisibility {
   nameReveal: boolean;
   slogan: boolean;
   fromWork: boolean;
+  hiddenReveal: boolean;
 }
 
 const ALL_VISIBLE: RevealVisibility = {
@@ -57,6 +59,7 @@ const ALL_VISIBLE: RevealVisibility = {
   nameReveal: true,
   slogan: true,
   fromWork: true,
+  hiddenReveal: true,
 };
 
 const NONE_VISIBLE: RevealVisibility = {
@@ -65,6 +68,7 @@ const NONE_VISIBLE: RevealVisibility = {
   nameReveal: false,
   slogan: false,
   fromWork: false,
+  hiddenReveal: false,
 };
 
 export default function ResultScreen({ result, stats, onRestart }: ResultScreenProps) {
@@ -96,6 +100,9 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
   const profileRef = useRef<HTMLDivElement>(null);
   const [needsEdgeBlur, setNeedsEdgeBlur] = useState(false);
 
+  /* ── A-F1: Focus management ref for result-layout ── */
+  const resultLayoutRef = useRef<HTMLDivElement>(null);
+
   /* ═══════════════════════════════════════════
      R1: Stagger reveal sequence on mount
      ═══════════════════════════════════════════ */
@@ -122,6 +129,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
     schedule(() => setRevealVis((v) => ({ ...v, nameReveal: true })), REVEAL_TIMINGS.nameReveal);
     schedule(() => setRevealVis((v) => ({ ...v, slogan: true })), REVEAL_TIMINGS.slogan);
     schedule(() => setRevealVis((v) => ({ ...v, fromWork: true })), REVEAL_TIMINGS.fromWork);
+    schedule(() => setRevealVis((v) => ({ ...v, hiddenReveal: true })), REVEAL_TIMINGS.hiddenReveal);
     schedule(() => {
       setRevealPhase("done");
     }, REVEAL_TIMINGS.cardReady);
@@ -143,6 +151,17 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
+  }, [revealPhase]);
+
+  /* ── A-F1: Move focus to result card after reveal completes ── */
+  useEffect(() => {
+    if (revealPhase === "done") {
+      // Small delay to allow DOM to settle after reveal layer fades
+      const id = setTimeout(() => {
+        resultLayoutRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(id);
+    }
   }, [revealPhase]);
 
   /* ═══════════════════════════════════════════
@@ -258,10 +277,15 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
     <div id="view-result">
       {/* ─── Profile Card (behind reveal layer) ─── */}
       <div
+        ref={resultLayoutRef}
         className="result-layout"
+        role="region"
+        aria-label={t("result.regionLabel")}
+        aria-hidden={revealPhase !== "done"}
+        tabIndex={-1}
         style={{
           opacity: revealPhase === "done" ? 1 : 0,
-          transition: `opacity 0.8s ${EASE_OUT_EXPO}`,
+          transition: prefersReducedMotion ? "none" : `opacity 0.8s ${EASE_OUT_EXPO}`,
         }}
       >
         <div
@@ -284,7 +308,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           }}
         >
           {/* R6: 角色名 + English subtitle */}
-          <div className="r-name" style={{ fontSize: "clamp(2.5rem, 10vw, 5rem)", marginBottom: "0.3rem" }}>
+          <div className="r-name" role="heading" aria-level={1} style={{ fontSize: "clamp(2.5rem, 10vw, 5rem)", marginBottom: "0.3rem" }}>
             {localized.name}
           </div>
           {localized.subtitle && (
@@ -393,10 +417,10 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
 
           {/* R10: Action buttons */}
           <div className="r-actions">
-            <button className="btn-restart" onClick={handleShare} disabled={sharing}>
+            <button className="btn-restart" onClick={handleShare} disabled={sharing} tabIndex={revealPhase === "done" ? 0 : -1}>
               {sharing ? "..." : t("result.share")}
             </button>
-            <button className="btn-restart" onClick={onRestart}>
+            <button className="btn-restart" onClick={onRestart} tabIndex={revealPhase === "done" ? 0 : -1}>
               {t("result.rebirth")}
             </button>
           </div>
@@ -408,6 +432,8 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
          Sits above profile card; fades out when done
          ═══════════════════════════════════════════ */}
       <div
+        role="status"
+        aria-live="polite"
         style={{
           position: "absolute",
           inset: 0,
@@ -422,7 +448,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           pointerEvents: revealLayerOut ? "none" : "auto",
           opacity: revealLayerOut ? 0 : 1,
           transition: revealLayerOut
-            ? `opacity 0.8s ${EASE_OUT_EXPO}`
+            ? (prefersReducedMotion ? "none" : `opacity 0.8s ${EASE_OUT_EXPO}`)
             : "none",
         }}
       >
@@ -431,12 +457,12 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           <div style={{
             position: "absolute",
             bottom: "5vh",
-            fontSize: "0.55rem",
+            fontSize: "0.7rem",
             letterSpacing: "0.3em",
-            color: "rgba(255,255,255,0.15)",
+            color: "rgba(255,255,255,0.55)",
             fontFamily: "var(--f-title)",
           }}>
-            点击任意处跳过
+            {t("result.skipHint")}
           </div>
         )}
 
@@ -474,7 +500,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           </div>
 
           {/* 3. 角色名 — motion-7: blur cross-fade */}
-          <div style={{
+          <div role="heading" aria-level={1} style={{
             fontSize: "clamp(2.8rem, 10vw, 5.5rem)",
             fontWeight: 900,
             lineHeight: 1.1,
@@ -513,6 +539,20 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           }}>
             {fromTitle}
           </div>
+
+          {/* 6. R16: Hidden character reveal (only for special=true) */}
+          {result.special && (
+            <div style={{
+              ...staggerStyle(revealVis.hiddenReveal),
+              fontSize: "clamp(0.85rem, 1.3vw, 0.95rem)",
+              fontStyle: "italic",
+              color: "#8b5cf6",
+              opacity: revealVis.hiddenReveal ? 0.8 : 0,
+              marginTop: "1.2rem",
+            }}>
+              {t("result.hiddenReveal")}
+            </div>
+          )}
         </div>
       </div>
 

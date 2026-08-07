@@ -52,6 +52,8 @@ const t = {
     shareHook: "我接受了灵魂审判。",
     shareCta: "来接受审判 →",
     hiddenReveal: "……审判庭从未见过这样的受审者。",
+    skipHint: "点击或按任意键跳过",
+    regionLabel: "审判结果",
   },
   dims: {
     S1: "严厉/宽容倾向", S2: "直觉/理性倾向", S3: "宽恕/惩戒倾向",
