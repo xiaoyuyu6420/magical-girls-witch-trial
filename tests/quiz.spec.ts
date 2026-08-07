@@ -166,7 +166,7 @@ test.describe("Quiz E2E Tests", () => {
       questionCount++;
     }
 
-    // Total questions: 25 if gate is "normal"/"normal_alt", 26 if "destroy"/"endure"
+    // Total questions: 25 if gate is "peace"/"undecided", 26 if "destroy"/"seen"
     expect(questionCount).toBeGreaterThanOrEqual(24);
     expect(questionCount).toBeLessThanOrEqual(26);
     console.log(`[TEST] Total questions answered: ${questionCount}, saw gate/trigger: ${sawGate}`);
@@ -230,9 +230,9 @@ test.describe("Quiz E2E Tests", () => {
   });
 
   // ---------------------------------------------------------------------------
-  // 6. If gate value is "destroy"/"endure", trigger question appears
+  // 6. If gate value is "destroy"/"seen", trigger question appears
   // ---------------------------------------------------------------------------
-  test("trigger question appears after destroy/endure gate value", async ({ page }) => {
+  test("trigger question appears after destroy/seen gate value", async ({ page }) => {
     let answered = 0;
     let triggerSeen = false;
 

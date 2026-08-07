@@ -62,11 +62,11 @@ function weightedManhattan(a,b){let d=0;for(let i=0;i<DIMENSIONS.length;i++)d+=(
 function similarity(dist){return Math.round(((1-dist/MAX_DIST)*100)*10)/10;}
 
 const SPECIAL_TRIGGERS = {
-  SPECIAL_A: { destroy: "YUKI", endure: "ETL" },
-  YUKI: { destroy: "YUKI", endure: "YUKI" },
-  ETL: { destroy: "ETL", endure: "ETL" },
+  SPECIAL_A: { destroy: "YUKI", seen: "ETL" },
+  YUKI: { destroy: "YUKI", seen: "YUKI" },
+  ETL: { destroy: "ETL", seen: "ETL" },
 };
-const GATE_BONUS = { normal: { S2: 1 }, normal_alt: { W1: 1 } };
+const GATE_BONUS = { peace: { S2: 1 }, undecided: { W1: 1 } };
 
 function applyBonus(scores, gate) {
   const out = { ...scores };
@@ -128,8 +128,8 @@ const types = [
 ];
 const sp1 = match({ dimScores, gateValue: "destroy", triggerFired: "SPECIAL_A" }, types);
 assert(sp1.code === "YUKI" && sp1.special, "SPECIAL_A destroy→YUKI");
-const sp2 = match({ dimScores, gateValue: "endure", triggerFired: "SPECIAL_A" }, types);
-assert(sp2.code === "ETL" && sp2.special, "SPECIAL_A endure→ETL");
+const sp2 = match({ dimScores, gateValue: "seen", triggerFired: "SPECIAL_A" }, types);
+assert(sp2.code === "ETL" && sp2.special, "SPECIAL_A seen→ETL");
 
 console.log("== deterministic ==");
 const r1 = match({ dimScores }, types);
@@ -138,10 +138,10 @@ assert(r1.code === r2.code && r1.userVector === r2.userVector, "same dimScores �
 
 console.log("== gate bonus ==");
 const ds2 = { ...dimScores, S2: 4 };
-const rn = match({ dimScores: ds2, gateValue: "normal" }, types);
+const rn = match({ dimScores: ds2, gateValue: "peace" }, types);
 const rd = match({ dimScores: ds2 }, types);
 const s2idx = DIMENSIONS.findIndex((d) => d.code === "S2");
-assert(parseVector(rn.userVector)[s2idx] > parseVector(rd.userVector)[s2idx], "normal gate boosts S2");
+assert(parseVector(rn.userVector)[s2idx] > parseVector(rd.userVector)[s2idx], "peace gate boosts S2");
 
 console.log(failures.length === 0 ? "\nALL_SMOKE_OK" : `\n${failures.length} FAILURES`);
 process.exit(failures.length === 0 ? 0 : 1);

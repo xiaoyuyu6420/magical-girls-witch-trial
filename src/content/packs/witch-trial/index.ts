@@ -17,18 +17,18 @@ export const witchTrialPack: QuizPack = {
     threshold: ALGO_CONFIG.threshold,
   },
   rules: {
-    gateValues: ["destroy", "endure", "normal", "normal_alt"],
+    gateValues: ["destroy", "seen", "peace", "undecided"],
     gateBonus: {
-      normal: { S2: 1 },
-      normal_alt: { W1: 1 },
+      peace: { S2: 1 },
+      undecided: { W1: 1 },
     },
     specialTriggers: {
-      SPECIAL_A: { destroy: "YUKI", endure: "ETL" },
-      SPECIAL_B: { destroy: "ETL", endure: "YUKI" },
-      YUKI: { destroy: "YUKI", endure: "YUKI" },
-      ETL: { destroy: "ETL", endure: "ETL" },
+      SPECIAL_A: { destroy: "YUKI", seen: "ETL" },
+      SPECIAL_B: { destroy: "ETL", seen: "YUKI" },
+      YUKI: { destroy: "YUKI", seen: "YUKI" },
+      ETL: { destroy: "ETL", seen: "ETL" },
     },
-    triggerGates: ["destroy", "endure"],
+    triggerGates: ["destroy", "seen"],
     optionShuffle: "stable-by-question-id",
   },
   presentation: {

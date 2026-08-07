@@ -103,7 +103,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   const displayQuestions = useMemo(() => {
     if (locale === "zh-CN") {
       return questions.filter((q) => {
-        if (q.type === "trigger") return gateValue === "destroy" || gateValue === "endure";
+        if (q.type === "trigger") return gateValue === "destroy" || gateValue === "seen";
         return true;
       });
     }
@@ -126,7 +126,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
         return q;
       }
     }).filter((q) => {
-      if (q.type === "trigger") return gateValue === "destroy" || gateValue === "endure";
+      if (q.type === "trigger") return gateValue === "destroy" || gateValue === "seen";
       return true;
     });
   }, [questions, locale, gateValue]);

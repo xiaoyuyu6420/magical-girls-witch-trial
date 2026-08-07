@@ -97,7 +97,7 @@ describe("processAnswers", () => {
   });
 
   it("accepts all valid gate values", () => {
-    for (const val of ["destroy", "endure", "normal", "normal_alt"] as const) {
+    for (const val of ["destroy", "seen", "peace", "undecided"] as const) {
       const options = [
         makeOption({ id: 1, questionId: 1, value: val, dim: "GATE", type: "gate" }),
       ];

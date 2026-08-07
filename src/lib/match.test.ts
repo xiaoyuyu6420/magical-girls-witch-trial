@@ -135,12 +135,12 @@ describe("match", () => {
     DIMENSIONS.forEach((d) => { dimScores[d.code] = 3; });
 
     const destroyResult = match({ dimScores, gateValue: "destroy", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
-    const endureResult = match({ dimScores, gateValue: "endure", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
+    const seenResult = match({ dimScores, gateValue: "seen", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
 
     expect(destroyResult.special).toBe(true);
     expect(destroyResult.code).toBe("YUKI");
-    expect(endureResult.special).toBe(true);
-    expect(endureResult.code).toBe("ETL");
+    expect(seenResult.special).toBe(true);
+    expect(seenResult.code).toBe("ETL");
   });
 
   it("does not trigger special without gateValue", () => {
@@ -150,12 +150,12 @@ describe("match", () => {
     expect(result.special).toBe(false);
   });
 
-  it("applies gate normal bonus to S2", () => {
+  it("applies gate peace bonus to S2", () => {
     const dimScores: Record<string, number> = {};
     DIMENSIONS.forEach((d) => { dimScores[d.code] = 3; });
     // S2 raw 3 → tier M; with +1 → 4 still M. Use 4 so +1 crosses to H(5)
     dimScores["S2"] = 4;
-    const resultNormal = match({ dimScores, gateValue: "normal" }, makeTypes(), pack);
+    const resultNormal = match({ dimScores, gateValue: "peace" }, makeTypes(), pack);
     const resultDefault = match({ dimScores }, makeTypes(), pack);
     const idx = DIMENSIONS.findIndex((d) => d.code === "S2");
     const nVals = parseVector(resultNormal.userVector);

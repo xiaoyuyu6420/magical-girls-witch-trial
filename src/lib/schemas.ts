@@ -11,7 +11,7 @@ export const matchRequestSchema = z.object({
       score: z.number().min(0).max(10).optional(),
     })
   ).min(1).max(100),
-  gateValue: z.enum(["destroy", "endure", "normal", "normal_alt"]).optional(),
+  gateValue: z.enum(["destroy", "seen", "peace", "undecided"]).optional(),
   triggerFired: z.string().max(50).optional(),
 });
 

@@ -15,21 +15,21 @@ describe("question explicit scores", () => {
   it("B1 forward high-trust option is not position-tied to score 1 only", () => {
     const q = QUESTIONS.find((x) => x.meta === "羁绊·邂逅");
     expect(q).toBeTruthy();
-    const highTrust = q!.options.find((o) => o.label.includes("多一个同伴"));
+    const highTrust = q!.options.find((o) => o.label.includes("多一个同伴就多一份希望"));
     expect(highTrust?.score).toBe(3);
   });
 
   it("S1 reverse harsh option scores high", () => {
-    const q = QUESTIONS.find((x) => x.meta === "审判·镜像");
+    const q = QUESTIONS.find((x) => x.meta === "评判·镜像");
     expect(q).toBeTruthy();
-    const harsh = q!.options.find((o) => o.label.includes("自生自灭"));
+    const harsh = q!.options.find((o) => o.label.includes("让她自生自灭"));
     expect(harsh?.score).toBe(3);
   });
 
   it("F2 reverse despair peak is the collapse option", () => {
-    const q = QUESTIONS.find((x) => x.meta === "侵蚀·崩塌");
+    const q = QUESTIONS.find((x) => x.meta === "执念·崩塌");
     expect(q).toBeTruthy();
-    const collapse = q!.options.find((o) => o.label.includes("再也不想站"));
+    const collapse = q!.options.find((o) => o.label.includes("再也不想站起来了"));
     expect(collapse?.score).toBe(3);
   });
 });
