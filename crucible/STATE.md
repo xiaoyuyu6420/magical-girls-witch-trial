@@ -1,8 +1,8 @@
 task: stage3a-reveal-result-page
-stage: "3c-redblue"
-last_completed: "3b-implement"
-next: "生成红方"
-updated: 2026-08-07T18:30:00+08:00
+stage: "4-audit"
+last_completed: "3c-redblue"
+next: "生成审计者"
+updated: 2026-08-07T20:30:00+08:00
 
 fingerprints:
   spec_hash: 4d7f3b816843

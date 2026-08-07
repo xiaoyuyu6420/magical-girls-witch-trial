@@ -17,7 +17,7 @@ const REVEAL_TIMINGS = {
   slogan: 3000,
   fromWork: 3800,
   hiddenReveal: 4000,
-  cardReady: 4200,
+  cardReady: 4600,
 } as const;
 
 /** R4: ease-out-expo cubic-bezier(0.16,1,0.3,1) */
