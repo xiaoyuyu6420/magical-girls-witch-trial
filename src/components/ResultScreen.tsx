@@ -1,13 +1,30 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import RadarChart from "./RadarChart";
-import DimensionBar from "./DimensionBar";
-import { parseVector } from "@/lib/match";
 import { getActivePack } from "@/pack/load";
 import { useLocalizedContent } from "@/lib/use-localized-content";
 import { toPng } from "html-to-image";
 import { useI18n } from "@/lib/i18n";
+
+/* ═══════════════════════════════════════════
+   Contracts — R1: REVEAL_TIMINGS as tunable constant
+   ═══════════════════════════════════════════ */
+const REVEAL_TIMINGS = {
+  pageFadeOut: 0,
+  judgementText: 800,
+  transitionText: 1800,
+  nameReveal: 2400,
+  slogan: 3000,
+  fromWork: 3800,
+  cardReady: 4200,
+} as const;
+
+/** R4: ease-out-expo cubic-bezier(0.16,1,0.3,1) */
+const EASE_OUT_EXPO = "cubic-bezier(0.16,1,0.3,1)";
+/** R3: motion-7 transition duration for blur cross-fade */
+const MOTION7_DURATION = "0.8s";
+/** Stagger fade duration for reveal text elements */
+const STAGGER_DURATION = "0.6s";
 
 interface ResultData {
   code: string; name: string; subtitle?: string; slogan: string; desc: string; keywords?: string;
@@ -23,68 +40,156 @@ interface ResultScreenProps {
   onRestart: () => void;
 }
 
+/* ═══════════════════════════════════════════
+   Reveal element visibility states (R1 stagger)
+   ═══════════════════════════════════════════ */
+interface RevealVisibility {
+  judgementText: boolean;
+  transitionText: boolean;
+  nameReveal: boolean;
+  slogan: boolean;
+  fromWork: boolean;
+}
+
+const ALL_VISIBLE: RevealVisibility = {
+  judgementText: true,
+  transitionText: true,
+  nameReveal: true,
+  slogan: true,
+  fromWork: true,
+};
+
+const NONE_VISIBLE: RevealVisibility = {
+  judgementText: false,
+  transitionText: false,
+  nameReveal: false,
+  slogan: false,
+  fromWork: false,
+};
+
 export default function ResultScreen({ result, stats, onRestart }: ResultScreenProps) {
   const pack = getActivePack();
-  const DIMENSIONS = pack.dimensions;
-  const MODEL_GROUPS = (() => {
-    const order: string[] = [];
-    const map = new Map<string, { model: string; dims: string[] }>();
-    for (const d of DIMENSIONS) {
-      if (!map.has(d.model)) {
-        order.push(d.model);
-        map.set(d.model, { model: d.model, dims: [] });
-      }
-      map.get(d.model)!.dims.push(d.code);
-    }
-    return order.map((m) => map.get(m)!);
-  })();
-  const tierLabels = pack.presentation.tierLabels;
-  const hideVectors = pack.presentation.hideTechnicalVectors;
-  const shareCardRef = useRef<HTMLDivElement>(null);
-  const [sharing, setSharing] = useState(false);
-  const [showDetail, setShowDetail] = useState(false);
-  const [shareCardReady, setShareCardReady] = useState(false);
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const localized = useLocalizedContent(
     result.code, result.name, result.slogan, result.desc, result.keywords, result.subtitle, result.translations
   );
 
-  const resolveTypeName = (entry: { code: string; name: string; translations?: string }) => {
-    try {
-      const dbVal = JSON.parse(entry.translations || "{}")[locale]?.name;
-      if (dbVal) return dbVal;
-    } catch { /* ignore */ }
-    if (locale === "zh-CN") return entry.name;
-    const i18nKey = `types.${entry.code}.name`;
-    const i18nVal = t(i18nKey);
-    return i18nVal !== i18nKey ? i18nVal : entry.name;
-  };
+  /* ── A1: Internal reveal phase ── */
+  const [revealPhase, setRevealPhase] = useState<"revealing" | "done">("revealing");
+  const [revealVis, setRevealVis] = useState<RevealVisibility>(NONE_VISIBLE);
+  const [revealLayerOut, setRevealLayerOut] = useState(false); // true = fading out
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  // 添加 revealed 类使结果页面可见
+  /* ── R5: prefers-reduced-motion check ── */
+  const prefersReducedMotion = useRef(
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false
+  ).current;
+
+  /* ── Share card state ── */
+  const shareCardRef = useRef<HTMLDivElement>(null);
+  const [sharing, setSharing] = useState(false);
+  const [shareCardReady, setShareCardReady] = useState(false);
+
+  /* ── Profile card scroll ref for motion-6 edge blur ── */
+  const profileRef = useRef<HTMLDivElement>(null);
+  const [needsEdgeBlur, setNeedsEdgeBlur] = useState(false);
+
+  /* ═══════════════════════════════════════════
+     R1: Stagger reveal sequence on mount
+     ═══════════════════════════════════════════ */
   useEffect(() => {
     document.body.classList.add("revealed");
+
+    // R5: reduced-motion → skip directly to done
+    if (prefersReducedMotion) {
+      setRevealVis(ALL_VISIBLE);
+      setRevealPhase("done");
+      return () => { document.body.classList.remove("revealed"); };
+    }
+
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    timersRef.current = timers;
+
+    const schedule = (cb: () => void, delay: number) => {
+      const id = setTimeout(cb, delay);
+      timers.push(id);
+    };
+
+    schedule(() => setRevealVis((v) => ({ ...v, judgementText: true })), REVEAL_TIMINGS.judgementText);
+    schedule(() => setRevealVis((v) => ({ ...v, transitionText: true })), REVEAL_TIMINGS.transitionText);
+    schedule(() => setRevealVis((v) => ({ ...v, nameReveal: true })), REVEAL_TIMINGS.nameReveal);
+    schedule(() => setRevealVis((v) => ({ ...v, slogan: true })), REVEAL_TIMINGS.slogan);
+    schedule(() => setRevealVis((v) => ({ ...v, fromWork: true })), REVEAL_TIMINGS.fromWork);
+    schedule(() => {
+      setRevealPhase("done");
+    }, REVEAL_TIMINGS.cardReady);
+
     return () => {
+      timers.forEach(clearTimeout);
       document.body.classList.remove("revealed");
     };
-  }, []);
+  }, [prefersReducedMotion]);
+
+  /* ── R9: motion-6 edge blur detection ── */
+  useEffect(() => {
+    if (revealPhase !== "done") return;
+    const el = profileRef.current;
+    if (!el) return;
+    const check = () => {
+      setNeedsEdgeBlur(el.scrollHeight > el.clientHeight + 2);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [revealPhase]);
+
+  /* ═══════════════════════════════════════════
+     R2: Skip — any click/keydown → immediately done
+     ═══════════════════════════════════════════ */
+  const skipReveal = useCallback(() => {
+    if (revealPhase === "done") return;
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+    setRevealVis(ALL_VISIBLE);
+    setRevealPhase("done");
+  }, [revealPhase]);
 
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") setShowDetail(false); };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, []);
+    if (revealPhase === "done") return;
+    const onClick = () => skipReveal();
+    const onKey = () => skipReveal();
+    window.addEventListener("click", onClick);
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("touchstart", onClick);
+    return () => {
+      window.removeEventListener("click", onClick);
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("touchstart", onClick);
+    };
+  }, [revealPhase, skipReveal]);
 
-  let userVals: number[] = [];
-  let tplVals: number[] = [];
-  try {
-    if (result.userVector) userVals = parseVector(result.userVector, DIMENSIONS.length);
-    if (result.templateVector) tplVals = parseVector(result.templateVector, DIMENSIONS.length);
-  } catch {
-    userVals = [];
-    tplVals = [];
-  }
+  /* ── Reveal layer fade-out after done ── */
+  useEffect(() => {
+    if (revealPhase === "done" && !prefersReducedMotion) {
+      // Small delay so the state settles before starting the CSS transition
+      const id = setTimeout(() => setRevealLayerOut(true), 50);
+      return () => clearTimeout(id);
+    }
+    if (revealPhase === "done" && prefersReducedMotion) {
+      setRevealLayerOut(true);
+    }
+  }, [revealPhase, prefersReducedMotion]);
 
-  const shareText = t("result.shareText", { name: localized.name, slogan: localized.slogan, url: typeof window !== "undefined" ? window.location.href : "" });
+  /* ═══════════════════════════════════════════
+     Share logic (preserved from original — R10)
+     ═══════════════════════════════════════════ */
+  const shareText = t("result.shareText", {
+    name: localized.name,
+    slogan: localized.slogan,
+    url: typeof window !== "undefined" ? window.location.href : "",
+  });
 
   const generateShareImage = useCallback(async (): Promise<Blob | null> => {
     if (!shareCardRef.current) return null;
@@ -100,11 +205,12 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
 
   const handleShare = useCallback(async () => {
     setShareCardReady(true);
-    // Allow one tick for the off-screen DOM node to mount
     await new Promise((resolve) => requestAnimationFrame(resolve));
     try {
       const imageBlob = await generateShareImage();
-      const imageFile = imageBlob ? new File([imageBlob], `witch-trial-${result.code}.png`, { type: "image/png" }) : undefined;
+      const imageFile = imageBlob
+        ? new File([imageBlob], `witch-trial-${result.code}.png`, { type: "image/png" })
+        : undefined;
       const shareTitle = t("meta.title");
       if (navigator.share && imageFile) {
         await navigator.share({ title: shareTitle, text: shareText, url: window.location.href, files: [imageFile] });
@@ -123,162 +229,404 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
     }
   }, [result, shareText, generateShareImage, t]);
 
-  const handleCopy = async () => {
-    try { await navigator.clipboard.writeText(window.location.href); } catch { /* ignore */ }
-  };
+  /* ── R11: Rarity helpers ── */
+  const typePercentage = stats?.typePercentage ?? null;
+  const rarityText = (() => {
+    if (typePercentage === null) return t("result.rarityCollecting");
+    if (result.special) return t("result.rarityRare", { percentage: typePercentage });
+    return t("result.rarityGlobal", { percentage: typePercentage });
+  })();
+  const rarityBarPercent = typePercentage !== null ? Math.min(typePercentage, 100) : 0;
 
-  const radarData = userVals.length === 12
-    ? DIMENSIONS.map((d, i) => ({ dimension: t(`dims.${d.code}`), user: userVals[i] ?? 1, template: tplVals[i] ?? 1 }))
-    : [];
+  /* ── Pack work intro (A4) ── */
+  const workIntro = pack.workIntro ?? "";
+  const fromTitle = t("result.revealFrom", { title: pack.title || "魔女审判" });
 
+  /* ═══════════════════════════════════════════
+     Stagger fade-in helper
+     ═══════════════════════════════════════════ */
+  const staggerStyle = (visible: boolean): React.CSSProperties => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateY(0)" : "translateY(12px)",
+    transition: `opacity ${STAGGER_DURATION} ${EASE_OUT_EXPO}, transform ${STAGGER_DURATION} ${EASE_OUT_EXPO}`,
+  });
+
+  /* ═══════════════════════════════════════════
+     RENDER
+     ═══════════════════════════════════════════ */
   return (
     <div id="view-result">
-      <div className="result-layout">
-        <div className="r-left">
-          <div className="r-arch">
-            {t("result.archetype")}
-            {result.special && <span style={{ marginLeft: "0.8rem", fontSize: "0.6em", color: "#8b5cf6" }}>{t("result.hidden")}</span>}
-            {result.borderType && <span style={{ marginLeft: "0.8rem", fontSize: "0.6em", color: "#888" }}>{t("result.border")}</span>}
+      {/* ─── Profile Card (behind reveal layer) ─── */}
+      <div
+        className="result-layout"
+        style={{
+          opacity: revealPhase === "done" ? 1 : 0,
+          transition: `opacity 0.8s ${EASE_OUT_EXPO}`,
+        }}
+      >
+        <div
+          ref={profileRef}
+          style={{
+            width: "100%",
+            maxWidth: 640,
+            margin: "0 auto",
+            padding: "3rem 1.5rem 2rem",
+            position: "relative",
+            overflowY: needsEdgeBlur ? "auto" : "visible",
+            maxHeight: needsEdgeBlur ? "100vh" : "none",
+            /* R9: motion-6 edge blur via mask-image when content overflows */
+            ...(needsEdgeBlur
+              ? {
+                  WebkitMaskImage: "linear-gradient(to bottom, transparent, black 40px, black calc(100% - 40px), transparent)",
+                  maskImage: "linear-gradient(to bottom, transparent, black 40px, black calc(100% - 40px), transparent)",
+                }
+              : {}),
+          }}
+        >
+          {/* R6: 角色名 + English subtitle */}
+          <div className="r-name" style={{ fontSize: "clamp(2.5rem, 10vw, 5rem)", marginBottom: "0.3rem" }}>
+            {localized.name}
           </div>
-          <div className="r-name">{localized.name}</div>
           {localized.subtitle && (
-            <div style={{ fontFamily: "var(--f-title)", fontSize: "clamp(0.8rem, 1.5vw, 1rem)", letterSpacing: "0.2em", color: "#888", marginBottom: "0.5rem" }}>
+            <div style={{
+              fontFamily: "var(--f-title)",
+              fontSize: "clamp(0.75rem, 1.5vw, 1rem)",
+              letterSpacing: "0.2em",
+              color: "#888",
+              marginBottom: "1rem",
+            }}>
               {localized.subtitle}
             </div>
           )}
 
-          <div className="r-stats">
-            <span>{result.similarity}%</span>
-            {result.top3.length > 1 && <span>{resolveTypeName(result.top3[1])} {result.top3[1].similarity}%</span>}
-            {result.top3.length > 2 && <span>{resolveTypeName(result.top3[2])} {result.top3[2].similarity}%</span>}
+          {/* Slogan */}
+          <div className="r-slogan" style={{ marginBottom: "0.6rem" }}>{localized.slogan}</div>
+
+          {/* ── 来自《魔女审判》 ── */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: "0.8rem",
+            fontSize: "0.7rem", fontFamily: "var(--f-title)", letterSpacing: "0.15em",
+            color: "#888", marginBottom: "1.2rem",
+          }}>
+            <span style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.1)" }} />
+            {fromTitle}
+            <span style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.1)" }} />
           </div>
 
-          <div className="r-slogan">{localized.slogan}</div>
+          {/* R7/R6: 一句话作品介绍 (A4: pack.workIntro) */}
+          {workIntro && (
+            <div style={{
+              fontSize: "clamp(0.8rem, 1.5vw, 0.95rem)",
+              color: "rgba(0,0,0,0.55)",
+              fontStyle: "italic",
+              lineHeight: 1.7,
+              marginBottom: "1.2rem",
+              paddingBottom: "1.2rem",
+              borderBottom: "1px solid rgba(0,0,0,0.08)",
+            }}>
+              {workIntro}
+            </div>
+          )}
 
-          {stats && (
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", margin: "0.8rem 0 0.3rem", padding: "0.5rem 0.8rem", background: "rgba(0,0,0,0.03)", borderRadius: 6, borderLeft: "3px solid rgba(139,0,0,0.3)" }}>
-              <div style={{ fontFamily: "var(--f-title)", fontSize: "1.1rem", fontWeight: 700, color: "#8b0000" }}>{stats.typePercentage}%</div>
-              <div style={{ fontSize: "0.7rem", color: "#888", lineHeight: 1.4, letterSpacing: "0.03em" }}>
-                {t("result.factorResonanceLabel")}
+          {/* R8: 第二人称描述 */}
+          <div className="r-desc" style={{ marginBottom: "1.2rem" }}>{localized.desc}</div>
+
+          {/* R8: 灵魂特质 keywords */}
+          {localized.keywords && (
+            <div className="r-keywords" style={{ marginBottom: "1.2rem" }}>
+              <div style={{
+                fontSize: "0.65rem", fontFamily: "var(--f-title)", letterSpacing: "0.2em",
+                color: "#888", marginBottom: "0.5rem",
+              }}>
+                {t("result.soulTraits")}
+              </div>
+              <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                {localized.keywords.split(/[、,，]/).map((kw: string, i: number) => (
+                  <span key={i} className="r-keyword-tag">{kw.trim()}</span>
+                ))}
               </div>
             </div>
           )}
 
-          <div className="r-actions">
-            <button className="btn-restart" onClick={handleShare} disabled={sharing}>{sharing ? "..." : t("result.share")}</button>
-            <button className="btn-restart" onClick={handleCopy}>{t("result.copyLink")}</button>
-            <button className="btn-restart" onClick={onRestart}>{t("result.rebirth")}</button>
+          {/* R11: 稀有度 */}
+          <div style={{ marginBottom: "0.8rem" }}>
+            <div style={{
+              fontSize: "0.65rem", fontFamily: "var(--f-title)", letterSpacing: "0.2em",
+              color: "#888", marginBottom: "0.5rem",
+            }}>
+              {t("result.rarityLabel")}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+              {/* Progress bar: fill = typePercentage%, rarer = emptier */}
+              <div style={{
+                flex: 1, height: 6, borderRadius: 3,
+                background: "rgba(0,0,0,0.06)", overflow: "hidden",
+              }}>
+                <div style={{
+                  width: `${rarityBarPercent}%`, height: "100%",
+                  background: "rgba(139,0,0,0.35)", borderRadius: 3,
+                  transition: `width 0.6s ${EASE_OUT_EXPO}`,
+                }} />
+              </div>
+              <span style={{
+                fontSize: "0.7rem", fontFamily: "var(--f-title)", letterSpacing: "0.1em",
+                color: typePercentage !== null ? "#555" : "#bbb",
+                whiteSpace: "nowrap",
+              }}>
+                {rarityText}
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div className="r-right">
-          <div className="r-desc">{localized.desc}</div>
-
-          {localized.keywords && (
-            <div className="r-keywords">
-              {localized.keywords.split(/[、,，]/).map((kw: string, i: number) => (
-                <span key={i} className="r-keyword-tag">{kw.trim()}</span>
-              ))}
+          {/* R16: Hidden character light text */}
+          {result.special && (
+            <div style={{
+              fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
+              fontStyle: "italic",
+              color: "#8b5cf6",
+              marginBottom: "1rem",
+              opacity: 0.8,
+            }}>
+              {t("result.hiddenReveal")}
             </div>
           )}
 
-          <div style={{ marginTop: "1rem" }}>
-            <button onClick={() => setShowDetail(true)}
-              style={{
-                fontFamily: "var(--f-title)", fontSize: "0.7rem", letterSpacing: "0.15em",
-                color: "#888", background: "none", border: "1px solid rgba(0,0,0,0.12)",
-                borderRadius: 999, padding: "0.35rem 1.2rem", cursor: "pointer",
-                transition: "all 0.3s ease",
-              }}>
-              {t("result.analysis")}
+          {/* R10: Action buttons */}
+          <div className="r-actions">
+            <button className="btn-restart" onClick={handleShare} disabled={sharing}>
+              {sharing ? "..." : t("result.share")}
+            </button>
+            <button className="btn-restart" onClick={onRestart}>
+              {t("result.rebirth")}
             </button>
           </div>
         </div>
       </div>
 
-      {showDetail && (
-        <div
-          style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", display: "flex", justifyContent: "center", alignItems: "center" }}
-          onClick={() => setShowDetail(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: "#fafafa", color: "#0a0a0a", borderRadius: 16,
-              maxWidth: 560, width: "92vw", maxHeight: "88vh", overflow: "auto",
-              padding: "2rem", position: "relative",
-              boxShadow: "0 25px 80px rgba(0,0,0,0.3)",
-            }}
-          >
-            <button onClick={() => setShowDetail(false)}
-              style={{ position: "absolute", top: "1rem", right: "1rem", background: "none", border: "none", fontSize: "1.4rem", color: "#888", cursor: "pointer", lineHeight: 1 }}>
-              &times;
-            </button>
+      {/* ═══════════════════════════════════════════
+         R1-R5: Reveal overlay layer
+         Sits above profile card; fades out when done
+         ═══════════════════════════════════════════ */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 100,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          background: "#050308",
+          color: "#e6e6e6",
+          fontFamily: "var(--f-body)",
+          pointerEvents: revealLayerOut ? "none" : "auto",
+          opacity: revealLayerOut ? 0 : 1,
+          transition: revealLayerOut
+            ? `opacity 0.8s ${EASE_OUT_EXPO}`
+            : "none",
+        }}
+      >
+        {/* Skip hint */}
+        {!revealLayerOut && revealPhase === "revealing" && !prefersReducedMotion && (
+          <div style={{
+            position: "absolute",
+            bottom: "5vh",
+            fontSize: "0.55rem",
+            letterSpacing: "0.3em",
+            color: "rgba(255,255,255,0.15)",
+            fontFamily: "var(--f-title)",
+          }}>
+            点击任意处跳过
+          </div>
+        )}
 
-            <div style={{ fontFamily: "var(--f-title)", fontSize: "0.65rem", letterSpacing: "0.3em", color: "#888", marginBottom: "1.5rem" }}>
-              {t("result.dimAnalysis")}
-            </div>
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+          gap: "0",
+          padding: "0 2rem",
+          maxWidth: 500,
+        }}>
+          {/* 1. 「审判结束了。」 */}
+          <div style={{
+            ...staggerStyle(revealVis.judgementText),
+            fontSize: "clamp(0.85rem, 1.5vw, 1rem)",
+            fontWeight: 300,
+            letterSpacing: "0.15em",
+            color: "rgba(255,255,255,0.6)",
+            marginBottom: "2rem",
+          }}>
+            {t("result.revealJudgement")}
+          </div>
 
-            {radarData.length > 0 && (
-              <>
-                <RadarChart data={radarData} templateName={localized.name} youLabel={t("result.you")} />
+          {/* 2. 「而你是——」 */}
+          <div style={{
+            ...staggerStyle(revealVis.transitionText),
+            fontSize: "clamp(0.85rem, 1.5vw, 1rem)",
+            fontWeight: 300,
+            letterSpacing: "0.15em",
+            color: "rgba(255,255,255,0.5)",
+            marginBottom: "2.5rem",
+          }}>
+            {t("result.revealTransition")}
+          </div>
 
-                {MODEL_GROUPS.map((group) => (
-                  <div key={group.model} style={{ marginBottom: "1rem" }}>
-                    <div style={{ fontFamily: "var(--f-title)", fontSize: "0.6rem", letterSpacing: "0.15em", color: "#888", marginBottom: "0.4rem" }}>
-                      {t(`dimGroups.${group.model}`)}
-                    </div>
-                    {group.dims.map((dimCode) => {
-                      const idx = DIMENSIONS.findIndex((d) => d.code === dimCode);
-                      const uv = userVals[idx] ?? 1;
-                      const tv = tplVals[idx] ?? uv;
-                      return (
-                        <DimensionBar key={dimCode} label={t(`dims.${dimCode}`)} value={uv} compareValue={tv} tierLabels={tierLabels} />
-                      );
-                    })}
-                  </div>
-                ))}
+          {/* 3. 角色名 — motion-7: blur cross-fade */}
+          <div style={{
+            fontSize: "clamp(2.8rem, 10vw, 5.5rem)",
+            fontWeight: 900,
+            lineHeight: 1.1,
+            letterSpacing: "0.15em",
+            color: "#fff",
+            marginBottom: "1rem",
+            /* R3: motion-7 cross-fade through blur */
+            opacity: revealVis.nameReveal ? 1 : 0,
+            filter: revealVis.nameReveal ? "blur(0px)" : "blur(20px)",
+            transform: revealVis.nameReveal ? "scale(1)" : "scale(1.05)",
+            transition: `opacity ${MOTION7_DURATION} ${EASE_OUT_EXPO}, filter ${MOTION7_DURATION} ${EASE_OUT_EXPO}, transform ${MOTION7_DURATION} ${EASE_OUT_EXPO}`,
+          }}>
+            {localized.name}
+          </div>
 
-                {!hideVectors && (
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "1rem", paddingTop: "0.8rem", borderTop: "1px solid rgba(0,0,0,0.06)", fontSize: "0.75rem" }}>
-                  <span style={{ color: "#888", fontFamily: "var(--f-title)", letterSpacing: "0.1em" }}>{t("result.you").toUpperCase()}</span>
-                  <span style={{ fontFamily: "var(--f-title)", fontWeight: 600, letterSpacing: "0.1em" }}>{result.userVector || "—"}</span>
-                  <span style={{ color: "#888", fontFamily: "var(--f-title)", letterSpacing: "0.1em" }}>{t("result.ideal")}</span>
-                  <span style={{ fontFamily: "var(--f-title)", fontWeight: 600, letterSpacing: "0.1em" }}>{result.templateVector}</span>
-                </div>
-                )}
-              </>
-            )}
+          {/* 4. 标语 */}
+          <div style={{
+            ...staggerStyle(revealVis.slogan),
+            fontSize: "clamp(0.85rem, 1.6vw, 1.05rem)",
+            fontStyle: "italic",
+            fontWeight: 300,
+            color: "rgba(212,175,55,0.7)",
+            lineHeight: 1.7,
+            marginBottom: "1.2rem",
+          }}>
+            {localized.slogan}
+          </div>
+
+          {/* 5. 来自《魔女审判》 */}
+          <div style={{
+            ...staggerStyle(revealVis.fromWork),
+            fontSize: "0.7rem",
+            fontFamily: "var(--f-title)",
+            letterSpacing: "0.2em",
+            color: "rgba(255,255,255,0.3)",
+          }}>
+            {fromTitle}
           </div>
         </div>
-      )}
+      </div>
 
+      {/* ═══════════════════════════════════════════
+         R14-R15: Share card (offscreen, for toPng)
+         ═══════════════════════════════════════════ */}
       {shareCardReady && (
-        <div ref={shareCardRef} aria-hidden="true" style={{ position: "fixed", top: "-9999px", left: "-9999px", width: 390, height: 693, background: "#050308", color: "#e6e6e6", fontFamily: "'Noto Serif SC', serif", padding: "2rem 1.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        <div
+          ref={shareCardRef}
+          aria-hidden="true"
+          style={{
+            position: "fixed", top: "-9999px", left: "-9999px",
+            width: 390, height: 693,
+            background: "#050308", color: "#e6e6e6",
+            fontFamily: "'Noto Serif SC', serif",
+            padding: "2rem 1.5rem",
+            display: "flex", flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
           <div>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: "0.55rem", letterSpacing: "0.5em", color: "rgba(212,175,55,0.6)", marginBottom: "1.2rem" }}>WITCH TRIAL</div>
-            <div style={{ fontSize: "1.8rem", fontWeight: 900, lineHeight: 1.15, color: "#fff", marginBottom: "0.4rem" }}>{localized.name}</div>
-            {localized.subtitle && <div style={{ fontSize: "0.75rem", color: "#888", letterSpacing: "0.15em", marginBottom: "0.3rem" }}>{localized.subtitle}</div>}
-            <div style={{ fontSize: "0.75rem", fontStyle: "italic", color: "#d4af37", marginTop: "0.8rem", lineHeight: 1.6 }}>{localized.slogan}</div>
+            {/* R14: Hook text — "我接受了灵魂审判。" */}
+            <div style={{
+              fontFamily: "'Cinzel', serif",
+              fontSize: "0.55rem",
+              letterSpacing: "0.5em",
+              color: "rgba(212,175,55,0.6)",
+              marginBottom: "1.2rem",
+            }}>
+              {t("result.shareHook")}
+            </div>
+            {/* 角色名 */}
+            <div style={{
+              fontSize: "1.8rem", fontWeight: 900, lineHeight: 1.15,
+              color: "#fff", marginBottom: "0.4rem",
+            }}>
+              {localized.name}
+            </div>
+            {/* English subtitle */}
+            {localized.subtitle && (
+              <div style={{
+                fontSize: "0.75rem", color: "#888", letterSpacing: "0.15em",
+                marginBottom: "0.3rem",
+              }}>
+                {localized.subtitle}
+              </div>
+            )}
+            {/* 标语 */}
+            <div style={{
+              fontSize: "0.75rem", fontStyle: "italic",
+              color: "#d4af37", marginTop: "0.8rem", lineHeight: 1.6,
+            }}>
+              {localized.slogan}
+            </div>
+            {/* 来自《魔女审判》 */}
+            <div style={{
+              fontSize: "0.55rem", fontFamily: "'Cinzel', serif",
+              letterSpacing: "0.15em", color: "rgba(255,255,255,0.25)",
+              marginTop: "0.6rem",
+            }}>
+              {fromTitle}
+            </div>
           </div>
           <div>
+            {/* Keywords */}
             {localized.keywords && (
               <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "1rem" }}>
                 {localized.keywords.split(/[、,，]/).map((kw: string, i: number) => (
-                  <span key={i} style={{ fontSize: "0.55rem", padding: "0.15rem 0.45rem", border: "1px solid rgba(212,175,55,0.25)", borderRadius: 999, color: "rgba(212,175,55,0.7)" }}>{kw.trim()}</span>
+                  <span key={i} style={{
+                    fontSize: "0.55rem", padding: "0.15rem 0.45rem",
+                    border: "1px solid rgba(212,175,55,0.25)", borderRadius: 999,
+                    color: "rgba(212,175,55,0.7)",
+                  }}>
+                    {kw.trim()}
+                  </span>
                 ))}
               </div>
             )}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "0.8rem" }}>
+            {/* R13: Rarity only, NO similarity/RESONANCE */}
+            <div style={{
+              display: "flex", justifyContent: "space-between", alignItems: "flex-end",
+              borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "0.8rem",
+            }}>
               <div>
-                <div style={{ fontFamily: "'Cinzel', serif", fontSize: "1.6rem", fontWeight: 900, color: "#d4af37" }}>{result.similarity}%</div>
-                <div style={{ fontSize: "0.5rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em" }}>RESONANCE</div>
+                {typePercentage !== null ? (
+                  <>
+                    <div style={{
+                      fontFamily: "'Cinzel', serif", fontSize: "1.6rem",
+                      fontWeight: 900, color: "#d4af37",
+                    }}>
+                      {typePercentage}%
+                    </div>
+                    <div style={{
+                      fontSize: "0.5rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.15em",
+                    }}>
+                      {t("result.rarityLabel").toUpperCase()}
+                    </div>
+                  </>
+                ) : (
+                  <div style={{
+                    fontSize: "0.55rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em",
+                  }}>
+                    {t("result.rarityCollecting")}
+                  </div>
+                )}
               </div>
-              {stats && (
-                <div style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.3)", textAlign: "right", lineHeight: 1.5 }}>
-                  {t("result.statsShort", { percentage: stats.typePercentage })}
-                </div>
-              )}
+              {/* R14: CTA — "来接受审判 →" */}
+              <div style={{
+                fontSize: "0.6rem", letterSpacing: "0.15em",
+                color: "rgba(212,175,55,0.5)",
+                fontFamily: "'Cinzel', serif",
+              }}>
+                {t("result.shareCta")}
+              </div>
             </div>
           </div>
         </div>
