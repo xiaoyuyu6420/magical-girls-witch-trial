@@ -38,7 +38,7 @@ export const MADOKA_TYPES: PersonalityTypeDef[] = [
     name: "晓美焰",
     subtitle: "时间掠夺者",
     group: "F",
-    vector: "HHL-HMH-LHH-HHM",
+    vector: "HHL-HLH-LHH-HHH",
     slogan: "「哪怕要重启世界一千次，我也要守住她一个人的笑容」",
     desc: "你是冰与执念的矛盾体——外表冷酷到不近人情，内心却燃烧着比任何人都炽烈的执着。你记着每一个轮回，每一次失败，每一个没能救下她的瞬间。你不信任旁人，因为旁人从未陪你走过那些被重置的时间；你宽恕不了命运，因为命运从未对你手软。你的温柔只对一个人开放，而对那一个人的爱，足够让你与整个世界为敌。",
     keywords: "轮回千次、冷焰执念、为一人敌世界",

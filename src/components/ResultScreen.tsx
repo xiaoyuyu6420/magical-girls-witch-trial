@@ -430,7 +430,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           </div>
 
           {/* R9: 结果页补充声明（角色版权） */}
-          <div style={{ marginTop: "1rem", fontSize: "0.6rem", textAlign: "center", color: "rgba(255,255,255,0.25)", letterSpacing: "0.05em" }}>
+          <div style={{ marginTop: "1rem", fontSize: "0.6rem", textAlign: "center", color: "rgba(0,0,0,0.35)", letterSpacing: "0.05em" }}>
             {t("disclaimer.result")}
           </div>
         </div>
