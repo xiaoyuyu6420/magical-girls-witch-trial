@@ -3,6 +3,7 @@ import { Noto_Serif_SC } from "next/font/google";
 import { Cinzel } from "next/font/google";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import AppShell from "@/components/AppShell";
+import DisclaimerFooter from "@/components/DisclaimerFooter";
 import { DocumentLang } from "@/components/DocumentLang";
 import "./globals.css";
 
@@ -67,6 +68,7 @@ export default function RootLayout({
         <DocumentLang />
         <GoogleAnalytics />
         <AppShell>{children}</AppShell>
+        <DisclaimerFooter />
       </body>
     </html>
   );

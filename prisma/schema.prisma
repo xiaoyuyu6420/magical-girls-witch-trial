@@ -57,6 +57,9 @@ model PersonalityType {
   keywords     String?
   special      Boolean @default(false)
   translations String  @default("{}")
+  /// 角色 IP 归属（A1/R2）：跨IP全局匹配时区分角色来自哪个作品。
+  /// 默认 "witch-trial"（向后兼容现有15角色）；小圆角色为 "madoka"。
+  ipCode       String  @default("witch-trial")
 }
 
 model TestRecord {

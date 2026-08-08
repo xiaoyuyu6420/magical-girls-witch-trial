@@ -98,6 +98,8 @@ export interface MatchResult {
   borderType: boolean;
   special: boolean;
   translations?: string;
+  /** 角色 IP 归属（跨IP全局匹配，结果页按 ipCode 显示对应作品信息） */
+  ipCode?: string;
 }
 
 export interface PersonalityTypeInput {
@@ -111,6 +113,8 @@ export interface PersonalityTypeInput {
   keywords?: string | null;
   special: boolean;
   translations?: string;
+  /** 角色 IP 归属（透传到 MatchResult 供结果页使用） */
+  ipCode?: string | null;
 }
 
 function applyGateBonus(
@@ -216,6 +220,7 @@ export function match(
         borderType: false,
         special: true,
         translations: t.translations,
+        ipCode: t.ipCode ?? undefined,
       };
     }
   }
@@ -252,6 +257,7 @@ export function match(
       borderType: true,
       special: false,
       translations: unsetType.translations,
+      ipCode: unsetType.ipCode ?? undefined,
     };
   }
 
@@ -285,6 +291,7 @@ export function match(
           borderType: true,
           special: false,
           translations: unsetType.translations,
+          ipCode: unsetType.ipCode ?? undefined,
         };
       }
       borderType = true;
@@ -311,5 +318,6 @@ export function match(
     borderType,
     special: false,
     translations: best.type.translations,
+    ipCode: best.type.ipCode ?? undefined,
   };
 }

@@ -1,106 +1,52 @@
-# 意图契约 — 阶段3a：结果页揭晓时刻
+# 意图契约 — 阶段2：跨IP扩展（小圆接入 + 全局匹配）
 
-> discoverer 产出，2026-08-07。依据 REDESIGN 第五节 + interface-details skill。
+> discoverer 产出，2026-08-08。依据 REDESIGN 第四节。前置已定：同人二创+全局匹配。
 
 ## BLUF
-spec 第五节清晰高质量。真正分叉只有 A1（揭晓序列组件归属），其余是实施细节真空。最关键：A1（衔接架构）+ A3（稀有度语义）+ A4（作品字段来源）。
-
-## 核心意图
-把传统结果页（百分比/雷达图/top3）重做为"揭晓时刻"——错峰动效把紧张反转为惊喜，稀有度替代相似度，角色档案卡承载情绪，分享卡驱动传播。
+跨IP扩展=每IP角色人工标定通用12维向量+全局加权曼哈顿匹配，算法复用，工作量在内容标定。8个分叉，最关键A1（引擎/内容pack分离）+A4（向量标定主体）。
 
 ## EARS 需求
-
-### 揭晓序列（R1-R5）
-- **R1**(Event-driven) 当用户答完最后一题并收到匹配结果，系统播放 6 元素错峰揭晓序列（t=0.0/0.8/1.8/2.4/3.0/3.8/4.2s）。时间轴提取为可调常量 REVEAL_TIMINGS。`[§5.3]`
-- **R2**(Ubiquitous) 揭晓期间任意点击/按键立即跳到档案卡完整可用状态。`[§5.3 + M-11]`
-- **R3**(Ubiquitous) 用 motion-7（cross-fade through blur）实现答题页→结果页、角色名浮现，不得硬切。`[§5.6 + M-7]`
-- **R4**(Ubiquitous) ease-out-expo 曲线 cubic-bezier(0.16,1,0.3,1) 贯穿揭晓全程。`[§5.6 决策门#4]`
-- **R5**(State-driven) 若 prefers-reduced-motion:reduce，跳过所有揭晓动画直接呈现完整档案卡。`[§5.6 决策门#3]`
-
-### 角色档案卡（R6-R10）
-- **R6**(Ubiquitous) 档案卡含 7 元素：角色名(中文+英文subtitle)、标语、「来自《魔女审判》」、一句话作品介绍、第二人称描述、灵魂特质(关键词)、稀有度条。`[§5.4]`
-- **R7**(Ubiquitous) 「一句话作品介绍」字段当前不存在，需新增。`[§5.4/§5.5]` `[需澄清 A4]`
-- **R8**(Ubiquitous) 复用现有 MatchResult.desc（第二人称描述）与 keywords（灵魂特质）。`[现状]`
-- **R9**(State-driven) 档案卡若超出单屏则可滚动并应用 motion-6（bleed blurred edges）；一屏放下则不触发。`[§5.6 + M-6]`
-- **R10**(Ubiquitous) 呈现「分享我的审判」「重新审判」两个按钮。`[§5.4]`
-
-### 稀有度（R11）
-- **R11**(Ubiquitous) 稀有度替代相似度：进度条 + 「全球仅 X%」文案，越小越稀有，填充越少。`[§5.2/§5.4]` `[需澄清 A3 填充映射]`
-
-### 砍除项（R12-R13）
-- **R12**(Ubiquitous) 主视图移除 similarity%、DimensionBar、RadarChart、top3 排行。`[§5.2]` `[需澄清 A2 彻底/保留入口]`
-- **R13**(Ubiquitous) 分享卡移除 similarity%/RESONANCE，仅保留稀有度数字。`[§5.7]`
-
-### 分享卡（R14-R15）
-- **R14**(Ubiquitous) 分享卡含：钩子文案「我接受了灵魂审判」、角色名、标语、「来自《魔女审判》」、稀有度数字、行动召唤。`[§5.7]`
-- **R15**(Ubiquitous) 分享卡用角色主题色渐变背景（阶段3a 用现有深色主题，主题色差异为后续打磨）。`[§5.7]`
-
-### 隐藏角色（R16）
-- **R16**(State-driven) 若 MatchResult.special===true，做轻量文案区分（特殊文案+「极少判定」），不做完整粒子裂缝光效。`[§5.6 + 待定]` `[需澄清 A5]`
-
-### 动效（R17-R18）
-- **R17**(Ubiquitous) 必须动效：motion-7/18/11/6 + ease-out-expo + reduced-motion降级。`[§5.6]`
-- **R18**(Optional) 可选动效 motion-3(标语逐字)/motion-22(稀有度光呼吸)；阶段3a 不做，用标准淡入替代。`[§5.6]`
-
-### 保留与git（R19-R20）
-- **R19**(Ubiquitous) 保留 match.ts(MatchResult含similarity/top3为锁死区不动)、分享功能、重新审判。UI不显示similarity/top3但字段保留。`[§5.2]`
-- **R20**(Event-driven) 完成有意义改动单元后 git commit。`[用户要求]`
+- **R1** [pack架构] 引擎配置（维度/权重/算法/门控规则）与IP内容（角色/workIntro/title）分离，引擎跨IP统一。`[§4 + 需澄清A1]`
+- **R2** [角色IP归属] 存储/查询/匹配角色时能区分所属IP。`[需澄清A1/A2]`
+- **R3** [小圆接入] 含魔法少女小圆核心角色（鹿目圆/晓美焰/美树沙耶香/佐仓杏子/巴麻美），各具12维向量。`[§4 + 需澄清A7]`
+- **R4** [向量标定] 接入时每角色12维向量依据角色设定按通用心理维度人工打分。`[§4 + 需澄清A4]`
+- **R5** [全局匹配] 用户向量vs所有IP所有角色加权曼哈顿取最近，不预选IP。`[前置已定]`
+- **R6** [算法复用] 复用加权曼哈顿+tier/delta/threshold，不重写算法。`[需澄清A8]`
+- **R7** [作品介绍] 结果页显示角色所属IP名称+一句话情绪式作品介绍。`[§4/§5 + 需澄清A3]`
+- **R8** [门控隔离] 跨IP时门控特殊人格路径只对相应IP角色生效，不误触发。`[需澄清A5]`
+- **R9** [合规声明] 显著位置声明同人二创/非官方/与原作方无关。`[§4⚠️ + 需澄清A6]`
+- **R10** [git] 每有意义改动单元commit。
 
 ## 非目标
-- N1 不填充跨IP作品介绍内容（仅魔女审判单一IP）。
-- N2 不做多语言（仅zh-CN）。
-- N3 不做A/B测试。
-- N4 不做不同IP视觉风格差异（统一风格）。
-- N5 不实现隐藏角色完整粒子裂缝光效。
-- N6 不改 match.ts 算法与 MatchResult 结构。
+- 毁灭者/憧憬/伊莉雅接入（后续按序）。
+- 多语言/AB/视觉风格差异/限定IP匹配。
+- 题目改写（阶段1已完成）。
 
 ## 验收锚点
-1. V1 揭晓序列：t=0.8「审判结束了」/t=2.4角色名浮现/t=4.2档案卡可交互。
-2. V2 跳过：t=2.0点击→立即t=4.2状态。
-3. V3 reduced-motion：直接显示档案卡不播动画。
-4. V4 砍除：主视图无similarity%/雷达图/维度条/top3。
-5. V5 分享卡：含钩子+角色+标语+稀有度+行动召唤，无similarity%。
-6. V6 稀有度兜底：stats为null时优雅降级不崩溃。
-
-## 假设
-- H1 时间轴=可调常量 REVEAL_TIMINGS。
-- H2 复用 desc/keywords 字段。
-- H3 钩子文案 i18n key result.shareHook。
-- H4 分享卡现有深色主题。
-- H5 不做 motion-3/22。
-- H6 隐藏角色轻量文案区分。
-- H7 match.ts 锁死，similarity 供内部 trackEvent。
+1. 用户匹配晓美焰→结果"来自《魔法少女小圆》"+小圆作品介绍（非魔女审判workIntro）。
+2. 用户匹配魔女审判HIRO→"来自《魔女审判》"，跨IP未破坏既有匹配。
+3. destroy门控+SPECIAL_A→仍YUKI（特殊路径未被小圆稀释）。
+4. 合规声明全站可见。
+5. seed后DB含小圆角色且带IP标记，match findMany能取到。
+6. 107 e2e仍绿（跨IP不破坏现有流程）。
 
 ## 歧义（需用户拍板）
+- **A1 引擎/内容pack分离**：读法1(引擎pack单一权威源+每IP内容pack) 推荐 / 读法2(每IP完整pack靠人工一致)
+- **A2 小圆数据放哪**：读法1(新建madoka/config.ts) 推荐 / 读法2(混进quiz-content.ts)
+- **A3 workIntro粒度**：读法1(per-IP共用一句) 推荐 / 读法2(per-角色)
+- **A4 向量标定主体**：读法1(开发者按角色设定主观标定+文档化) 推荐 / 读法2(placeholder后续精修)
+- **A5 小圆特殊人格**：读法1(小圆全普通角色,特殊仍YUKI/ETL) 推荐 / 读法2(小圆加魔女化形态)
+- **A6 合规声明位置**：读法1(footer全站) 推荐 / 读法2(仅结果页) / 读法3(首页+footer)
+- **A7 小圆数量**：读法1(5主角) 推荐 / 读法2(含渚6个)
+- **A8 delta/threshold校准**：读法1(保持现值+标观察项) 推荐 / 读法2(重校准)
 
-### A1 揭晓序列组件归属 ⭐最高风险
-- 读法1(内联)：ResultScreen 内部 phase，挂载即播放。改动小，状态闭环。
-- 读法2(独立组件)：新建 RevealSequence 插 TestScreen/ResultScreen 间，page 加 revealPhase 状态机。职责分离但改动大。
-- 推荐：读法1（内联）——spec 定义揭晓为"结果页第一秒"，result 数据就近可用。
+## 决策（编排者按推荐裁定 2026-08-08，用户未答按推荐执行）
 
-### A2 砍除彻底程度
-- 读法1(彻底删除)：删 r-stats/top3/详情按钮/弹窗(RadarChart+DimensionBar)。
-- 读法2(隐藏保留入口)：主视图砍但保留"详细分析"弹窗入口。
-- 推荐：读法1（彻底删除）——spec"砍掉所有"明确；保留弹窗制造判决书vs揭晓时刻认知矛盾。
-
-### A3 稀有度数字语义+填充映射
-- 数字=stats.typePercentage（直接，越小越稀有）。
-- 填充映射待定：spec ASCII `▓▓░░░░░░░░`(2满8空)倾向"越稀有填充越少"。
-- stats为null兜底待定。
-
-### A4 作品介绍字段来源
-- 读法1(共用一句)：15角色共用一句魔女审判介绍，存 pack.meta.workIntro。改动小，跨IP阶段再扩每角色字段。
-- 读法2(每角色一句)：PersonalityTypeInput 加 workIntro 字段，15句+DB列+admin改造。
-- 推荐：读法1（共用一句 + pack.meta.workIntro）——单一IP符合spec"为跨IP预留"语义，不侵入MatchResult锁死区。
-
----
-
-## 歧义决策（用户已拍板 2026-08-07）
-
-- **A1 = ResultScreen 内联 phase**：揭晓序列作为 ResultScreen 内部阶段，挂载即播放，播完揭晓层消失露出档案卡。状态单组件闭环。
-- **A2 = 彻底删除**：删除 r-stats(百分比+top3)、详情按钮、整个 showDetail 弹窗(含 RadarChart/DimensionBar 引用)。RadarChart.tsx/DimensionBar.tsx 文件保留但不被 ResultScreen 引用（未来可能他用）。
-- **A3 = 直接=typePercentage，越稀有越空**：数字=stats.typePercentage，填充条填充比例 = min(typePercentage, 100) / 100 但映射到"越稀有越空"——即填充 = typePercentage%（3.4%→约0.3格满）。实际：用 typePercentage 直接作填充百分比但语义反转显示（"全球仅3.4%"配几乎空的条）。stats为null→显示"全球数据收集中"+空条禁用。
-- **A4 = 共用一句 + pack.meta.workIntro**：pack 配置加 meta.workIntro 字段（"一部关于'在死亡回溯中守住一个人'的故事"），所有15角色共用。不侵入 MatchResult/PersonalityTypeInput。
-- **A5 = 轻量文案区分**：隐藏角色(special=true)揭晓时多一行"……审判庭从未见过这样的受审者"，稀有度文案"极少判定"，不做粒子裂缝光效。
-- **A6 = 可调常量 REVEAL_TIMINGS**。
-- **A7 = 一屏放下优先，motion-6 条件触发**（溢出时才应用边缘模糊）。
+- **A1 = 引擎pack单一权威源**：抽出引擎pack（维度/权重/算法/门控/触发规则，跨IP唯一）+ 每 IP 一个内容pack（角色/workIntro/title）。PersonalityType 加 ipCode 字段。
+- **A2 = 新建 madoka/config.ts**：小圆角色独立目录 src/content/packs/madoka/。seed 改为遍历所有内容pack的角色。
+- **A3 = workIntro per-IP**：小圆共用一句"一部关于「为了一个人反复重启世界」的故事"。workIntro 从 pack 级扩展为 per-ipCode 映射。
+- **A4 = AI按设定标定+文档化**：基于小圆角色剧情设定主观标定12维向量，ADR记录每角色标定理由。参考现有15角色量级。
+- **A5 = 小圆全普通角色**：special=false，门控特殊人格仍只 YUKI/ETL。
+- **A6 = footer全站+结果页补充**：footer"本测试为同人二创作品，与原作版权方无隶属关系"，结果页"角色版权归原作方所有"。
+- **A7 = 5主角**：鹿目圆/晓美焰/美树沙耶香/佐仓杏子/巴麻美。渚留后续。
+- **A8 = 保持现值+观察项**：delta:3 threshold:40 不改，标为观察项。

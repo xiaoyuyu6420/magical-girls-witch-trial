@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { PERSONALITY_TYPES, QUESTIONS } from "../src/data/quiz-content";
+import { MADOKA_TYPES, MADOKA_IP_CODE } from "../src/content/packs/madoka/config";
 
 const prisma = new PrismaClient();
 
@@ -14,23 +15,30 @@ async function main() {
     console.log("FORCE_RESEED=1 — wiping answers/options/questions before reseed");
   }
 
+  // 跨IP角色：魔女审判标 ipCode="witch-trial"，小圆标 ipCode="madoka"
+  const witchTrialTypes = PERSONALITY_TYPES.map((t) => ({ ...t, ipCode: "witch-trial" }));
+  const madokaTypes = MADOKA_TYPES.map((t) => ({ ...t, ipCode: MADOKA_IP_CODE }));
+  const allTypes = [...witchTrialTypes, ...madokaTypes];
+
   console.log("Seeding personality types...");
-  for (const t of PERSONALITY_TYPES) {
+  for (const t of allTypes) {
     await prisma.personalityType.upsert({
       where: { code: t.code },
       update: {
         name: t.name, subtitle: t.subtitle ?? null, group: t.group,
         vector: t.vector, slogan: t.slogan, desc: t.desc,
         keywords: t.keywords ?? null, special: t.special ?? false,
+        ipCode: t.ipCode,
       },
       create: {
         code: t.code, name: t.name, subtitle: t.subtitle ?? null, group: t.group,
         vector: t.vector, slogan: t.slogan, desc: t.desc,
         keywords: t.keywords ?? null, special: t.special ?? false,
+        ipCode: t.ipCode,
       },
     });
   }
-  console.log(`  → ${PERSONALITY_TYPES.length} types seeded`);
+  console.log(`  → ${allTypes.length} types seeded (${witchTrialTypes.length} witch-trial + ${madokaTypes.length} madoka)`);
 
   console.log("Seeding questions...");
   await prisma.answer.deleteMany();

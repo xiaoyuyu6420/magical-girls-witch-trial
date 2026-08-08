@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { getActivePack } from "@/pack/load";
+import { getIpMeta } from "@/content/packs/ip-registry";
 import { useLocalizedContent } from "@/lib/use-localized-content";
 import { toPng } from "html-to-image";
 import { useI18n } from "@/lib/i18n";
@@ -33,6 +34,8 @@ interface ResultData {
   top3: { code: string; name: string; similarity: number; translations?: string }[];
   group: string; borderType: boolean; special: boolean;
   translations?: string;
+  /** 角色 IP 归属（跨IP全局匹配，结果页按此查作品信息） */
+  ipCode?: string;
 }
 
 interface ResultScreenProps {
@@ -257,9 +260,10 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
   })();
   const rarityBarPercent = typePercentage !== null ? Math.min(typePercentage, 100) : 0;
 
-  /* ── Pack work intro (A4) ── */
-  const workIntro = pack.workIntro ?? "";
-  const fromTitle = t("result.revealFrom", { title: pack.title || "魔女审判" });
+  /* ── 跨IP作品信息（R7：按 result.ipCode 查，A1/A3 per-IP）── */
+  const ipMeta = getIpMeta(result.ipCode);
+  const workIntro = ipMeta.workIntro;
+  const fromTitle = t("result.revealFrom", { title: ipMeta.title });
 
   /* ═══════════════════════════════════════════
      Stagger fade-in helper
@@ -423,6 +427,11 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
             <button className="btn-restart" onClick={onRestart} tabIndex={revealPhase === "done" ? 0 : -1}>
               {t("result.rebirth")}
             </button>
+          </div>
+
+          {/* R9: 结果页补充声明（角色版权） */}
+          <div style={{ marginTop: "1rem", fontSize: "0.6rem", textAlign: "center", color: "rgba(255,255,255,0.25)", letterSpacing: "0.05em" }}>
+            {t("disclaimer.result")}
           </div>
         </div>
       </div>

@@ -125,6 +125,10 @@ const t = {
     text: "The factor resonates violently within you. Darkness surges in from every direction. You feel yourself crossing the boundary between human and witch. Will you accept this power—even if the price is losing your humanity?",
     options: ["Yes", "...No. That's not who I am."],
   },
+  disclaimer: {
+    footer: "This is a fan-made derivative work, not affiliated with the original copyright holders",
+    result: "Character copyrights belong to their respective original creators",
+  },
 };
 
 export default t;
