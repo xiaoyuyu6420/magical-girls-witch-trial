@@ -1574,24 +1574,39 @@
 
       ensureEmbeddedTestFrame();
 
-      document.body.style.transition = 'background 0.3s';
-      document.body.style.background = '#b80a1f';
-      if (hero) hero.style.opacity = '0';
-      if (bgTextContainer) bgTextContainer.style.opacity = '0';
+      // 单次连续背景过渡：#030303 → #000。原先 #030303→#b80a1f→#000 的红色中间态是
+      // "闪一下"的根因——welcome 原背景已是近黑，突变到亮血红再回黑，读起来就是一记红闪。
+      // 直接沉入纯黑本身即是"沉入黑暗"的仪式感，且与 /test 的 #030303 黑底连续衔接。
+      var diveEase = 'cubic-bezier(0.16, 1, 0.3, 1)'; // ease-out-expo，welcome 页无 token，内联
+      document.body.style.transition = 'background-color 0.45s ' + diveEase;
+      document.body.style.backgroundColor = '#000';
+      // hero / 背景大字柔和淡出（原先无 transition，瞬间消失会硬切并暴露背景）。与背景同步。
+      if (hero) { hero.style.transition = 'opacity 0.4s ' + diveEase; hero.style.opacity = '0'; }
+      if (bgTextContainer) { bgTextContainer.style.transition = 'opacity 0.4s ' + diveEase; bgTextContainer.style.opacity = '0'; }
 
       // 禁止鼠标追踪，环带立即开始回中
       lastMoveTime = 0;
       setCursorVisible(false);
 
-      setTimeout(() => {
-        document.body.style.background = '#000';
-        document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
 
-        // 缩短黑屏过渡时间到 600ms，让导航更响应
-        setTimeout(() => {
-          enterEmbeddedTest();
-        }, 600);
-      }, 150);
+      // 揭幕时机：等 iframe 内 /test 真正渲染就绪（它 fetch 完题目后会 postMessage 通知），
+      // 而非硬等 600ms。这样 display:block 那一帧 /test 已挂载、.view-test 进场淡入立即
+      // 开始，消除"显示了却黑屏等加载"的割裂感。fallback 2s 防 /test 异常时永久黑屏。
+      var diveRevealed = false;
+      var diveTimer = null;
+      function revealTest() {
+        if (diveRevealed) return;
+        diveRevealed = true;
+        if (diveTimer) clearTimeout(diveTimer);
+        window.removeEventListener('message', onTestReady);
+        enterEmbeddedTest();
+      }
+      function onTestReady(e) {
+        if (e.data === 'witch-trial-test-ready') revealTest();
+      }
+      window.addEventListener('message', onTestReady);
+      diveTimer = setTimeout(revealTest, 2000);
     }
 
     // Restore saved language preference

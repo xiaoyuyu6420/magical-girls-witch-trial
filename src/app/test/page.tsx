@@ -5,8 +5,8 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import TestScreen from "@/components/TestScreen";
 import ResultScreen from "@/components/ResultScreen";
 import FullscreenButton from "@/components/FullscreenButton";
+import { AuroraBurst } from "@/components/AuroraBurst";
 import { trackEvent } from "@/components/GoogleAnalytics";
-import { useI18n } from "@/lib/i18n";
 import type { QuizQuestion } from "@/components/TestScreen";
 
 interface MatchResult {
@@ -21,13 +21,17 @@ export default function TestPage() {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [result, setResult] = useState<MatchResult | null>(null);
   const [stats, setStats] = useState<{ totalParticipants: number; typePercentage: number; typeCount: number } | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [auroraActive, setAuroraActive] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [lastCompletion, setLastCompletion] = useState<{ answers: { questionId: number; optionId: number }[] } | null>(null);
-  const { t } = useI18n();
+  // prefers-reduced-motion 检测：传给 AuroraBurst 缩短最小时长（C3）。
+  const [reducedMotion, setReducedMotion] = useState(false);
   const startedAtRef = useRef<number>(0);
+  // 极光最小时长信号的 resolve 句柄：AuroraBurst 的 onComplete 在 minDurationMs 后调用，
+  // 与 fetch 完成信号 Promise.all（ADR 盲点 #13 / 风险1）。
+  const resolveAuroraRef = useRef<(() => void) | null>(null);
 
   const loadQuiz = useCallback(() => {
     fetch("/api/quiz")
@@ -60,29 +64,60 @@ export default function TestPage() {
     loadQuiz();
   }, [loadQuiz]);
 
+  // 检测 prefers-reduced-motion，供 AuroraBurst 缩短最小时长（C3）。
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  // Tell the welcome shell (parent frame) we're rendered, so it reveals the
+  // iframe the moment content is ready instead of a hardcoded 600ms race.
+  // No-op when /test is visited directly (not embedded).
+  useEffect(() => {
+    if (questions.length > 0 && window.parent !== window) {
+      window.parent.postMessage("witch-trial-test-ready", "*");
+    }
+  }, [questions]);
+
   const handleComplete = useCallback(async (data: {
     answers: { questionId: number; optionId: number }[];
   }) => {
-    setLoading(true);
     setSubmitError(null);
     setLastCompletion(data);
+    // 触发极光转场（替换原 loading spinner），期间串行提交 match → results（C2）。
+    setAuroraActive(true);
+    // 极光最小时长信号：AuroraBurst 的 onComplete 在 minDurationMs 后 resolve。
+    // fetch 快时极光播满最小时长才切结果；fetch 慢时 auroraActive 保持 true、
+    // 极光维持覆盖等待 fetch 完成（弱网保护，ADR 风险1）。
+    const auroraGate = new Promise<void>((resolve) => {
+      resolveAuroraRef.current = resolve;
+    });
     try {
-      const matchRes = await fetch("/api/match", {
+      const matchPromise = fetch("/api/match", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers: data.answers }),
+      }).then(async (matchRes) => {
+        if (!matchRes.ok) {
+          const errorData = await matchRes.json().catch(() => null);
+          throw new Error(errorData?.error || `Match failed: HTTP ${matchRes.status}`);
+        }
+        const matchData: MatchResult = await matchRes.json();
+        setResult(matchData);
+        trackEvent("quiz_complete", { result_code: matchData.code, similarity: matchData.similarity, special: matchData.special ? 1 : 0 });
+        return matchData;
       });
-      if (!matchRes.ok) {
-        const errorData = await matchRes.json().catch(() => null);
-        throw new Error(errorData?.error || `Match failed: HTTP ${matchRes.status}`);
-      }
-      const matchData: MatchResult = await matchRes.json();
-      setResult(matchData);
-      trackEvent("quiz_complete", { result_code: matchData.code, similarity: matchData.similarity, special: matchData.special ? 1 : 0 });
+
+      // 串行：先等 match 成功，再发 stats，避免 match 失败但 stats 已写入 DB 的双写虚高。
+      // 极光转场不受影响——auroraGate 只依赖最小时长，与 fetch 顺序无关。
+      await matchPromise;
 
       const sessionId = `anon-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
       const duration = startedAtRef.current ? Date.now() - startedAtRef.current : null;
-      const statsRes = await fetch("/api/results", {
+      const statsPromise = fetch("/api/results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -96,22 +131,28 @@ export default function TestPage() {
           completedAt: new Date().toISOString(),
           duration,
         }),
+      }).then(async (statsRes) => {
+        if (!statsRes.ok) {
+          const errorData = await statsRes.json().catch(() => null);
+          throw new Error(errorData?.error || `Results failed: HTTP ${statsRes.status}`);
+        }
+        const statsData = await statsRes.json();
+        setStats({ totalParticipants: statsData.totalParticipants, typePercentage: statsData.typePercentage, typeCount: statsData.typeCount });
+        return statsData;
       });
-      if (!statsRes.ok) {
-        const errorData = await statsRes.json().catch(() => null);
-        throw new Error(errorData?.error || `Results failed: HTTP ${statsRes.status}`);
-      }
-      const statsData = await statsRes.json();
-      setStats({ totalParticipants: statsData.totalParticipants, typePercentage: statsData.typePercentage, typeCount: statsData.typeCount });
+
+      await statsPromise;
       setLastCompletion(null);
+      // 双信号齐备才切结果：极光最小时长（auroraGate）+ fetch 完成（ADR 盲点 #13）。
+      await auroraGate;
       setShowResult(true);
+      setAuroraActive(false);
     } catch (err) {
       console.error(err);
       setResult(null);
       setStats(null);
       setSubmitError(err instanceof Error ? err.message : "Failed to submit quiz");
-    } finally {
-      setLoading(false);
+      setAuroraActive(false);
     }
   }, []);
 
@@ -184,40 +225,17 @@ export default function TestPage() {
             <TestScreen
               questions={questions}
               onComplete={handleComplete}
-              onExit={handleExit}
+              onExit={handleRestart}
             />
           )
         )}
 
-        {loading && (
-          <div style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 8000,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "rgba(3,3,3,0.9)",
-            backdropFilter: "blur(4px)"
-          }}>
-            <div style={{
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              border: "2px solid rgba(184,10,31,0.2)",
-              borderTopColor: "#b80a1f",
-              animation: "spin 1s linear infinite"
-            }} />
-            <p style={{
-              marginTop: "1.5rem",
-              color: "#b80a1f",
-              fontSize: "0.8rem",
-              letterSpacing: "0.3em"
-            }}>{t("loading.text")}</p>
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          </div>
-        )}
+        <AuroraBurst
+          active={auroraActive}
+          minDurationMs={1300}
+          reducedMotion={reducedMotion}
+          onComplete={() => resolveAuroraRef.current?.()}
+        />
 
         <FullscreenButton />
       </div>

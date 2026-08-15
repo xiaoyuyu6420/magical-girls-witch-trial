@@ -40,6 +40,8 @@ model Option {
   score      Int      @default(0)
   value      String?
   trigger    String?
+  /// 姿态（posture 评分体系）：A=粉饰 B=清醒 C=扭曲。weight 题（weight:: 编码）不用。
+  posture    String?
   answers    Answer[]
 
   @@index([questionId])
@@ -51,15 +53,23 @@ model PersonalityType {
   name         String
   subtitle     String?
   group        String
-  vector       String
-  slogan       String
-  desc         String
+  /// posture 体系下不再使用 12 维向量匹配；保留列以兼容旧 schema/历史记录。
+  vector       String  @default("")
+  slogan       String  @default("")
+  desc         String  @default("")
   keywords     String?
   special      Boolean @default(false)
   translations String  @default("{}")
   /// 角色 IP 归属（A1/R2）：跨IP全局匹配时区分角色来自哪个作品。
   /// 默认 "witch-trial"（向后兼容现有15角色）；小圆角色为 "madoka"。
   ipCode       String  @default("witch-trial")
+  /// posture 体系新增字段（HTML「审判庭」5 角色）
+  /// 审判官逼视（结果页"控诉"文案）
+  prosecution  String  @default("")
+  /// 温柔落点（结果页"心灵安全网"文案）
+  softlanding  String  @default("")
+  /// 角色标签（逗号分隔，如 "撕碎契约,极黑独占,深渊主宰"）
+  tags         String  @default("")
 }
 
 model TestRecord {

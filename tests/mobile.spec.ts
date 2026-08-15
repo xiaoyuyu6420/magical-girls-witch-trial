@@ -52,15 +52,51 @@ test.describe("Mobile / Responsive", () => {
     const flexDir = await optionsStage.evaluate((el) => getComputedStyle(el).flexDirection);
     expect(flexDir).toBe("column");
 
-    // .opt-block should be flex: 0 0 auto (content-sized, not stretched)
+    // .opt-block 移动端 flex: none（无挤压设计，选中靠背景/金线表达）
     const firstOpt = page.locator(".opt-block").first();
-    const flex = await firstOpt.evaluate((el) => getComputedStyle(el).flex);
-    // "0 0 auto" or shorthand equivalent
-    expect(flex).toMatch(/0\s+0\s+auto|none/);
+    const flexGrow = await firstOpt.evaluate((el) => getComputedStyle(el).flexGrow);
+    expect(parseFloat(flexGrow)).toBe(0);
 
     // Should have rounded corners on mobile
     const borderRadius = await firstOpt.evaluate((el) => getComputedStyle(el).borderRadius);
     expect(parseFloat(borderRadius)).toBeGreaterThan(0);
+  });
+
+  test("question stage sits in the upper region; top bar stays clear", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto("/test", { waitUntil: "networkidle", timeout: 30000 });
+    await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
+
+    // The question stage hugs the top bar (fixed height, never jumps between
+    // questions).  Its center sits in the upper portion of the viewport —
+    // well above mid-screen, with no empty gap above it.
+    const centerY = await page.locator(".q-text").evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return r.top + r.height / 2;
+    });
+    expect(centerY).toBeGreaterThan(60);   // below the top bar
+    expect(centerY).toBeLessThan(200);     // upper portion, not mid-screen（HTML 长文案下 q-text 略低）
+
+    // Top bar: EXIT lives inside the fixed top bar (y < 60px), not floating
+    // over the question area.
+    const exitBtn = page.locator(".test-header button").last();
+    await expect(exitBtn).toBeVisible();
+    const exitBox = await exitBtn.boundingBox();
+    expect(exitBox).not.toBeNull();
+    expect(exitBox!.y).toBeLessThan(60);
+
+    // After answering once, BACK appears on the left of the same bar and does
+    // not overlap EXIT.
+    await page.locator(".opt-block").first().click();
+    await page.waitForTimeout(1100);
+    const backBtn = page.locator(".test-header button").first();
+    await expect(backBtn).toBeVisible({ timeout: 5000 });
+    const backBox = await backBtn.boundingBox();
+    const exitBox2 = await exitBtn.boundingBox();
+    expect(backBox).not.toBeNull();
+    expect(exitBox2).not.toBeNull();
+    // back sits strictly left of exit (no overlap)
+    expect(backBox!.x + backBox!.width).toBeLessThanOrEqual(exitBox2!.x + 1);
   });
 
   test("result page is scrollable on mobile", async ({ page }) => {

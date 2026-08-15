@@ -158,11 +158,11 @@ test.describe("localStorage Progress Persistence", () => {
     await page.goto("/test", { waitUntil: "networkidle", timeout: 30000 });
     await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
 
-    // Should be at the first question (watermark shows "I")
+    // Should be at the first question (桌面回 HEAD：watermark 罗马数字 "I"；移动端 32 为阿拉伯 "01")
     const watermark = page.locator(".watermark-index");
     await expect(watermark).toHaveText("I");
 
-    // Should show question 1 / total
+    // Should show question 1 / total（桌面回 HEAD：q-meta 内嵌计数）
     const meta = page.locator(".q-meta span").first();
     const metaText = await meta.textContent();
     expect(metaText).toMatch(/01\s*\/\s*\d{2}/);
@@ -181,7 +181,7 @@ test.describe("localStorage Progress Persistence", () => {
     await page.reload({ waitUntil: "networkidle", timeout: 30000 });
     await expect(page.locator(".q-text")).toBeVisible({ timeout: 10000 });
 
-    // Should be at the first question
+    // Should be at the first question (桌面回 HEAD：watermark 罗马数字 "I")
     const watermark = page.locator(".watermark-index");
     await expect(watermark).toHaveText("I");
   });

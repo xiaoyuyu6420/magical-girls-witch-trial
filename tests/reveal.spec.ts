@@ -31,7 +31,7 @@ test.describe("揭晓时刻 + 变奏题", () => {
     await expect(page.locator(".r-name").first()).toBeVisible();
     // 稀有度相关文案（全球/极少判定/收集中），无 similarity%
     const body = await page.locator("body").textContent() ?? "";
-    expect(body).toMatch(/全球|极少判定/);
+    expect(body).toMatch(/与你相同者|全球|极少判定/);
     expect(body).not.toMatch(/相似度\s*\d/);
     expect(body).not.toMatch(/RESONANCE/);
   });
@@ -59,7 +59,7 @@ test.describe("揭晓时刻 + 变奏题", () => {
     await answerAllQuestions(page);
     await skipRevealAndWaitCard(page);
     const body = await page.locator("body").textContent() ?? "";
-    expect(body).toMatch(/死亡回溯/);
+    expect(body).toMatch(/反复重启世界|死亡回溯/);
   });
 
   test("批注插页在第5题后出现并可关闭", async ({ page }) => {
@@ -95,24 +95,34 @@ test.describe("揭晓时刻 + 变奏题", () => {
         await page.waitForTimeout(400);
         continue;
       }
-      const hammer = page.locator("button", { hasText: "落锤" });
-      if (await hammer.first().isVisible({ timeout: 150 }).catch(() => false)) {
-        await hammer.first().click({ force: true });
+      const weightStage = page.locator(".weight-stage");
+      if (await weightStage.isVisible({ timeout: 150 }).catch(() => false)) {
+        const wcards = page.locator(".weight-card");
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(1).click({ force: true });
+        await page.waitForTimeout(200);
+        await page.locator(".btn-confirm-weight").click({ force: true });
         await page.waitForTimeout(900);
         answered++;
         continue;
       }
-      const opt = page.locator(".opt-block").first();
+      const opt = page.locator(".opt-block, .balance-pan").first();
       await opt.waitFor({ state: "visible", timeout: 5000 });
       await opt.click({ force: true });
       await page.waitForTimeout(900);
       answered++;
     }
-    // 第14题应是砝码题：检测落锤按钮
-    const hammer = page.locator("button", { hasText: "落锤" });
-    await expect(hammer.first()).toBeVisible({ timeout: 5000 });
-    // 落锤后能继续
-    await hammer.first().click({ force: true });
+    // 第14题应是砝码题：检测点阵分配区
+    const weightStage = page.locator(".weight-stage");
+    await expect(weightStage).toBeVisible({ timeout: 5000 });
+    // 分配 2|1|0 后落锤能继续
+    const wcards = page.locator(".weight-card");
+    await wcards.nth(0).click({ force: true });
+    await wcards.nth(0).click({ force: true });
+    await wcards.nth(1).click({ force: true });
+    await page.waitForTimeout(200);
+    await page.locator(".btn-confirm-weight").click({ force: true });
     await page.waitForTimeout(900);
     // 第15题后会有批注，消化掉确认能继续
     while (await page.locator(".interjection-overlay").isVisible({ timeout: 100 }).catch(() => false)) {

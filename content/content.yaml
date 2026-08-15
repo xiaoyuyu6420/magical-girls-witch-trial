@@ -1,0 +1,1151 @@
+_meta:
+  说明: 这是文案权威源。别的 Agent 在这里填文案，然后跑 `pnpm exec tsx scripts/sync-content.ts` 同步到项目。
+  规则:
+    - 标 🔒 的字段是结构字段（dim/type/score/value/trigger/vector 等），绝对不能改——改了会破坏评分算法
+    - 标 ✏️ 的字段是文案字段（text/label/slogan/desc/keywords/meta），在这里填
+    - 四语言：zh-CN 是中文权威源，en/ja/zh-TW 是翻译
+    - "题库 26 题：1-12 正向 / 13-17 反向 / 18 门控 / 19 触发 / 20-26 反向；第 8/22 是天平题(2选项) / 第 14 是砝码题(7选项 weight:: 编码 🔒)"
+    - 改完后跑 sync，项目 http://localhost:3010 立即生效
+questions:
+  - _index: 1
+    _dim: 🔒 Q1 · 晨光中的许愿
+    _type: 🔒 normal
+    meta: ✏️ 清晨的阳光透过窗帘缝隙打在脸上，闹钟还没响。我睁开眼，看着天花板上的微尘在光里起舞。在那一刻，我心里悄悄浮现出对今天的期许——
+    text: ""
+    options: []
+  - _index: 2
+    _dim: 🔒 Q2 · 小团体的温热
+    _type: 🔒 normal
+    meta: ✏️ 放学后的教室，大家围在一起热烈地讨论着周末的聚会。有人忽然转过头，微笑着拉住我的手：“你肯定也会来的，对吧？少了你可不行。”那一刻——
+    text: ""
+    options: []
+  - _index: 3
+    _dim: 🔒 Q3 · 雨夜的伞檐
+    _type: 🔒 normal
+    meta: ✏️ 深秋的雨夜，图书馆关门了。我站在门口，旁边是那个平时很少说话、有些孤僻的同班同学。她正窘迫地看着雨幕，手里没有任何雨具。而我手里恰好有一把伞。那一刻——
+    text: ""
+    options: []
+  - _index: 4
+    _dim: 🔒 Q4 · 被赋予的使命
+    _type: 🔒 normal
+    meta: ✏️ 老师或长辈当着众人的面，将一项重要的任务交到了我手里，并拍着我的肩膀说：“你是最让人放心的。”那一刻——
+    text: ""
+    options: []
+  - _index: 5
+    _dim: 🔒 Q5 · 无声的妥协
+    _type: 🔒 normal
+    meta: ✏️ 朋友聚餐时，大家都高声赞同去吃某家我不喜欢的餐厅。当有人顺口问起我的意见时——
+    text: ""
+    options: []
+  - _index: 6
+    _dim: 🔒 Q6 · 镜中的变身
+    _type: 🔒 normal
+    meta: ✏️ 深夜，我站在洗手间的镜子前，看着镜子里疲惫又平凡的自己，脑海中忽然闪过小时候关于“魔法少女”的幻想。如果真的能获得某种力量——
+    text: ""
+    options: []
+  - _index: 7
+    _dim: 🔒 Q7 · 光芒下的阴影
+    _type: 🔒 normal
+    meta: ✏️ 看着舞台中央那个光彩照人、被所有人簇拥的朋友，我站在台下阴暗的角落里默默鼓掌。那一刻——
+    text: ""
+    options: []
+  - _index: 8
+    _dim: 🔒 POSTURE
+    _type: 🔒 normal (scale)
+    meta: ✏️ Q8 · 守护与自我
+    text: 假若天平的两端，一端是“不惜牺牲自己的情绪去换取大家的幸福”，另一端是“死守护住自己的界限哪怕让身边的人失望”。你会将筹码掷向——
+    options:
+      - _score: 🔒 3
+        _value: 🔒 SACRIFICE
+        label: 牺牲自我，换取温暖与安宁。【纯洁牺牲倾向】
+      - _score: 🔒 3
+        _value: 🔒 OBSESSION
+        label: 守住界限，哪怕承受孤立与冷眼。【极黑独占/自存倾向】
+  - _index: 9
+    _dim: 🔒 Q9 · 脆弱时的怀抱
+    _type: 🔒 normal
+    meta: ✏️ 遇到极度委屈的事情时，蜷缩在房间角落里的我，第一个闪过的念头是——
+    text: ""
+    options: []
+  - _index: 10
+    _dim: 🔒 Q10 · 规训下的顺从
+    _type: 🔒 normal
+    meta: ✏️ 面对长辈不容置疑的命令和对未来的安排，即使与我内心的渴望背道而驰，我通常会——
+    text: ""
+    options: []
+  - _index: 11
+    _dim: 🔒 Q11 · 完美无瑕的谎言
+    _type: 🔒 normal
+    meta: ✏️ 当别人关切地问起“你最近还好吗”时，我的第一反应往往是——
+    text: ""
+    options: []
+  - _index: 12
+    _dim: 🔒 Q12 · 理想主义的微霜
+    _type: 🔒 normal
+    meta: ✏️ 第一次发现自己敬佩的人私下里也会说谎、利己、展现丑陋的一面时，那一刻——
+    text: ""
+    options: []
+  - _index: 13
+    _dim: 🔒 Q13 · 被轻描淡写的付出
+    _type: 🔒 normal
+    meta: ✏️ 我熬夜几天几夜做出的努力，在会议上被上司或同伴轻飘飘地一笔带过，甚至将功劳归于他人。那一刻，我——
+    text: ""
+    options: []
+  - _index: 14
+    _dim: 🔒 POSTURE
+    _type: 🔒 normal (weight)
+    meta: ✏️ Q14 · 崩塌时刻的筹码分配
+    text: 面对接踵而至的误解与压力，你的世界正处于崩塌边缘。请将手中仅存的 3 点心理筹码，分配给不同的应对姿态：
+    options:
+      - _score: 🔒 3
+        label: 🔒 weight::2|1|0 (编码，勿动)
+      - _score: 🔒 3
+        label: 🔒 weight::2|0|1 (编码，勿动)
+      - _score: 🔒 2
+        label: 🔒 weight::1|2|0 (编码，勿动)
+      - _score: 🔒 2
+        label: 🔒 weight::0|2|1 (编码，勿动)
+      - _score: 🔒 2
+        label: 🔒 weight::1|0|2 (编码，勿动)
+      - _score: 🔒 2
+        label: 🔒 weight::0|1|2 (编码，勿动)
+      - _score: 🔒 1
+        label: 🔒 weight::1|1|1 (编码，勿动)
+  - _index: 15
+    _dim: 🔒 Q15 · 被当作谈资的秘密
+    _type: 🔒 normal
+    meta: ✏️ 偶然间，我在那个未曾把我拉入的群聊里，看见最亲近的朋友正用轻佻的字眼，把我藏得最深的伤痛当作谈资呈给众人看。那一刻——
+    text: ""
+    options: []
+  - _index: 16
+    _dim: 🔒 Q16 · 无声的冷眼旁观
+    _type: 🔒 normal
+    meta: ✏️ 高中那年，那个全班避之不及的同学默不作声地坐在我身旁。朋友拉拉我的袖子：“走了，别沾上晦气。”我看着她抠着桌角起皮漆的双手。那一刻——
+    text: ""
+    options: []
+  - _index: 17
+    _dim: 🔒 Q17 · 以爱为名的勒索
+    _type: 🔒 normal
+    meta: ✏️ 拿着不理想的成绩/绩效回家，父母长久地叹气：“我们一辈子的心血都白费了，你对得起我们吗？”那一刻——
+    text: ""
+    options: []
+  - _index: 18
+    _dim: 🔒 GATE
+    _type: 🔒 gate
+    meta: ✏️ Q18 · 灵魂的路径抉择
+    text: 当所有的伪装剥落，现实的残酷如冰水般将你彻底浇透。站在这个无声的悬崖边，你内心中最强烈的声音是——
+    options:
+      - _score: 🔒 4
+        _value: 🔒 destroy
+        label: 【毁灭线】既然这个世界如此脏乱与不公，那就彻底掀翻它，让一切都归于灰烬。
+      - _score: 🔒 4
+        _value: 🔒 seen
+        label: 【被看见线】哪怕流血、哪怕粉身碎骨，我也要这世界睁开眼，看看我究竟有多痛！
+      - _score: 🔒 4
+        _value: 🔒 peace
+        label: 【平静线】闭上双眼，不再挣扎，接受所有的残缺与遗憾，任由自己归于沉寂。
+      - _score: 🔒 3
+        _value: 🔒 undecided
+        label: 【游离线】我不知道……我只是在风里悬浮着，找不到落脚点，也不知该往何处去。
+  - _index: 19
+    _dim: 🔒 TRIGGER
+    _type: 🔒 trigger
+    meta: ✏️ Q19 · 隐藏角色契约
+    text: 迷雾深处，走出一个遍体鳞伤、正小声啜泣的“小时候的你”。她怀里抱着一把沾满锈迹与血迹的锁匙，抬起湿润的眼睛问你：“你还愿意相信奇迹吗？”
+    options:
+      - _score: 🔒 3
+        _value: 🔒 true
+        label: 接过那把沾血的钥匙，握紧拳头。（触发：黑化魔女 / 执念神明隐藏分支）
+      - _score: 🔒 2
+        _value: 🔒 false
+        label: 摇摇头，转身走入迷雾之中。（维持：常规审判线）
+  - _index: 20
+    _dim: 🔒 Q20 · 无法逃离的自卑
+    _type: 🔒 normal
+    meta: ✏️ 每当走在热闹的大街上，感觉周围人的目光扫过自己时，我身体最直观的反应是——
+    text: ""
+    options: []
+  - _index: 21
+    _dim: 🔒 Q21 · 控制与互戕的爱情
+    _type: 🔒 normal
+    meta: ✏️ 伴侣频繁挑剔我的穿着、朋友圈和言行，并表达“我都是为了你好”。那一刻——
+    text: ""
+    options: []
+  - _index: 22
+    _dim: 🔒 POSTURE
+    _type: 🔒 normal (scale)
+    meta: ✏️ Q22 · 终极代价
+    text: 审判官将你逼至死角，天平两端只能二选一：是“牺牲你自己，让身边所有爱过你的人重获幸福”，还是“拉着世界陪葬，只为抱紧你唯一的真情”？
+    options:
+      - _score: 🔒 3
+        _value: 🔒 SACRIFICE
+        label: 宁愿献祭自我，换取他人的光明。【纯洁殉道】
+      - _score: 🔒 4
+        _value: 🔒 OBSESSION
+        label: 宁可毁灭世界，也绝不放手执念。【极黑独占】
+  - _index: 23
+    _dim: 🔒 Q23 · 隐秘的恶意与嫉妒
+    _type: 🔒 normal
+    meta: ✏️ 当得知那个平时处处压你一头、完美无瑕的人突然遭遇了重大挫折时，你内心深处第一闪过的念头是——
+    text: ""
+    options: []
+  - _index: 24
+    _dim: 🔒 Q24 · 被榨干后的废弃
+    _type: 🔒 normal
+    meta: ✏️ 曾经对你嘘寒问暖的团体或领导，在你失去了利用价值后，迅速将你边缘化。面对这种冷酷——
+    text: ""
+    options: []
+  - _index: 25
+    _dim: 🔒 Q25 · 悬崖边的告别
+    _type: 🔒 normal
+    meta: ✏️ 假若所有的希望都已破灭，站在荒芜的终点，看着那个一路走来伤痕累累的自己，你想对她说——
+    text: ""
+    options: []
+  - _index: 26
+    _dim: 🔒 Q26 · 审判终章确认
+    _type: 🔒 normal
+    meta: ✏️ 审判的声音在空旷的精神世界回响：“看清了吗？这就是你皮囊下的真实——包含了懦弱、妥协、阴暗与执拗的你自己。现在，你愿意以这样的真面目，签下这份生存的契约吗？”
+    text: ""
+    options: []
+characters:
+  - _code: 🔒 homura_devil
+    _name: 🔒 晓美焰 · 执念的黑化魔女
+    _group: 🔒 main
+    _vector: "🔒 "
+    _source: witch-trial
+    slogan: ""
+    desc: ""
+  - _code: 🔒 madoka_god
+    _name: 🔒 鹿目圆 · 终极救赎的圆环之理
+    _group: 🔒 main
+    _vector: "🔒 "
+    _source: witch-trial
+    slogan: ""
+    desc: ""
+  - _code: 🔒 sayaka_siren
+    _name: 🔒 美树沙耶香 · 理想主义破灭的痛楚
+    _group: 🔒 main
+    _vector: "🔒 "
+    _source: witch-trial
+    slogan: ""
+    desc: ""
+  - _code: 🔒 kyoko_pragmatist
+    _name: 🔒 佐仓杏子 · 利己外衣下的真心
+    _group: 🔒 main
+    _vector: "🔒 "
+    _source: witch-trial
+    slogan: ""
+    desc: ""
+  - _code: 🔒 emma_truth
+    _name: 🔒 樱羽艾玛 · 寻求真相的清醒审判者
+    _group: 🔒 fallback
+    _vector: "🔒 "
+    _subtitle: 🔒 默认审判者
+    _source: witch-trial
+    slogan: ""
+    desc: ""
+ui:
+  zh-CN:
+    meta:
+      title: ""
+      description: ""
+    welcome:
+      badge: ""
+      title: ""
+      subtitle: ""
+      startHint: ""
+      participants: ""
+      startButton: ""
+      prologue1: ""
+      prologue2: ""
+      prologue3: ""
+    loading:
+      text: 审判通道开启中…
+    test:
+      exit: 退出
+      gateBadge: 命运分歧
+      triggerBadge: 最终抉择
+      keyHint: 按 1 / 2 / 3 选择
+      weightHint: 点击卡片分配筹码
+    result:
+      archetype: 灵魂原型
+      hidden: 隐藏
+      border: 边界
+      share: 保存契约
+      copyLink: 复制链接
+      rebirth: 重新审判
+      analysis: 分析
+      dimAnalysis: 姿态分析
+      you: 你
+      ideal: 理想
+      statsInfo: 统计信息
+      statsShort: 统计
+      factorResonance: 共鸣
+      factorResonanceLabel: 姿态共鸣
+      shareText: 我接受了灵魂审判，被审判为「{name}」——{slogan} {url}
+      revealJudgement: 审判结束了。
+      revealTransition: 而你是——
+      revealFrom: 来自《{title}》
+      rarityLabel: 审判占比
+      rarityGlobal: 与你相同者 {percentage}%
+      rarityCollecting: 采集中…
+      rarityRare: 稀有 · 仅 {percentage}%
+      workIntroLabel: 作品
+      soulTraits: 灵魂特质
+      shareHook: 我接受了灵魂审判
+      shareCta: 来接受审判 →
+      hiddenReveal: 隐藏人格显现
+      skipHint: 点击任意处跳过
+      regionLabel: 灵魂审判结果
+    dims:
+      S1: ""
+      S2: ""
+      S3: ""
+      F1: ""
+      F2: ""
+      F3: ""
+      B1: ""
+      B2: ""
+      B3: ""
+      W1: ""
+      W2: ""
+      W3: ""
+    dimGroups:
+      S: ""
+      F: ""
+      B: ""
+      W: ""
+    types:
+      EMMA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      SHERRY:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MIRIA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HIRO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      NANOKA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HANNA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MERURU:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      COCO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      NOAH:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MARGO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ANAN:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ALISA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      LEIA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      UNSET:
+        name: ""
+        slogan: ""
+        desc: ""
+      YUKI:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ETL:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MADOKA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HOMURA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      SAYAKA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      KYOKO:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MAMI:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+    questions: |-
+      [
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", "", "", "", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+        ]
+    gate:
+      meta: ""
+      text: ""
+      options: |-
+        [
+              "",
+              "",
+              "",
+              "",
+            ]
+    trigger:
+      meta: ""
+      text: ""
+      options: '["", ""]'
+    disclaimer:
+      footer: ""
+      result: ""
+  en:
+    meta:
+      title: ""
+      description: ""
+    welcome:
+      badge: ""
+      title: ""
+      subtitle: ""
+      startHint: ""
+      participants: ""
+      startButton: ""
+      prologue1: ""
+      prologue2: ""
+      prologue3: ""
+    loading:
+      text: ""
+    test:
+      exit: ""
+      gateBadge: ""
+      triggerBadge: ""
+      keyHint: ""
+      weightHint: ""
+    result:
+      archetype: ""
+      hidden: ""
+      border: ""
+      share: ""
+      copyLink: ""
+      rebirth: ""
+      analysis: ""
+      dimAnalysis: ""
+      you: ""
+      ideal: ""
+      statsInfo: ""
+      statsShort: ""
+      factorResonance: ""
+      factorResonanceLabel: ""
+      shareText: ""
+      revealJudgement: ""
+      revealTransition: ""
+      revealFrom: ""
+      rarityLabel: ""
+      rarityGlobal: ""
+      rarityCollecting: ""
+      rarityRare: ""
+      workIntroLabel: ""
+      soulTraits: ""
+      shareHook: ""
+      shareCta: ""
+      hiddenReveal: ""
+      skipHint: ""
+      regionLabel: ""
+    dims:
+      S1: ""
+      S2: ""
+      S3: ""
+      F1: ""
+      F2: ""
+      F3: ""
+      B1: ""
+      B2: ""
+      B3: ""
+      W1: ""
+      W2: ""
+      W3: ""
+    dimGroups:
+      S: ""
+      F: ""
+      B: ""
+      W: ""
+    types:
+      EMMA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      SHERRY:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MIRIA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HIRO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      NANOKA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HANNA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MERURU:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      COCO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      NOAH:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MARGO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ANAN:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ALISA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      LEIA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      UNSET:
+        name: ""
+        slogan: ""
+        desc: ""
+      YUKI:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ETL:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MADOKA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HOMURA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      SAYAKA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      KYOKO:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MAMI:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+    questions: |-
+      [
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", "", "", "", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+        ]
+    gate:
+      meta: ""
+      text: ""
+      options: |-
+        [
+              "",
+              "",
+              "",
+              "",
+            ]
+    trigger:
+      meta: ""
+      text: ""
+      options: '["", ""]'
+    disclaimer:
+      footer: ""
+      result: ""
+  ja:
+    meta:
+      title: ""
+      description: ""
+    welcome:
+      badge: ""
+      title: ""
+      subtitle: ""
+      startHint: ""
+      participants: ""
+      startButton: ""
+      prologue1: ""
+      prologue2: ""
+      prologue3: ""
+    loading:
+      text: ""
+    test:
+      exit: ""
+      gateBadge: ""
+      triggerBadge: ""
+      keyHint: ""
+      weightHint: ""
+    result:
+      archetype: ""
+      hidden: ""
+      border: ""
+      share: ""
+      copyLink: ""
+      rebirth: ""
+      analysis: ""
+      dimAnalysis: ""
+      you: ""
+      ideal: ""
+      statsInfo: ""
+      statsShort: ""
+      factorResonance: ""
+      factorResonanceLabel: ""
+      shareText: ""
+      revealJudgement: ""
+      revealTransition: ""
+      revealFrom: ""
+      rarityLabel: ""
+      rarityGlobal: ""
+      rarityCollecting: ""
+      rarityRare: ""
+      workIntroLabel: ""
+      soulTraits: ""
+      shareHook: ""
+      shareCta: ""
+      hiddenReveal: ""
+      skipHint: ""
+      regionLabel: ""
+    dims:
+      S1: ""
+      S2: ""
+      S3: ""
+      F1: ""
+      F2: ""
+      F3: ""
+      B1: ""
+      B2: ""
+      B3: ""
+      W1: ""
+      W2: ""
+      W3: ""
+    dimGroups:
+      S: ""
+      F: ""
+      B: ""
+      W: ""
+    types:
+      EMMA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      SHERRY:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MIRIA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HIRO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      NANOKA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HANNA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MERURU:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      COCO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      NOAH:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MARGO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ANAN:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ALISA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      LEIA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      UNSET:
+        name: ""
+        slogan: ""
+        desc: ""
+      YUKI:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ETL:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MADOKA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HOMURA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      SAYAKA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      KYOKO:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MAMI:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+    questions: |-
+      [
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", "", "", "", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+        ]
+    gate:
+      meta: ""
+      text: ""
+      options: |-
+        [
+              "",
+              "",
+              "",
+              "",
+            ]
+    trigger:
+      meta: ""
+      text: ""
+      options: '["", ""]'
+    disclaimer:
+      footer: ""
+      result: ""
+  zh-TW:
+    meta:
+      title: ""
+      description: ""
+    welcome:
+      badge: ""
+      title: ""
+      subtitle: ""
+      startHint: ""
+      participants: ""
+      startButton: ""
+      prologue1: ""
+      prologue2: ""
+      prologue3: ""
+    loading:
+      text: ""
+    test:
+      exit: ""
+      gateBadge: ""
+      triggerBadge: ""
+      keyHint: ""
+      weightHint: ""
+    result:
+      archetype: ""
+      hidden: ""
+      border: ""
+      share: ""
+      copyLink: ""
+      rebirth: ""
+      analysis: ""
+      dimAnalysis: ""
+      you: ""
+      ideal: ""
+      statsInfo: ""
+      statsShort: ""
+      factorResonance: ""
+      factorResonanceLabel: ""
+      shareText: ""
+      revealJudgement: ""
+      revealTransition: ""
+      revealFrom: ""
+      rarityLabel: ""
+      rarityGlobal: ""
+      rarityCollecting: ""
+      rarityRare: ""
+      workIntroLabel: ""
+      soulTraits: ""
+      shareHook: ""
+      shareCta: ""
+      hiddenReveal: ""
+      skipHint: ""
+      regionLabel: ""
+    dims:
+      S1: ""
+      S2: ""
+      S3: ""
+      F1: ""
+      F2: ""
+      F3: ""
+      B1: ""
+      B2: ""
+      B3: ""
+      W1: ""
+      W2: ""
+      W3: ""
+    dimGroups:
+      S: ""
+      F: ""
+      B: ""
+      W: ""
+    types:
+      EMMA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      SHERRY:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MIRIA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HIRO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      NANOKA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HANNA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MERURU:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      COCO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      NOAH:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MARGO:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ANAN:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ALISA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      LEIA:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      UNSET:
+        name: ""
+        slogan: ""
+        desc: ""
+      YUKI:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ETL:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MADOKA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      HOMURA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      SAYAKA:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      KYOKO:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      MAMI:
+        name: ""
+        subtitle: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+    questions: |-
+      [
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", "", "", "", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "", text: "", options: ["", "", ""] },
+        ]
+    gate:
+      meta: ""
+      text: ""
+      options: |-
+        [
+              "",
+              "",
+              "",
+              "",
+            ]
+    trigger:
+      meta: ""
+      text: ""
+      options: '["", ""]'
+    disclaimer:
+      footer: ""
+      result: ""

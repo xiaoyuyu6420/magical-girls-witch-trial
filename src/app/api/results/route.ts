@@ -52,19 +52,29 @@ export async function POST(req: NextRequest) {
   const optionIds = Array.from(new Set(answers.map((a) => a.optionId)));
   const options = await db.option.findMany({
     where: { id: { in: optionIds } },
-    include: { question: { select: { id: true, dim: true, type: true } } },
+    include: { question: { select: { id: true, dim: true, type: true, renderType: true } } },
   });
 
-  const { dimScores, gateValue, triggerFired, validAnswers } = processAnswers(answers, options);
+  const processed = processAnswers(answers, options);
 
-  if (validAnswers.length !== answers.length) {
+  if (processed.validAnswers.length !== answers.length) {
     return NextResponse.json(
       { error: "Invalid answers" },
       { status: 400 }
     );
   }
 
-  const result = match({ dimScores, gateValue, triggerFired }, await db.personalityType.findMany());
+  const result = match(
+    {
+      postureA: processed.postureA,
+      postureB: processed.postureB,
+      postureC: processed.postureC,
+      path: processed.path,
+      keyUnlocked: processed.keyUnlocked,
+      tendency: processed.tendency,
+    },
+    await db.personalityType.findMany(),
+  );
 
   const record = await db.testRecord.create({
     data: {
@@ -74,8 +84,8 @@ export async function POST(req: NextRequest) {
       userVector: result.userVector,
       top3: JSON.stringify(result.top3),
       borderType: result.borderType,
-      gateValue: gateValue ?? null,
-      triggerFired: triggerFired ?? null,
+      gateValue: processed.gateValue ?? null,
+      triggerFired: processed.keyUnlocked ? "KEY_UNLOCKED" : null,
       userAgent: userAgent ?? null,
       ipAddress: getClientIp(req),
       screenRes: screenRes ?? null,
@@ -85,7 +95,7 @@ export async function POST(req: NextRequest) {
       completedAt: completedAt ? new Date(completedAt) : null,
       duration: duration ?? null,
       answers: {
-        create: validAnswers.map((a) => ({
+        create: processed.validAnswers.map((a) => ({
           questionId: a.questionId,
           optionId: a.optionId,
         })),

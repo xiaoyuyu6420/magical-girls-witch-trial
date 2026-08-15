@@ -8,7 +8,7 @@ const STORAGE_KEY = "witch-trial-progress";
  * Waits for the animation delay before returning.
  */
 async function answerQuestion(page: Page, optionIndex: number, clickDelay = 900) {
-  const optBlocks = page.locator(".opt-block");
+  const optBlocks = page.locator(".opt-block, .balance-pan");
   await expect(optBlocks.first()).toBeVisible({ timeout: 5000 });
   const count = await optBlocks.count();
   if (optionIndex >= count) {
@@ -97,23 +97,28 @@ test.describe("Quiz E2E Tests", () => {
     let count = 0;
     while (count < 30) {
       // 消化批注插页
-      while (await page.locator(".interjection-overlay").isVisible({ timeout: 100 }).catch(() => false)) {
+      while ((await page.locator(".interjection-overlay").count()) > 0) {
         await page.locator(".interjection-overlay").click({ force: true }).catch(() => {});
         await page.waitForTimeout(400);
       }
 
       if (await isResultPage(page)) break;
 
-      // 砝码题：点落锤
-      const hammer = page.locator("button", { hasText: "落锤" });
-      if (await hammer.first().isVisible({ timeout: 100 }).catch(() => false)) {
-        await hammer.first().click({ force: true });
+      // 砝码题（点阵分配）：点卡片 2|1|0 后落锤
+      const weightStage = page.locator(".weight-stage");
+      if (await weightStage.isVisible({ timeout: 100 }).catch(() => false)) {
+        const wcards = page.locator(".weight-card");
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(1).click({ force: true });
+        await page.waitForTimeout(200);
+        await page.locator(".btn-confirm-weight").click({ force: true });
         await page.waitForTimeout(900);
         count++;
         continue;
       }
 
-      const opts = page.locator(".opt-block");
+      const opts = page.locator(".opt-block, .balance-pan");
       const n = await opts.count();
       if (n === 0) {
         await page.waitForTimeout(500);
@@ -125,6 +130,9 @@ test.describe("Quiz E2E Tests", () => {
       count++;
     }
 
+    // 极光转场（AuroraBurst ~1.3s minDuration）期间 result-layout 尚未挂载，
+    // 循环可能在上题动画 + 极光间隙 break——显式等结果卡出现（IM3 时序契约）。
+    await expect(page.locator(".result-layout")).toBeVisible({ timeout: 8000 });
     expect(await isResultPage(page)).toBe(true);
     // 等待揭晓动画结束（skip reveal by clicking）
     await page.waitForTimeout(5000);
@@ -144,14 +152,19 @@ test.describe("Quiz E2E Tests", () => {
     const widths: number[] = [initial];
     for (let i = 0; i < 5; i++) {
       // 消化批注插页（第5题后会出现）
-      while (await page.locator(".interjection-overlay").isVisible({ timeout: 100 }).catch(() => false)) {
+      while ((await page.locator(".interjection-overlay").count()) > 0) {
         await page.locator(".interjection-overlay").click({ force: true }).catch(() => {});
         await page.waitForTimeout(400);
       }
-      // 砝码题：点落锤
-      const hammer = page.locator("button", { hasText: "落锤" });
-      if (await hammer.first().isVisible({ timeout: 100 }).catch(() => false)) {
-        await hammer.first().click({ force: true });
+      // 砝码题（点阵分配）：点卡片 2|1|0 后落锤
+      const weightStage = page.locator(".weight-stage");
+      if (await weightStage.isVisible({ timeout: 100 }).catch(() => false)) {
+        const wcards = page.locator(".weight-card");
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(1).click({ force: true });
+        await page.waitForTimeout(200);
+        await page.locator(".btn-confirm-weight").click({ force: true });
         await page.waitForTimeout(900);
         continue;
       }
@@ -159,7 +172,7 @@ test.describe("Quiz E2E Tests", () => {
       // Wait for the next question (or interjection) to be rendered
       await page.waitForTimeout(200);
       // 消化批注插页
-      while (await page.locator(".interjection-overlay").isVisible({ timeout: 100 }).catch(() => false)) {
+      while ((await page.locator(".interjection-overlay").count()) > 0) {
         await page.locator(".interjection-overlay").click({ force: true }).catch(() => {});
         await page.waitForTimeout(400);
       }
@@ -187,23 +200,28 @@ test.describe("Quiz E2E Tests", () => {
 
     while (questionCount < 30) {
       // 消化批注插页
-      while (await page.locator(".interjection-overlay").isVisible({ timeout: 100 }).catch(() => false)) {
+      while ((await page.locator(".interjection-overlay").count()) > 0) {
         await page.locator(".interjection-overlay").click({ force: true }).catch(() => {});
         await page.waitForTimeout(400);
       }
 
       if (await isResultPage(page)) break;
 
-      // 砝码题：点落锤
-      const hammer = page.locator("button", { hasText: "落锤" });
-      if (await hammer.first().isVisible({ timeout: 100 }).catch(() => false)) {
-        await hammer.first().click({ force: true });
+      // 砝码题（点阵分配）：点卡片 2|1|0 后落锤
+      const weightStage = page.locator(".weight-stage");
+      if (await weightStage.isVisible({ timeout: 100 }).catch(() => false)) {
+        const wcards = page.locator(".weight-card");
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(1).click({ force: true });
+        await page.waitForTimeout(200);
+        await page.locator(".btn-confirm-weight").click({ force: true });
         await page.waitForTimeout(900);
         questionCount++;
         continue;
       }
 
-      const opts = page.locator(".opt-block");
+      const opts = page.locator(".opt-block, .balance-pan");
       const n = await opts.count();
       if (n === 0) {
         await page.waitForTimeout(500);
@@ -238,23 +256,28 @@ test.describe("Quiz E2E Tests", () => {
 
     while (count < 30) {
       // 消化批注插页
-      while (await page.locator(".interjection-overlay").isVisible({ timeout: 100 }).catch(() => false)) {
+      while ((await page.locator(".interjection-overlay").count()) > 0) {
         await page.locator(".interjection-overlay").click({ force: true }).catch(() => {});
         await page.waitForTimeout(400);
       }
 
       if (await isResultPage(page)) break;
 
-      // 砝码题：点落锤
-      const hammer = page.locator("button", { hasText: "落锤" });
-      if (await hammer.first().isVisible({ timeout: 100 }).catch(() => false)) {
-        await hammer.first().click({ force: true });
+      // 砝码题（点阵分配）：点卡片 2|1|0 后落锤
+      const weightStage = page.locator(".weight-stage");
+      if (await weightStage.isVisible({ timeout: 100 }).catch(() => false)) {
+        const wcards = page.locator(".weight-card");
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(1).click({ force: true });
+        await page.waitForTimeout(200);
+        await page.locator(".btn-confirm-weight").click({ force: true });
         await page.waitForTimeout(900);
         count++;
         continue;
       }
 
-      const opts = page.locator(".opt-block");
+      const opts = page.locator(".opt-block, .balance-pan");
       const n = await opts.count();
       if (n === 0) {
         await page.waitForTimeout(500);
@@ -310,23 +333,28 @@ test.describe("Quiz E2E Tests", () => {
 
     while (answered < 30) {
       // 消化批注插页
-      while (await page.locator(".interjection-overlay").isVisible({ timeout: 100 }).catch(() => false)) {
+      while ((await page.locator(".interjection-overlay").count()) > 0) {
         await page.locator(".interjection-overlay").click({ force: true }).catch(() => {});
         await page.waitForTimeout(400);
       }
 
       if (await isResultPage(page)) break;
 
-      // 砝码题：点落锤
-      const hammer = page.locator("button", { hasText: "落锤" });
-      if (await hammer.first().isVisible({ timeout: 100 }).catch(() => false)) {
-        await hammer.first().click({ force: true });
+      // 砝码题（点阵分配）：点卡片 2|1|0 后落锤
+      const weightStage = page.locator(".weight-stage");
+      if (await weightStage.isVisible({ timeout: 100 }).catch(() => false)) {
+        const wcards = page.locator(".weight-card");
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(1).click({ force: true });
+        await page.waitForTimeout(200);
+        await page.locator(".btn-confirm-weight").click({ force: true });
         await page.waitForTimeout(900);
         answered++;
         continue;
       }
 
-      const opts = page.locator(".opt-block");
+      const opts = page.locator(".opt-block, .balance-pan");
       const n = await opts.count();
       if (n === 0) {
         await page.waitForTimeout(500);
@@ -378,8 +406,8 @@ test.describe("Quiz E2E Tests", () => {
     const parsed = JSON.parse(savedBefore!);
     expect(parsed.currentIndex).toBeGreaterThan(0);
 
-    // Click EXIT button
-    const exitButton = page.locator('button:has-text("EXIT")');
+    // Click EXIT button（桌面回 HEAD：t("test.exit") 文案）
+    const exitButton = page.getByRole("button", { name: /EXIT|退出|離開|終了/ });
     await expect(exitButton).toBeVisible();
     await exitButton.click();
 

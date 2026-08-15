@@ -72,6 +72,15 @@ playwright-report/
 # allow committed static assets in public/
 !public/
 !public/**
+
+# visual regression baselines — must be committed (contract R3)
+!tests/visual/
+!tests/visual/**
+!tests/visual/__screenshots__/
+!tests/visual/__screenshots__/**
 # crucible workflow artifacts (local only)
 .git.bak.*/
 smoke-result.txt
+
+# local copy backups
+backups/

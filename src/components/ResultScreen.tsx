@@ -8,25 +8,24 @@ import { toPng } from "html-to-image";
 import { useI18n } from "@/lib/i18n";
 
 /* ═══════════════════════════════════════════
-   Contracts — R1: REVEAL_TIMINGS as tunable constant
+   Reveal 骨架契约（crucible/30-adr/final.md 决策1 + 盲点 #9/#10/#12；40-implementation IM5）
+   - `body.revealed` ← globals.css `body.revealed .result-layout` 可见性门控，勿拆
+   - revealPhase 状态机 / skipReveal（click/Space/touch 三路）/
+     resultLayoutRef.focus()（done 后）/ aria-hidden / aria-live /
+     edge-blur 滚动门控：对外行为不变（reveal.spec/result.spec/quiz.spec 的 skip 断言锚定）
+   - 6 段 4.6s stagger（judgementText/transitionText/slogan/fromWork/hiddenReveal）
+     已精简为单名字闪现（O1=B：角色名 blur crossfade ≤800ms）
+   - reduced-motion：跳过动画直达 done（P8 守卫）
    ═══════════════════════════════════════════ */
 const REVEAL_TIMINGS = {
-  pageFadeOut: 0,
-  judgementText: 800,
-  transitionText: 1800,
-  nameReveal: 2400,
-  slogan: 3000,
-  fromWork: 3800,
-  hiddenReveal: 4000,
-  cardReady: 4600,
+  nameReveal: 200, // 名字柔和浮现起始（极光暗幕 active=false 瞬间归零，同色无缝）
+  cardReady: 1800, // 名字渐显(0.8s)+完整展示后 revealPhase → done
 } as const;
 
 /** R4: ease-out-expo cubic-bezier(0.16,1,0.3,1) */
 const EASE_OUT_EXPO = "cubic-bezier(0.16,1,0.3,1)";
-/** R3: motion-7 transition duration for blur cross-fade */
+/** R3: motion-7 名字 blur cross-fade 时长 */
 const MOTION7_DURATION = "0.8s";
-/** Stagger fade duration for reveal text elements */
-const STAGGER_DURATION = "0.6s";
 
 interface ResultData {
   code: string; name: string; subtitle?: string; slogan: string; desc: string; keywords?: string;
@@ -36,6 +35,11 @@ interface ResultData {
   translations?: string;
   /** 角色 IP 归属（跨IP全局匹配，结果页按此查作品信息） */
   ipCode?: string;
+  /** posture 体系：审判官逼视 / 温柔落点 / 标签 / 姿态占比 */
+  prosecution?: string;
+  softlanding?: string;
+  tags?: string;
+  posturePct?: { A: number; B: number; C: number };
 }
 
 interface ResultScreenProps {
@@ -44,35 +48,12 @@ interface ResultScreenProps {
   onRestart: () => void;
 }
 
-/* ═══════════════════════════════════════════
-   Reveal element visibility states (R1 stagger)
-   ═══════════════════════════════════════════ */
-interface RevealVisibility {
-  judgementText: boolean;
-  transitionText: boolean;
-  nameReveal: boolean;
-  slogan: boolean;
-  fromWork: boolean;
-  hiddenReveal: boolean;
-}
-
-const ALL_VISIBLE: RevealVisibility = {
-  judgementText: true,
-  transitionText: true,
-  nameReveal: true,
-  slogan: true,
-  fromWork: true,
-  hiddenReveal: true,
-};
-
-const NONE_VISIBLE: RevealVisibility = {
-  judgementText: false,
-  transitionText: false,
-  nameReveal: false,
-  slogan: false,
-  fromWork: false,
-  hiddenReveal: false,
-};
+/** POSTURE 三姿态（A 粉饰 / B 清醒 / C 扭曲） */
+const POSTURE_ROWS = [
+  ["A", "粉饰"],
+  ["B", "清醒"],
+  ["C", "扭曲"],
+] as const;
 
 export default function ResultScreen({ result, stats, onRestart }: ResultScreenProps) {
   const pack = getActivePack();
@@ -81,10 +62,10 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
     result.code, result.name, result.slogan, result.desc, result.keywords, result.subtitle, result.translations
   );
 
-  /* ── A1: Internal reveal phase ── */
+  /* ── A1: Internal reveal phase（骨架保留）── */
   const [revealPhase, setRevealPhase] = useState<"revealing" | "done">("revealing");
-  const [revealVis, setRevealVis] = useState<RevealVisibility>(NONE_VISIBLE);
-  const [revealLayerOut, setRevealLayerOut] = useState(false); // true = fading out
+  const [nameRevealed, setNameRevealed] = useState(false); // 单名字闪现（O1=B）
+  const [revealLayerOut, setRevealLayerOut] = useState(false); // true = overlay 淡出中
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   /* ── R5: prefers-reduced-motion check ── */
@@ -99,7 +80,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
   const [sharing, setSharing] = useState(false);
   const [shareCardReady, setShareCardReady] = useState(false);
 
-  /* ── Profile card scroll ref for motion-6 edge blur ── */
+  /* ── R9: motion-6 edge blur 检测（滚动容器现为 #view-result，mask 随之挂载）── */
   const profileRef = useRef<HTMLDivElement>(null);
   const [needsEdgeBlur, setNeedsEdgeBlur] = useState(false);
 
@@ -107,14 +88,15 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
   const resultLayoutRef = useRef<HTMLDivElement>(null);
 
   /* ═══════════════════════════════════════════
-     R1: Stagger reveal sequence on mount
+     O1=B 单名字闪现：mount 即挂 body.revealed（盲点 #9 门控），
+     ~150ms 起名字 blur crossfade，~950ms revealPhase → done
      ═══════════════════════════════════════════ */
   useEffect(() => {
     document.body.classList.add("revealed");
 
     // R5: reduced-motion → skip directly to done
     if (prefersReducedMotion) {
-      setRevealVis(ALL_VISIBLE);
+      setNameRevealed(true);
       setRevealPhase("done");
       return () => { document.body.classList.remove("revealed"); };
     }
@@ -127,12 +109,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
       timers.push(id);
     };
 
-    schedule(() => setRevealVis((v) => ({ ...v, judgementText: true })), REVEAL_TIMINGS.judgementText);
-    schedule(() => setRevealVis((v) => ({ ...v, transitionText: true })), REVEAL_TIMINGS.transitionText);
-    schedule(() => setRevealVis((v) => ({ ...v, nameReveal: true })), REVEAL_TIMINGS.nameReveal);
-    schedule(() => setRevealVis((v) => ({ ...v, slogan: true })), REVEAL_TIMINGS.slogan);
-    schedule(() => setRevealVis((v) => ({ ...v, fromWork: true })), REVEAL_TIMINGS.fromWork);
-    schedule(() => setRevealVis((v) => ({ ...v, hiddenReveal: true })), REVEAL_TIMINGS.hiddenReveal);
+    schedule(() => setNameRevealed(true), REVEAL_TIMINGS.nameReveal);
     schedule(() => {
       setRevealPhase("done");
     }, REVEAL_TIMINGS.cardReady);
@@ -168,13 +145,13 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
   }, [revealPhase]);
 
   /* ═══════════════════════════════════════════
-     R2: Skip — any click/keydown → immediately done
+     R2: Skip — any click/keydown/touch → immediately done
      ═══════════════════════════════════════════ */
   const skipReveal = useCallback(() => {
     if (revealPhase === "done") return;
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
-    setRevealVis(ALL_VISIBLE);
+    setNameRevealed(true);
     setRevealPhase("done");
   }, [revealPhase]);
 
@@ -262,26 +239,32 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
 
   /* ── 跨IP作品信息（R7：按 result.ipCode 查，A1/A3 per-IP）── */
   const ipMeta = getIpMeta(result.ipCode);
+  /* posture 体系：三姿态占比（A 粉饰 / B 清醒 / C 扭曲） */
+  const posturePct = result.posturePct;
+  /* 标语回退：5 角色无 slogan，用首个灵魂特质替代 */
+  const sloganText = localized.slogan || (result.tags ? result.tags.split(",")[0] : "");
   const workIntro = ipMeta.workIntro;
   const fromTitle = t("result.revealFrom", { title: ipMeta.title });
 
   /* ═══════════════════════════════════════════
-     Stagger fade-in helper
-     ═══════════════════════════════════════════ */
-  const staggerStyle = (visible: boolean): React.CSSProperties => ({
-    opacity: visible ? 1 : 0,
-    transform: visible ? "translateY(0)" : "translateY(12px)",
-    transition: `opacity ${STAGGER_DURATION} ${EASE_OUT_EXPO}, transform ${STAGGER_DURATION} ${EASE_OUT_EXPO}`,
-  });
-
-  /* ═══════════════════════════════════════════
-     RENDER
+     RENDER — 32 塔罗分栏（editorial-grid；CSS 由 globals.css IM1 定义）
      ═══════════════════════════════════════════ */
   return (
-    <div id="view-result">
-      {/* ─── Profile Card (behind reveal layer) ─── */}
+    <div
+      id="view-result"
+      style={needsEdgeBlur
+        ? {
+            WebkitMaskImage: "linear-gradient(to bottom, transparent, black 40px, black calc(100% - 40px), transparent)",
+            maskImage: "linear-gradient(to bottom, transparent, black 40px, black calc(100% - 40px), transparent)",
+          }
+        : undefined}
+    >
+      {/* ─── 结果卡（Reveal 可见性门控；E2E 锚点 .result-layout）─── */}
       <div
-        ref={resultLayoutRef}
+        ref={(node) => {
+          resultLayoutRef.current = node;
+          profileRef.current = node;
+        }}
         className="result-layout"
         role="region"
         aria-label={t("result.regionLabel")}
@@ -290,155 +273,193 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
         style={{
           opacity: revealPhase === "done" ? 1 : 0,
           transition: prefersReducedMotion ? "none" : `opacity 0.8s ${EASE_OUT_EXPO}`,
+          /* 32 金标为列式编辑布局：badge 在上、editorial-grid 在下 */
+          flexDirection: "column",
+          alignItems: "flex-start",
+          maxWidth: 1000,
+          margin: "0 auto",
+          width: "100%",
         }}
       >
-        <div
-          ref={profileRef}
-          style={{
-            width: "100%",
-            maxWidth: 640,
-            margin: "0 auto",
-            padding: "3rem 1.5rem 2rem",
-            position: "relative",
-            overflowY: needsEdgeBlur ? "auto" : "visible",
-            maxHeight: needsEdgeBlur ? "100vh" : "none",
-            /* R9: motion-6 edge blur via mask-image when content overflows */
-            ...(needsEdgeBlur
-              ? {
-                  WebkitMaskImage: "linear-gradient(to bottom, transparent, black 40px, black calc(100% - 40px), transparent)",
-                  maskImage: "linear-gradient(to bottom, transparent, black 40px, black calc(100% - 40px), transparent)",
-                }
-              : {}),
-          }}
-        >
-          {/* R6: 角色名 + English subtitle */}
-          <div className="r-name" role="heading" aria-level={1} style={{ fontSize: "clamp(2.5rem, 10vw, 5rem)", marginBottom: "0.3rem" }}>
-            {localized.name}
-          </div>
-          {localized.subtitle && (
-            <div style={{
-              fontFamily: "var(--f-title)",
-              fontSize: "clamp(0.75rem, 1.5vw, 1rem)",
-              letterSpacing: "0.2em",
-              color: "#888",
-              marginBottom: "1rem",
-            }}>
-              {localized.subtitle}
-            </div>
-          )}
+        <div className="result-header-badge">SOUL ARCHETYPE · VERDICT SEALED</div>
 
-          {/* Slogan */}
-          <div className="r-slogan" style={{ marginBottom: "0.6rem" }}>{localized.slogan}</div>
-
-          {/* ── 来自《魔女审判》 ── */}
-          <div style={{
-            display: "flex", alignItems: "center", gap: "0.8rem",
-            fontSize: "0.7rem", fontFamily: "var(--f-title)", letterSpacing: "0.15em",
-            color: "#888", marginBottom: "1.2rem",
-          }}>
-            <span style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.1)" }} />
-            {fromTitle}
-            <span style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.1)" }} />
-          </div>
-
-          {/* R7/R6: 一句话作品介绍 (A4: pack.workIntro) */}
-          {workIntro && (
-            <div style={{
-              fontSize: "clamp(0.8rem, 1.5vw, 0.95rem)",
-              color: "rgba(0,0,0,0.55)",
-              fontStyle: "italic",
-              lineHeight: 1.7,
-              marginBottom: "1.2rem",
-              paddingBottom: "1.2rem",
-              borderBottom: "1px solid rgba(0,0,0,0.08)",
-            }}>
-              {workIntro}
-            </div>
-          )}
-
-          {/* R8: 第二人称描述 */}
-          <div className="r-desc" style={{ marginBottom: "1.2rem" }}>{localized.desc}</div>
-
-          {/* R8: 灵魂特质 keywords */}
-          {localized.keywords && (
-            <div className="r-keywords" style={{ marginBottom: "1.2rem" }}>
-              <div style={{
-                fontSize: "0.65rem", fontFamily: "var(--f-title)", letterSpacing: "0.2em",
-                color: "#888", marginBottom: "0.5rem",
-              }}>
-                {t("result.soulTraits")}
+        <div className="editorial-grid" style={{ width: "100%" }}>
+          {/* 左栏：塔罗卡框（3:4 金边紫 glow） */}
+          <div className="tarot-card-frame">
+            {/* 未来替换为立绘（当前 src 空 + display:none，金标同构） */}
+            <img src="" alt={localized.name} className="character-img" />
+            <div className="tarot-placeholder">
+              <svg className="tarot-icon" viewBox="0 0 24 24">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <div style={{ fontFamily: "var(--f-syne)", fontWeight: 800, fontSize: "0.9rem", color: "var(--gold-hyper)", letterSpacing: "0.08em" }}>
+                {localized.name}
               </div>
-              <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-                {localized.keywords.split(/[、,，]/).map((kw: string, i: number) => (
-                  <span key={i} className="r-keyword-tag">{kw.trim()}</span>
+              <div style={{ fontSize: "0.72rem", color: "var(--text-dim)" }}>
+                {localized.subtitle || "CHARACTER PORTRAIT"}
+              </div>
+            </div>
+          </div>
+
+          {/* 右栏：艺术排版详情 */}
+          <div className="result-details">
+            <div>
+              <div className="res-ip-tag">{t("result.workIntroLabel")}：《{ipMeta.title}》</div>
+              {/* 渐变标题（res-title）+ E2E 锚点（r-name）同节点 */}
+              <h1 className="res-title r-name">{localized.name}</h1>
+              {localized.subtitle && (
+                <div style={{
+                  fontFamily: "var(--f-title)",
+                  fontSize: "0.75rem",
+                  letterSpacing: "0.2em",
+                  color: "var(--text-dim)",
+                  marginTop: "0.4rem",
+                }}>
+                  {localized.subtitle}
+                </div>
+              )}
+            </div>
+
+            {/* 标语（E2E 锚点 .r-slogan） */}
+            <div className="r-slogan" style={{ marginTop: "0.4rem" }}>{sloganText}</div>
+
+            {/* 一句话作品介绍（R7，reveal.spec 断言 pack.workIntro） */}
+            {workIntro && (
+              <div style={{
+                fontSize: "0.8rem",
+                color: "rgba(255,255,255,0.5)",
+                fontStyle: "italic",
+                lineHeight: 1.7,
+                paddingBottom: "1rem",
+                borderBottom: "1px solid rgba(255,255,255,0.08)",
+              }}>
+                {workIntro}
+              </div>
+            )}
+
+            {/* 灵魂特质 → 32 芯片（E2E 锚点 .r-keywords/.r-keyword-tag 同节点） */}
+            {result.tags && (
+              <div className="tag-cloud r-keywords">
+                {result.tags.split(/[、,，]/).map((kw: string, i: number) => (
+                  <span key={i} className="neo-chip r-keyword-tag">{kw.trim()}</span>
                 ))}
               </div>
-            </div>
-          )}
+            )}
 
-          {/* R11: 稀有度 */}
-          <div style={{ marginBottom: "0.8rem" }}>
-            <div style={{
-              fontSize: "0.65rem", fontFamily: "var(--f-title)", letterSpacing: "0.2em",
-              color: "#888", marginBottom: "0.5rem",
-            }}>
-              {t("result.rarityLabel")}
+            {/* 审判官的逼视 + 温柔的落点 */}
+            <div className="verdict-editorial-card">
+              {result.prosecution && (
+                <div className="r-desc">
+                  <div className="section-label">⚖️ 审判官的逼视</div>
+                  <p className="section-body" style={{ marginTop: 8 }}>{result.prosecution}</p>
+                </div>
+              )}
+              {result.softlanding && (
+                <div>
+                  <div className="section-label" style={{ color: "var(--purple-neon)" }}>🕊️ 温柔的落点</div>
+                  <p className="section-body" style={{ marginTop: 8 }}>{result.softlanding}</p>
+                </div>
+              )}
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-              {/* Progress bar: fill = typePercentage%, rarer = emptier */}
-              <div style={{
-                flex: 1, height: 6, borderRadius: 3,
-                background: "rgba(0,0,0,0.06)", overflow: "hidden",
-              }}>
-                <div style={{
-                  width: `${rarityBarPercent}%`, height: "100%",
-                  background: "rgba(139,0,0,0.35)", borderRadius: 3,
-                  transition: `width 0.6s ${EASE_OUT_EXPO}`,
-                }} />
+
+            {/* 姿态占比柱图（32 霓虹柱图；reduced-motion 的 transition 守卫在 globals.css .stat-fill） */}
+            {posturePct && (
+              <div className="stat-bars-container">
+                {POSTURE_ROWS.map(([k, label]) => (
+                  <div key={k} className="stat-row">
+                    <span className="stat-name">POSTURE {k} ({label})</span>
+                    <div className="stat-track">
+                      <div className="stat-fill" style={{ width: `${posturePct[k]}%` }} />
+                    </div>
+                    <span className="stat-val">{posturePct[k]}%</span>
+                  </div>
+                ))}
               </div>
-              <span style={{
-                fontSize: "0.7rem", fontFamily: "var(--f-title)", letterSpacing: "0.1em",
-                color: typePercentage !== null ? "#555" : "#bbb",
-                whiteSpace: "nowrap",
+            )}
+
+            {/* R11: 稀有度（保留；深色金紫适配，仅宽 transition 且有 reduced-motion 守卫） */}
+            <div style={{ marginTop: "0.5rem" }}>
+              <div style={{
+                fontSize: "0.65rem",
+                fontFamily: "var(--f-title)",
+                letterSpacing: "0.2em",
+                color: "var(--text-dim)",
+                marginBottom: "0.5rem",
               }}>
-                {rarityText}
-              </span>
+                {t("result.rarityLabel")}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.05)", overflow: "hidden" }}>
+                  <div style={{
+                    width: `${rarityBarPercent}%`,
+                    height: "100%",
+                    background: "linear-gradient(90deg, var(--violet-deep), var(--purple-neon), var(--gold-hyper))",
+                    borderRadius: 3,
+                    transition: prefersReducedMotion ? "none" : `width 0.6s ${EASE_OUT_EXPO}`,
+                  }} />
+                </div>
+                <span style={{
+                  fontSize: "0.7rem",
+                  fontFamily: "var(--f-title)",
+                  letterSpacing: "0.1em",
+                  color: typePercentage !== null ? "var(--gold-hyper)" : "rgba(255,255,255,0.4)",
+                  whiteSpace: "nowrap",
+                }}>
+                  {rarityText}
+                </span>
+              </div>
             </div>
-          </div>
 
-          {/* R16: Hidden character light text */}
-          {result.special && (
+            {/* R16: Hidden character light text（special 专属） */}
+            {result.special && (
+              <div style={{
+                fontSize: "0.8rem",
+                fontStyle: "italic",
+                color: "var(--purple-neon)",
+                opacity: 0.85,
+              }}>
+                {t("result.hiddenReveal")}
+              </div>
+            )}
+
+            {/* R10: 操作按钮（32 胶囊；E2E 锚点 .r-actions/.btn-restart 同节点） */}
+            <div className="action-row r-actions">
+              <button
+                className="btn-restart btn-neo btn-neo-primary"
+                onClick={handleShare}
+                disabled={sharing}
+                tabIndex={revealPhase === "done" ? 0 : -1}
+                style={{ borderBottom: "none", alignSelf: "auto" }}
+              >
+                {sharing ? "..." : t("result.share")}
+              </button>
+              <button
+                className="btn-restart btn-neo btn-neo-secondary"
+                onClick={onRestart}
+                tabIndex={revealPhase === "done" ? 0 : -1}
+                style={{ borderBottom: "none", alignSelf: "auto" }}
+              >
+                {t("result.rebirth")}
+              </button>
+            </div>
+
+            {/* 结果页补充声明（角色版权） */}
             <div style={{
-              fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
-              fontStyle: "italic",
-              color: "#8b5cf6",
-              marginBottom: "1rem",
-              opacity: 0.8,
+              marginTop: "1rem",
+              fontSize: "0.6rem",
+              textAlign: "center",
+              color: "rgba(255,255,255,0.35)",
+              letterSpacing: "0.05em",
             }}>
-              {t("result.hiddenReveal")}
+              {t("disclaimer.result")}
             </div>
-          )}
-
-          {/* R10: Action buttons */}
-          <div className="r-actions">
-            <button className="btn-restart" onClick={handleShare} disabled={sharing} tabIndex={revealPhase === "done" ? 0 : -1}>
-              {sharing ? "..." : t("result.share")}
-            </button>
-            <button className="btn-restart" onClick={onRestart} tabIndex={revealPhase === "done" ? 0 : -1}>
-              {t("result.rebirth")}
-            </button>
-          </div>
-
-          {/* R9: 结果页补充声明（角色版权） */}
-          <div style={{ marginTop: "1rem", fontSize: "0.6rem", textAlign: "center", color: "rgba(0,0,0,0.35)", letterSpacing: "0.05em" }}>
-            {t("disclaimer.result")}
           </div>
         </div>
       </div>
 
       {/* ═══════════════════════════════════════════
-         R1-R5: Reveal overlay layer
-         Sits above profile card; fades out when done
+         Reveal overlay（骨架保留；内容精简为单名字闪现 O1=B）
+         深色金紫黑重皮：底 #050308 + 名字白→金→紫渐变
          ═══════════════════════════════════════════ */}
       <div
         role="status"
@@ -451,7 +472,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          background: "#050308",
+          background: "var(--reveal-bg, #050308)",
           color: "#e6e6e6",
           fontFamily: "var(--f-body)",
           pointerEvents: revealLayerOut ? "none" : "auto",
@@ -461,7 +482,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
             : "none",
         }}
       >
-        {/* Skip hint */}
+        {/* Skip hint（#12：result.skipHint 键保留） */}
         {!revealLayerOut && revealPhase === "revealing" && !prefersReducedMotion && (
           <div style={{
             position: "absolute",
@@ -480,93 +501,35 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           flexDirection: "column",
           alignItems: "center",
           textAlign: "center",
-          gap: "0",
           padding: "0 2rem",
           maxWidth: 500,
         }}>
-          {/* 1. 「审判结束了。」 */}
-          <div style={{
-            ...staggerStyle(revealVis.judgementText),
-            fontSize: "clamp(0.85rem, 1.5vw, 1rem)",
-            fontWeight: 300,
-            letterSpacing: "0.15em",
-            color: "rgba(255,255,255,0.6)",
-            marginBottom: "2rem",
-          }}>
-            {t("result.revealJudgement")}
-          </div>
-
-          {/* 2. 「而你是——」 */}
-          <div style={{
-            ...staggerStyle(revealVis.transitionText),
-            fontSize: "clamp(0.85rem, 1.5vw, 1rem)",
-            fontWeight: 300,
-            letterSpacing: "0.15em",
-            color: "rgba(255,255,255,0.5)",
-            marginBottom: "2.5rem",
-          }}>
-            {t("result.revealTransition")}
-          </div>
-
-          {/* 3. 角色名 — motion-7: blur cross-fade */}
+          {/* 单名字闪现 — R3 motion-7 柔和浮现（2026-08-15：blur20px+scale 金光凝聚
+              在暗幕上读作"闪一下"，改 opacity+translateY+浅 blur 的柔和浮现；
+              渐变经 token：桌面重定义后 = 米白→旧金，移动端保留 超金→霓虹紫） */}
           <div role="heading" aria-level={1} style={{
             fontSize: "clamp(2.8rem, 10vw, 5.5rem)",
             fontWeight: 900,
             lineHeight: 1.1,
             letterSpacing: "0.15em",
-            color: "#fff",
-            marginBottom: "1rem",
-            /* R3: motion-7 cross-fade through blur */
-            opacity: revealVis.nameReveal ? 1 : 0,
-            filter: revealVis.nameReveal ? "blur(0px)" : "blur(20px)",
-            transform: revealVis.nameReveal ? "scale(1)" : "scale(1.05)",
-            transition: `opacity ${MOTION7_DURATION} ${EASE_OUT_EXPO}, filter ${MOTION7_DURATION} ${EASE_OUT_EXPO}, transform ${MOTION7_DURATION} ${EASE_OUT_EXPO}`,
+            background: "linear-gradient(135deg, #F2EFE9 15%, var(--gold-hyper) 60%, var(--purple-neon) 100%)",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            color: "transparent",
+            opacity: nameRevealed ? 1 : 0,
+            filter: nameRevealed ? "blur(0px)" : "blur(8px)",
+            transform: nameRevealed ? "translateY(0)" : "translateY(26px)",
+            transition: prefersReducedMotion ? "none" : `opacity ${MOTION7_DURATION} ${EASE_OUT_EXPO}, transform ${MOTION7_DURATION} ${EASE_OUT_EXPO}, filter ${MOTION7_DURATION} ${EASE_OUT_EXPO}`,
           }}>
             {localized.name}
           </div>
-
-          {/* 4. 标语 */}
-          <div style={{
-            ...staggerStyle(revealVis.slogan),
-            fontSize: "clamp(0.85rem, 1.6vw, 1.05rem)",
-            fontStyle: "italic",
-            fontWeight: 300,
-            color: "rgba(212,175,55,0.7)",
-            lineHeight: 1.7,
-            marginBottom: "1.2rem",
-          }}>
-            {localized.slogan}
-          </div>
-
-          {/* 5. 来自《魔女审判》 */}
-          <div style={{
-            ...staggerStyle(revealVis.fromWork),
-            fontSize: "0.7rem",
-            fontFamily: "var(--f-title)",
-            letterSpacing: "0.2em",
-            color: "rgba(255,255,255,0.3)",
-          }}>
-            {fromTitle}
-          </div>
-
-          {/* 6. R16: Hidden character reveal (only for special=true) */}
-          {result.special && (
-            <div style={{
-              ...staggerStyle(revealVis.hiddenReveal),
-              fontSize: "clamp(0.85rem, 1.3vw, 0.95rem)",
-              fontStyle: "italic",
-              color: "#8b5cf6",
-              opacity: revealVis.hiddenReveal ? 0.8 : 0,
-              marginTop: "1.2rem",
-            }}>
-              {t("result.hiddenReveal")}
-            </div>
-          )}
         </div>
       </div>
 
       {/* ═══════════════════════════════════════════
-         R14-R15: Share card (offscreen, for toPng)
+         分享卡（离屏 toPng；深色实色 #050308 + 金紫文字，
+         子树禁用 backdrop-filter/mix-blend-mode/纯 transparent —— 盲点 #4）
          ═══════════════════════════════════════════ */}
       {shareCardReady && (
         <div
@@ -588,7 +551,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
               fontFamily: "'Cinzel', serif",
               fontSize: "0.55rem",
               letterSpacing: "0.5em",
-              color: "rgba(212,175,55,0.6)",
+              color: "rgba(255,215,0,0.6)",
               marginBottom: "1.2rem",
             }}>
               {t("result.shareHook")}
@@ -612,9 +575,9 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
             {/* 标语 */}
             <div style={{
               fontSize: "0.75rem", fontStyle: "italic",
-              color: "#d4af37", marginTop: "0.8rem", lineHeight: 1.6,
+              color: "rgba(255,215,0,0.9)", marginTop: "0.8rem", lineHeight: 1.6,
             }}>
-              {localized.slogan}
+              {sloganText}
             </div>
             {/* 来自《魔女审判》 */}
             <div style={{
@@ -632,8 +595,8 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
                 {localized.keywords.split(/[、,，]/).map((kw: string, i: number) => (
                   <span key={i} style={{
                     fontSize: "0.55rem", padding: "0.15rem 0.45rem",
-                    border: "1px solid rgba(212,175,55,0.25)", borderRadius: 999,
-                    color: "rgba(212,175,55,0.7)",
+                    border: "1px solid rgba(255,215,0,0.25)", borderRadius: 999,
+                    color: "rgba(255,215,0,0.7)",
                   }}>
                     {kw.trim()}
                   </span>
@@ -650,7 +613,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
                   <>
                     <div style={{
                       fontFamily: "'Cinzel', serif", fontSize: "1.6rem",
-                      fontWeight: 900, color: "#d4af37",
+                      fontWeight: 900, color: "rgba(255,215,0,0.95)",
                     }}>
                       {typePercentage}%
                     </div>
@@ -671,7 +634,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
               {/* R14: CTA — "来接受审判 →" */}
               <div style={{
                 fontSize: "0.6rem", letterSpacing: "0.15em",
-                color: "rgba(212,175,55,0.5)",
+                color: "rgba(255,215,0,0.5)",
                 fontFamily: "'Cinzel', serif",
               }}>
                 {t("result.shareCta")}

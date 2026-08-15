@@ -91,16 +91,21 @@ test.describe("Keyboard Navigation", () => {
         break;
       }
 
-      // 砝码题：键盘无法操作+/-按钮，用鼠标点击落锤
-      const hammer = page.locator("button", { hasText: "落锤" });
-      if (await hammer.first().isVisible({ timeout: 100 }).catch(() => false)) {
-        await hammer.first().click({ force: true });
+      // 砝码题（点阵分配）：键盘无法分配，用鼠标点卡片 2|1|0 后落锤
+      const weightStage = page.locator(".weight-stage");
+      if (await weightStage.isVisible({ timeout: 100 }).catch(() => false)) {
+        const wcards = page.locator(".weight-card");
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(0).click({ force: true });
+        await wcards.nth(1).click({ force: true });
+        await page.waitForTimeout(200);
+        await page.locator(".btn-confirm-weight").click({ force: true });
         await page.waitForTimeout(1000);
         answered++;
         continue;
       }
 
-      const options = page.locator(".opt-block");
+      const options = page.locator(".opt-block, .balance-pan");
       const optCount = await options.count();
       if (optCount === 0) {
         await page.waitForTimeout(500);

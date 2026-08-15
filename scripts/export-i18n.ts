@@ -171,6 +171,11 @@ const typeKeys = [
   "UNSET",
   "YUKI",
   "ETL",
+  "MADOKA",
+  "HOMURA",
+  "SAYAKA",
+  "KYOKO",
+  "MAMI",
 ];
 const typeRows: Array<Record<string, string>> = [];
 for (const key of typeKeys) {

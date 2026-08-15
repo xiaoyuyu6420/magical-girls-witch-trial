@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { processAnswers } from "@/lib/answer-processor";
 import { pickAnnotation, ANNOTATION_FALLBACKS } from "@/lib/annotations";
-import { getActivePack } from "@/pack/load";
 import { rateLimit } from "@/lib/rate-limit";
 import type { AnnotationNode } from "@/lib/annotations";
 
@@ -49,11 +48,10 @@ export async function POST(req: NextRequest) {
     const optionIds = Array.from(new Set(answers.map((a) => a.optionId)));
     const options = await db.option.findMany({
       where: { id: { in: optionIds } },
-      include: { question: { select: { id: true, dim: true, type: true } } },
+      include: { question: { select: { id: true, dim: true, type: true, renderType: true } } },
     });
 
-    const pack = getActivePack();
-    const { dimScores } = processAnswers(answers, options, pack);
+    const processed = processAnswers(answers, options);
 
     // 使用确定性 rng（基于 node + answer hash，避免同一用户每次刷新看到不同文案）
     const answerHash = answers.reduce((h, a) => h ^ (a.optionId * 31 + a.questionId), 0);
@@ -64,7 +62,7 @@ export async function POST(req: NextRequest) {
       return rngState / 2147483647;
     };
 
-    const text = pickAnnotation(node as AnnotationNode, dimScores, pack, rng);
+    const text = pickAnnotation(node as AnnotationNode, processed.postureA, processed.postureB, processed.postureC, rng);
     return NextResponse.json({ text });
   } catch (err) {
     console.error("Annotation error:", err);

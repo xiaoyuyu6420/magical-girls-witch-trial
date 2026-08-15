@@ -38,7 +38,7 @@ export async function answerAllQuestions(
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const interjection = page.locator(".interjection-overlay");
-      if (await interjection.isVisible({ timeout: 100 }).catch(() => false)) {
+      if ((await interjection.count()) > 0) {
         await interjection.click({ force: true, timeout: 3000 }).catch(() => {});
         await page.waitForTimeout(400);
         stallGuard++;
@@ -54,16 +54,27 @@ export async function answerAllQuestions(
       break;
     }
 
-    // 砝码题：检测"落锤"确认按钮（初始 [1,1,1] 合法，直接落锤）
-    const weightConfirm = page.locator("button", { hasText: "落锤" });
-    if (await weightConfirm.first().isVisible({ timeout: 100 }).catch(() => false)) {
-      await weightConfirm.first().click({ force: true, timeout: 5000 });
+    // 砝码题（点阵分配）：点卡片分配 2|1|0 后点"落锤决断"确认
+    const weightStage = page.locator(".weight-stage");
+    if (await weightStage.isVisible({ timeout: 100 }).catch(() => false)) {
+      const cards = page.locator(".weight-card");
+      // 每击间隔等待 React 重渲染（cycleSlot 是函数式 state 更新，连续 force click
+      // 落在重渲染间隙会丢点击 → weightSlots 漂移 → posture/角色漂移，视觉基线不稳）
+      await cards.nth(0).click({ force: true, timeout: 3000 });
+      await page.waitForTimeout(120);
+      await cards.nth(0).click({ force: true, timeout: 3000 });
+      await page.waitForTimeout(120);
+      await cards.nth(1).click({ force: true, timeout: 3000 });
+      await page.waitForTimeout(200);
+      const weightConfirm = page.locator(".btn-confirm-weight");
+      await weightConfirm.click({ force: true, timeout: 5000 });
       await page.waitForTimeout(clickDelay);
       questionCount++;
       continue;
     }
 
-    const optBlocks = page.locator(".opt-block");
+    // 普通题 .opt-block + 天平题 .balance-pan
+    const optBlocks = page.locator(".opt-block, .balance-pan");
     const count = await optBlocks.count();
 
     if (count === 0) {
@@ -72,13 +83,17 @@ export async function answerAllQuestions(
         reachedResult = true;
         break;
       }
-      // 可能是动画中，再等一轮
-      await page.waitForTimeout(500);
-      if ((await page.locator(".opt-block").count()) === 0
-        && !(await page.locator("button", { hasText: "落锤" }).first().isVisible({ timeout: 100 }).catch(() => false))) {
-        break;
+      // 切题动画？opt 可能回来
+      if ((await page.locator(".opt-block, .balance-pan").count()) > 0) continue;
+      // opt 没回来：极光转场中（aurora ~1.3s + ResultScreen 挂载 + reveal）或已到结果页。
+      // 等 result-layout 覆盖极光时序（IM3 引入 AuroraBurst 替换 loading spinner）。
+      try {
+        await expect(resultLayout).toBeVisible({ timeout: 8000 });
+        reachedResult = true;
+      } catch {
+        /* 真未到达结果页 */
       }
-      continue;
+      break;
     }
 
     await optBlocks.first().waitFor({ state: "visible", timeout: 5000 });

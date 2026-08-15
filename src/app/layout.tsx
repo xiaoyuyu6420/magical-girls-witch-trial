@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Serif_SC } from "next/font/google";
 import { Cinzel } from "next/font/google";
+import { Syne } from "next/font/google";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import AppShell from "@/components/AppShell";
 import DisclaimerFooter from "@/components/DisclaimerFooter";
@@ -17,6 +18,12 @@ const cinzel = Cinzel({
   variable: "--font-cinzel",
   subsets: ["latin"],
   weight: ["400", "600", "800"],
+});
+
+const syne = Syne({
+  variable: "--font-syne",
+  subsets: ["latin"],
+  weight: ["500", "700", "800"],
 });
 
 export const viewport: Viewport = {
@@ -62,13 +69,15 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${notoSerif.variable} ${cinzel.variable} h-full antialiased dark`}
+      className={`${notoSerif.variable} ${cinzel.variable} ${syne.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col font-[family-name:var(--font-noto-serif)]">
         <DocumentLang />
         <GoogleAnalytics />
-        <AppShell>{children}</AppShell>
-        <DisclaimerFooter />
+        <AppShell>
+          {children}
+          <DisclaimerFooter />
+        </AppShell>
       </body>
     </html>
   );

@@ -4,6 +4,8 @@ import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useI18n } from "@/lib/i18n";
 import type { AnnotationNode } from "@/lib/annotations";
 import { ANNOTATION_FALLBACKS } from "@/lib/annotations";
+import { renderRichText } from "@/lib/rich-text";
+import { BackgroundLayers } from "./BackgroundLayers";
 
 export interface QuizQuestion {
   id: number; dim: string; text: string; order: number; type: string; meta: string;
@@ -91,6 +93,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const { t, locale } = useI18n();
   const [stageFadeOut, setStageFadeOut] = useState(false);
+  const [toastVerdict, setToastVerdict] = useState(false);
   const [showKeyboardHint, setShowKeyboardHint] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -102,6 +105,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   const touchFeedbackRef = useRef(false);
   const timerRef = useRef<number>(0);
   const fadeTimerRef = useRef<number>(0);
+  const toastTimerRef = useRef<number>(0);
 
   // ── 批注插页：独立 state，不改 currentIndex ──
   const [interjection, setInterjection] = useState<AnnotationNode | null>(null);
@@ -112,6 +116,32 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
 
   // ── 砝码题：三槽分配值 ──
   const [weightSlots, setWeightSlots] = useState<[number, number, number]>([1, 1, 1]);
+
+  // ── prefers-reduced-motion 检测（仅视觉层：传给 BackgroundLayers 控制 Canvas/浮雕）──
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // 微任务读初始值（同下方恢复进度的既有模式，避免 effect 内同步 setState）
+    queueMicrotask(() => setReducedMotion(mq.matches));
+    const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  // ── 桌面/移动端检测：视觉排版按端回退（2026-08-14 桌面回 HEAD 旧金气质）。
+  // 桌面：水印/序号用罗马数字、q-meta 内嵌计数；移动端：32 皮肤阿拉伯数字 + HUD 计数器。
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 769px)");
+    queueMicrotask(() => setIsDesktop(mq.matches));
+    const onChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -135,6 +165,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     return () => {
       clearTimeout(timerRef.current);
       clearTimeout(fadeTimerRef.current);
+      clearTimeout(toastTimerRef.current);
     };
   }, []);
 
@@ -174,12 +205,19 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   const current = displayQuestions[safeIndex];
   const progress = displayQuestions.length > 0 ? (safeIndex / displayQuestions.length) * 100 : 0;
 
-  // ── 砝码题：当题切换时重置 slots 为均分 ──
+  // ── 砝码题：当题切换时重置 slots 为 0（HTML「审判庭」从零分配）──
   useEffect(() => {
     if (current?.renderType === "weight") {
-      setWeightSlots([1, 1, 1]);
+      setWeightSlots([0, 0, 0]);
     }
   }, [safeIndex, current?.renderType]);
+
+  // ── 换题时恢复已选高亮（回看场景：进入已答题显示上次的选择）──
+  useEffect(() => {
+    const saved = answers[safeIndex];
+    setSelectedOptionId(saved ? saved.optionId : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [safeIndex]);
 
   // ── 批注插页：answers.length 命中 5/10/15 且未显示过时触发 ──
   useEffect(() => {
@@ -247,8 +285,15 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     setSelectedOptionId(option.id);
     document.body.classList.remove("hovering");
 
+    // ✦ 契约已被记录 ✦ —— 选中后闪现 400ms（HTML「审判庭」toast）
+    setToastVerdict(true);
+    clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = window.setTimeout(() => setToastVerdict(false), 400);
+
     const answer = { questionId: current.id, optionId: option.id };
-    const newAnswers = [...answers, answer];
+    // 按 safeIndex 覆盖（支持回看改答）：写入当前位置，保留后续已答
+    const newAnswers = [...answers];
+    newAnswers[safeIndex] = answer;
     let newGateValue = gateValue;
     if (current.type === "gate" && option.value) { newGateValue = option.value; setGateValue(option.value); }
 
@@ -258,8 +303,9 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     const isLast = safeIndex >= displayQuestions.length - 1;
     pendingRef.current = { answers: newAnswers, gateValue: newGateValue, isLast };
 
-    const feedbackDelay = isTouchFeedback ? 120 : 400;
-    const totalDelay = isTouchFeedback ? 280 : 700;
+    // Touch gets a shorter (but still visible) squeeze, mouse keeps the full beat.
+    const feedbackDelay = isTouchFeedback ? 320 : 400;
+    const totalDelay = isTouchFeedback ? 680 : 700;
     fadeTimerRef.current = window.setTimeout(() => {
       setStageFadeOut(true);
     }, feedbackDelay);
@@ -279,6 +325,14 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
       handleSelect(matched);
     }
   }, [current, weightSlots, handleSelect]);
+
+  // ── 返回上一题（回看 + 可改，高亮由 [safeIndex] useEffect 自动恢复）──
+  const handleBack = useCallback(() => {
+    if (isAnimating) return;
+    if (safeIndex <= 0) return;
+    setStageFadeOut(false);
+    setCurrentIndex(safeIndex - 1);
+  }, [safeIndex, isAnimating]);
 
   // Keyboard support
   useEffect(() => {
@@ -346,30 +400,61 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   const questionLabelId = `q-text-${current.id}`;
   const renderType = current.renderType ?? current.type;
 
+  // ── I2：题卡进场动画 floatIn（32）── 已接线（key remount + backwards fill）
+  // 题卡 key={safeIndex}：切题时 remount 新 DOM，className 恒定含 .enter → animation 只播一次。
+  // 之前 2 次 class-toggle 方案失败根因：className 随 state toggle → animation 反复重启 →
+  // Playwright stability 持续判 not-stable → click 重试 ~99s timeout。
+  // 现改 key remount（className 不 toggle）+ CSS backwards fill（mount 即 opacity:0 不闪，
+  // 结束回归默认 1，getAnimations 干净）。
+
   // ── renderType 分发：渲染 options 区域 ──
   const renderOptions = () => {
     switch (renderType) {
       case "scale":
-        // 天平题：2 个 option，左右对峙，复用 opt-block 时序推开
+        // 天平题：SVG 天平图形（横梁+支点+托盘）+ 下方双选项，选中侧横梁倾斜
         return (
-          <div className="options-stage" role="radiogroup" aria-labelledby={questionLabelId}>
-            {current.options.map((option, idx) => (
-              <button
-                type="button"
-                key={option.id}
-                className={`opt-block ${selectedOptionId === option.id ? "is-selected" : ""} ${selectedOptionId !== null && selectedOptionId !== option.id ? "is-dimmed" : ""}`}
-                role="radio"
-                aria-checked={false}
-                aria-label={option.label}
-                style={{ animationDelay: `${idx * 0.1}s`, pointerEvents: isAnimating ? "none" : "auto" }}
-                onClick={() => handleSelect(option)}
-              >
-                <div className="opt-content">
-                  <div className="opt-index" aria-hidden="true">{ROMAN[idx]}</div>
-                  <div className="opt-text">{option.label}</div>
-                </div>
-              </button>
-            ))}
+          <div className="balance-stage" role="radiogroup" aria-labelledby={questionLabelId}>
+            <svg
+              className={`balance-svg ${
+                selectedOptionId === current.options[0]?.id ? "tilt-left"
+                : selectedOptionId === current.options[1]?.id ? "tilt-right"
+                : ""
+              }`}
+              viewBox="0 0 220 130"
+              aria-hidden="true"
+            >
+              {/* 支点（尖端朝上） */}
+              <polygon points="110,12 96,40 124,40" fill="currentColor" opacity="0.55" />
+              {/* 横梁 */}
+              <line x1="20" y1="40" x2="200" y2="40" stroke="currentColor" strokeWidth="2" />
+              {/* 挂绳 */}
+              <line x1="35" y1="40" x2="35" y2="72" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+              <line x1="185" y1="40" x2="185" y2="72" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+              {/* 托盘（弧线） */}
+              <path d="M 15 72 Q 35 94 55 72" stroke="currentColor" strokeWidth="2" fill="none" />
+              <path d="M 165 72 Q 185 94 205 72" stroke="currentColor" strokeWidth="2" fill="none" />
+            </svg>
+            <div className="balance-beam-options">
+              {current.options.map((option, idx) => {
+                const isSel = selectedOptionId === option.id;
+                const isOther = selectedOptionId !== null && !isSel;
+                return (
+                  <button
+                    type="button"
+                    key={option.id}
+                    className={`balance-pan ${isSel ? "is-down" : ""} ${isOther ? "is-up" : ""}`}
+                    role="radio"
+                    aria-checked={isSel}
+                    aria-label={option.label}
+                    style={{ animationDelay: `${idx * 0.08}s`, pointerEvents: isAnimating ? "none" : "auto" }}
+                    onClick={() => handleSelect(option)}
+                  >
+                    <span className="balance-pan-key" aria-hidden="true">{ROMAN[idx]}</span>
+                    <span className="balance-pan-text">{option.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         );
 
@@ -389,11 +474,12 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
                 role="radio"
                 aria-checked={false}
                 aria-label={option.label}
-                style={{ animationDelay: `${idx * 0.1}s`, pointerEvents: isAnimating ? "none" : "auto" }}
+                style={{ animationDelay: `${idx * 0.05}s`, pointerEvents: isAnimating ? "none" : "auto" }}
                 onClick={() => handleSelect(option)}
               >
                 <div className="opt-content">
-                  <div className="opt-index" aria-hidden="true">{ROMAN[idx]}</div>
+                  {/* 桌面回 HEAD：罗马数字序号（I/II/III）；移动端 32 皮肤：零填充阿拉伯 01/02/03 */}
+                  <div className="opt-index" aria-hidden="true">{isDesktop ? ROMAN[idx] : String(idx + 1).padStart(2, "0")}</div>
                   <div className="opt-text">{option.label}</div>
                 </div>
               </button>
@@ -406,131 +492,63 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   // ── 砝码题 UI ──
   const renderWeightUI = () => {
     const slotLabels: [string, string, string] = ["A", "B", "C"];
-    const themes = parseSlotThemes(current.text);
+    // 三槽主题（HTML「审判庭」固定语义：A 假装平静 / B 暗中反抗 / C 彻底放弃）
+    const slotThemes: [string, string, string] = ["假装平静", "暗中反抗", "彻底放弃"];
     const total = weightSlots[0] + weightSlots[1] + weightSlots[2];
     const isValid = total === 3;
 
-    const adjustSlot = (slotIdx: number, delta: number) => {
+    // 点阵点击：未满(总和<3)且未到顶(槽<2)→ +1；否则重置该槽为 0
+    const cycleSlot = (slotIdx: number) => {
       setWeightSlots((prev) => {
+        const sum = prev[0] + prev[1] + prev[2];
+        const cur = prev[slotIdx];
         const next: [number, number, number] = [...prev];
-        const newVal = next[slotIdx] + delta;
-        if (newVal < 0 || newVal > 2) return prev;
-        next[slotIdx] = newVal;
+        next[slotIdx] = cur < 2 && sum < 3 ? cur + 1 : 0;
         return next;
       });
     };
 
     return (
-      <div className="options-stage weight-stage" role="group" aria-label="砝码分配">
-        <div style={{
-          display: "flex", flexDirection: "column", width: "100%", height: "100%",
-          justifyContent: "center", alignItems: "center", padding: "2vh 4vw", gap: "2vh",
-        }}>
-          {/* 三槽 */}
-          <div style={{
-            display: "flex", gap: "3vw", width: "100%", maxWidth: 600,
-            justifyContent: "center", alignItems: "stretch",
-          }}>
-            {weightSlots.map((val, slotIdx) => (
-              <div key={slotIdx} style={{
-                flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
-                border: "1px solid rgba(212,175,55,0.15)",
-                background: "rgba(10,5,20,0.35)",
-                backdropFilter: "blur(8px)",
-                padding: "1.5vh 0",
-                borderRadius: 2,
-                opacity: 0, transform: "translateY(20px)",
-                animation: `staggerIn 0.6s var(--ease-out-expo) ${slotIdx * 0.1}s forwards`,
-              }}>
-                <div style={{
-                  fontFamily: "var(--f-title)", fontSize: "clamp(0.7rem,1.5vw,0.9rem)",
-                  color: "var(--c-gold)", letterSpacing: "0.2em", marginBottom: "0.5vh",
-                }}>
-                  {slotLabels[slotIdx]}
-                </div>
-                <div style={{
-                  fontSize: "clamp(0.8rem,1.8vw,1rem)", color: "rgba(255,255,255,0.6)",
-                  textAlign: "center", lineHeight: 1.5, marginBottom: "1vh",
-                  padding: "0 0.5rem", fontStyle: "italic",
-                }}>
-                  {themes[slotIdx]}
-                </div>
-                <div style={{
-                  fontSize: "clamp(2rem,5vw,3.5rem)", fontFamily: "var(--f-title)",
-                  color: "#fff", lineHeight: 1, margin: "0.5vh 0",
-                  textShadow: "0 0 20px rgba(212,175,55,0.3)",
-                }}>
-                  {val}
-                </div>
-                <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5vh" }}>
-                  <button
-                    type="button"
-                    onClick={() => adjustSlot(slotIdx, -1)}
-                    disabled={val <= 0}
-                    style={{
-                      width: 36, height: 36, fontSize: "1.2rem", lineHeight: 1,
-                      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-                      color: val <= 0 ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.7)",
-                      cursor: val <= 0 ? "not-allowed" : "pointer",
-                      borderRadius: 2, transition: "all 0.2s",
-                      font: "inherit", padding: 0, appearance: "none", WebkitAppearance: "none",
-                    }}
-                    aria-label={`${slotLabels[slotIdx]} 减少`}
-                  >
-                    −
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => adjustSlot(slotIdx, 1)}
-                    disabled={val >= 2}
-                    style={{
-                      width: 36, height: 36, fontSize: "1.2rem", lineHeight: 1,
-                      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-                      color: val >= 2 ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.7)",
-                      cursor: val >= 2 ? "not-allowed" : "pointer",
-                      borderRadius: 2, transition: "all 0.2s",
-                      font: "inherit", padding: 0, appearance: "none", WebkitAppearance: "none",
-                    }}
-                    aria-label={`${slotLabels[slotIdx]} 增加`}
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* 总和 + 确认按钮 */}
-          <div style={{
-            display: "flex", flexDirection: "column", alignItems: "center", gap: "0.8vh",
-          }}>
-            <div style={{
-              fontFamily: "var(--f-title)", fontSize: "clamp(0.65rem,1.2vw,0.8rem)",
-              color: isValid ? "var(--c-gold)" : "rgba(184,10,31,0.8)",
-              letterSpacing: "0.15em",
-              transition: "color 0.3s",
-            }}>
-              {isValid ? "天平已定" : `尚余 ${3 - total} 枚砝码未放`}
-            </div>
-            <button
-              type="button"
-              onClick={handleWeightConfirm}
-              disabled={!isValid || isAnimating}
-              style={{
-                fontFamily: "var(--f-title)", fontSize: "clamp(0.75rem,1.5vw,0.95rem)",
-                letterSpacing: "0.2em",
-                color: isValid ? "var(--c-gold)" : "rgba(255,255,255,0.15)",
-                background: "none",
-                border: isValid ? "1px solid rgba(212,175,55,0.4)" : "1px solid rgba(255,255,255,0.05)",
-                padding: "0.6rem 2rem", cursor: isValid && !isAnimating ? "pointer" : "not-allowed",
-                borderRadius: 2, transition: "all 0.3s",
-                opacity: 0, transform: "translateY(20px)",
-                animation: "staggerIn 0.6s var(--ease-out-expo) 0.3s forwards",
+      <div className="weight-stage" role="group" aria-label="心理筹码分配">
+        <div className="weight-allocator">
+          {weightSlots.map((val, slotIdx) => (
+            <div
+              key={slotIdx}
+              className="weight-card"
+              role="button"
+              tabIndex={0}
+              aria-label={`${slotThemes[slotIdx]}：当前 ${val} 点`}
+              style={{ animationDelay: `${slotIdx * 0.08}s` }}
+              onClick={() => cycleSlot(slotIdx)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") { e.preventDefault(); cycleSlot(slotIdx); }
               }}
             >
-              落锤
-            </button>
+              <div className="weight-title">
+                <span className="weight-key">{slotLabels[slotIdx]}</span>
+                <span>{slotThemes[slotIdx]}</span>
+              </div>
+              <div className="node-group" aria-hidden="true">
+                {[0, 1].map((d) => (
+                  <span key={d} className={`node-dot ${d < val ? "active" : ""}`} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="weight-footer">
+          <div className="weight-status">
+            {isValid ? "⚖️ 筹码已分配完毕" : `尚余 ${3 - total} 点心理筹码（点击卡片分配）`}
           </div>
+          <button
+            type="button"
+            className={`btn-confirm-weight ${isValid ? "active" : ""}`}
+            onClick={handleWeightConfirm}
+            disabled={!isValid || isAnimating}
+          >
+            落 锤 决 断
+          </button>
         </div>
       </div>
     );
@@ -552,7 +570,9 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
           background: "rgba(3,3,3,0.95)",
           padding: "4vh 8vw",
           cursor: "pointer",
-          animation: "staggerIn 0.6s var(--ease-out-expo) forwards",
+          // A4：reduced-motion 时跳过 staggerIn（inline 优先级高于 CSS 守卫，
+          // 故在 JS 侧按 reducedMotion state 门控，元素仍可见）。
+          animation: reducedMotion ? "none" : "staggerIn 0.6s var(--ease-out-expo) forwards",
         }}
         onClick={() => { setInterjection(null); setInterjectionText(""); }}
         onKeyDown={(e) => {
@@ -591,45 +611,71 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   };
 
   return (
-    <div className="view-test" style={{ position: "relative", width: "100%", height: "100%" }}>
+    <div className="view-test" style={{ position: "relative", width: "100%", height: "100dvh" }}>
+      {/* 32 背景层（z 0-1 内容之下）：Canvas 紫粒子 + 浮雕题号 + 胶片颗粒 */}
+      <BackgroundLayers questionIndex={currentIndex} reducedMotion={reducedMotion} />
       <div id="progress-line" />
-      {/* EXIT button */}
-      <button type="button" onClick={() => { localStorage.removeItem(STORAGE_KEY); onExit(); }}
-        style={{
-          position: "absolute",
-          top: "max(1.2rem, env(safe-area-inset-top, 1.2rem))",
-          right: "max(1.2rem, env(safe-area-inset-right, 1.2rem))",
-          zIndex: 30,
-          background: "transparent",
-          border: "none",
-          color: "rgba(255,255,255,0.4)",
-          fontFamily: "var(--f-title)",
-          fontSize: "0.7rem",
-          letterSpacing: "0.15em",
-          padding: "0.3rem 0.5rem",
-          cursor: "pointer",
-          transition: "all 0.3s ease",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = "rgba(184, 10, 31, 0.8)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = "rgba(255,255,255,0.4)";
-        }}
-      >
-        {t("test.exit")}
-      </button>
-      <div className="watermark-index" aria-hidden="true">{ROMAN[safeIndex] || (safeIndex + 1)}</div>
-      <div ref={stageRef} id="test-stage-wrapper" className={stageFadeOut ? "stage-fade-out" : ""}>
-        <div className="question-stage">
-          <div className="q-meta">
-            <span>
-              {isGateOrTrigger && <span className="gate-badge">{current.type === "gate" ? t("test.gateBadge") : t("test.triggerBadge")}</span>}
-              {isGateOrTrigger ? "" : `${current.meta || "审判"} \u00B7 ${String(safeIndex + 1).padStart(2, "0")} / ${String(displayQuestions.length).padStart(2, "0")}`}
-            </span>
-            <span className="q-hint">{showKeyboardHint ? (renderType === "weight" ? "用 +/- 调整砝码" : t("test.keyHint")) : ""}</span>
+      <div className="grain-overlay-test" aria-hidden="true" />
+      {/* Top bar — HUD 双胶囊（32 提取）：左 PREV+计数器 / 右 EXIT。Q1 时
+          #btn-back 保持 DOM（CSS 默认 opacity 0），safeIndex>0 时加 .visible 显现。
+          .test-header 容器定位机制不动（桌面 absolute 顶角 / 移动端 flex 列）。 */}
+      <div className="test-header">
+        <div className="hud-capsule">
+          <button
+            type="button"
+            id="btn-back"
+            className={`hud-btn ${safeIndex > 0 ? "visible" : ""}`}
+            tabIndex={safeIndex > 0 ? 0 : -1}
+            onClick={handleBack}
+            aria-label="返回上一题"
+          >
+            {/* 双向箭头用内联 SVG 绘制（⇄ 字符在部分安卓系统字体缺字形会渲染
+                成空白，SVG 保证所有设备一致显示） */}
+            <svg width="22" height="14" viewBox="0 0 24 16" fill="none"
+              stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"
+              strokeLinejoin="round" style={{ display: "block" }} aria-hidden="true">
+              <line x1="2" y1="8" x2="22" y2="8" />
+              <path d="M7 3 L2 8 L7 13" />
+              <path d="M17 3 L22 8 L17 13" />
+            </svg>
+          </button>
+          <div className="hud-counter">
+            <span>{String(safeIndex + 1).padStart(2, "0")}</span>
+            <span className="counter-slash">/</span>
+            <span>{String(questions.length).padStart(2, "0")}</span>
           </div>
-          <div className="q-text" id={questionLabelId}>{current.text}</div>
+        </div>
+        {/* EXIT 按钮（桌面回 HEAD：t("test.exit") 文案；移动端 32 皮肤保留写死 RESTART） */}
+        <div className="hud-capsule">
+          <button type="button" className="hud-btn" onClick={() => { localStorage.removeItem(STORAGE_KEY); onExit(); }}>
+            {isDesktop ? (t("test.exit") || "EXIT") : "RESTART"}
+          </button>
+        </div>
+      </div>
+      <div className="watermark-index" aria-hidden="true">
+        {isDesktop ? (ROMAN[safeIndex] || (safeIndex + 1)) : String(safeIndex + 1).padStart(2, "0")}
+      </div>
+      <div ref={stageRef} id="test-stage-wrapper" className={stageFadeOut ? "stage-fade-out" : ""}>
+        {/* 题卡：.card.enter 为 floatIn 进场钩子（key remount 接线，见上方 I2 注释）。
+            玻璃态/紫 glow/金线仅移动端 32 皮肤（mobile-skin）；桌面为 HEAD 旧版无卡排版。
+            card-glare 已随桌面回滚移除（32 元素）。 */}
+        <div key={safeIndex} className="question-stage card enter">
+          <span className={`toast-verdict ${toastVerdict ? "show" : ""}`} aria-live="polite">✦ 契约已被记录 ✦</span>
+          <div className="q-meta">
+            {isGateOrTrigger ? (
+              <span className="gate-badge">{current.type === "gate" ? t("test.gateBadge") : t("test.triggerBadge")}</span>
+            ) : isDesktop ? (
+              // 桌面回 HEAD：meta · 计数内嵌（HUD 计数器仅移动端 32 皮肤）
+              <span>{`${current.meta || "审判"} \u00B7 ${String(safeIndex + 1).padStart(2, "0")} / ${String(displayQuestions.length).padStart(2, "0")}`}</span>
+            ) : (
+              <span className="tag-pill">
+                <span className="pulse-orb" aria-hidden="true" />
+                <span>{current.meta || "审判"}</span>
+              </span>
+            )}
+            <span className="q-hint">{showKeyboardHint ? (renderType === "weight" ? t("test.weightHint") : t("test.keyHint")) : ""}</span>
+          </div>
+          <div className="q-text" id={questionLabelId}>{renderRichText(current.text)}</div>
         </div>
         {renderOptions()}
       </div>

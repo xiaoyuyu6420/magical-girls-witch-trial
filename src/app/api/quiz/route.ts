@@ -40,7 +40,11 @@ export async function GET(req: NextRequest) {
       const renderType = (q as { renderType?: string }).renderType ?? "normal";
       const shuffleable = pack.rules.optionShuffle === "stable-by-question-id"
         && q.type === "normal" && renderType === "normal";
-      const options = shuffleable ? shuffleOptionsStable(q.id, rawOptions) : rawOptions;
+      // IM6 诊断（2026-08-13）：shuffle 种子不能用自增 id —— FORCE_RESEED 每次
+      // deleteMany+create 后 SQLite AUTOINCREMENT 不重置，q.id 跨 seed 递增，
+      // 导致"stable"洗牌跨部署/reseed 输出不同选项顺序 → 视觉基线漂移 + E2E 角色漂移。
+      // 改用业务 order（seed 内唯一、跨 seed 稳定）。
+      const options = shuffleable ? shuffleOptionsStable(q.order ?? q.id, rawOptions) : rawOptions;
       return {
         id: q.id,
         dim: q.dim,

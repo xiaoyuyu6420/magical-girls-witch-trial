@@ -1,0 +1,1524 @@
+{
+  "hash": "1d8a425d023a",
+  "questions": [
+    {
+      "dim": "S1",
+      "type": "normal",
+      "renderType": null,
+      "text": "「别装冷静了。你心里清楚自己已经踩在临界线上——可你还在盘算怎么让那个声音闭嘴。你从不接受任何人的评判——对吧？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。那数据可能有误差，凭什么让我认命？",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装冷静。配合是审慎，不是认命——冲动只会让浓度更高。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。我容不得任何东西对我的命运指手画脚。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "F1",
+      "type": "normal",
+      "renderType": null,
+      "text": "「别装了。嘴上说'放下了'，可你记得每个伤害过你的人的脸、说过的话。你从来没有真正原谅过——对吗？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对，我真的放下了。恨只会反噬自己。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装放下。恨是真的，手松开也是真的——不是原谅，是今天不动手。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。我从来没原谅过。恨意从进来那天就没消退。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "B1",
+      "type": "normal",
+      "renderType": null,
+      "text": "「你嘴上说'谢谢'，心里却没信过那个向你伸出手的人——你连她为何偏偏找你都没想通，就在算她图什么。你从来没无条件信任过陌生人。」",
+      "opts": [
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "不对。我信了。多一个同伴多一份希望，不是人人都在算计。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装信任，但也不封闭。警惕和善意不矛盾——我接过食物了不是吗？",
+          "labelIsCode": false
+        },
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。这世上没人会无条件对人好。我从来没真正相信过。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "W1",
+      "type": "normal",
+      "renderType": null,
+      "text": "「深夜独处，记忆翻涌——你深呼吸、握拳，把它们压回去。你怕情绪失控，所以把自己封死。你从来没有真正崩溃过——对吧？」",
+      "opts": [
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装没事。我让眼泪流了——这不是压抑，是活着。",
+          "labelIsCode": false
+        },
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。我没压回去。我放手了，让一切涌出来。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。我握紧拳头把记忆压了回去。我不能被情绪吞噬。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "S2",
+      "type": "normal",
+      "renderType": null,
+      "text": "「东西被偷，人人否认。你心里已知道是谁——本能在排斥她，直觉在尖叫。可你连证据都没有，就定了罪。你从来都是先判后审——对吧？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。我没凭直觉定罪。谁有动机、谁有机会——我用逻辑，不是凭空臆断。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装客观。直觉说是她，但没证据的指控只会分裂大家——不是审判，是审慎。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。就是她。我说不出为什么，但本能在排斥她——我从不需要证据就敢定罪。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "F2",
+      "type": "normal",
+      "renderType": null,
+      "text": "「第三次听到'必须有人牺牲，一切才能结束'。第一次不信，第二次安慰自己规则有漏洞，第三次——脑袋空白。你早知这规则绕不开——对吧？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。第三次？那一定有前两次没发现的漏洞。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装镇定。规则残酷，但一定有改写可能——我拒绝在找到出路前先崩溃。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。脑袋空白。我早知走不通，只是不愿承认。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "B2",
+      "type": "normal",
+      "renderType": null,
+      "text": "「你最好的朋友一直在出卖你们。她说'是为了保护你'——你差点信了？她背叛了你，第一反应不是愤怒，是替她找理由。你对背叛容忍高得反常——因为你怕失去任何人。」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。不是容忍背叛，是生气没用——先解决问题。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装大度。愤怒涌上来，但我强迫自己听完解释——不敢在确认前切断这条线。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。心像被剜了一块。被最信任的人背叛，比什么都痛——可我不敢恨她。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "W2",
+      "type": "normal",
+      "renderType": "scale",
+      "text": "「别想了。天平只会倾斜一次。你骨子里，到底是——」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "「任由感觉淹没我——恐惧、恶心，都是活着的证据。」",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "「把感觉关进盒子里，只让脑子转——活着才算下一步。」",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "S3",
+      "type": "normal",
+      "renderType": null,
+      "text": "「一个杀了人的少女说：重来一次她还会这么做——那是保护唯一朋友的方式。你已经替她找了借口。你的宽恕从不问她值不值得——对吧？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。规则就是规则，杀人者必须受处刑。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装铁面。我理解她想护同伴，但杀人不是唯一解——我拒绝把动机当免罪符。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。如果是我，可能也会这么做。比起变成空壳，我更怕失去重要的人——宽恕不问值不值得。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "F3",
+      "type": "normal",
+      "renderType": null,
+      "text": "「你找到了自己的出路——代价是失去所有同伴。她们说你疯了，执念蒙了心。可你没停下来。你不是'还在考虑'——你早决定好了，哪怕众叛亲离。」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。也许我太执着了，让我再想想有没有不伤人的方案——我还没决定。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装犹豫。我在试着解释，但她们不同意——我也许该退一步。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。不理解就算了。在彻底迷失之前，我必须完成这件事。我从没犹豫过。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "B3",
+      "type": "normal",
+      "renderType": null,
+      "text": "「她在加速崩溃，意识模糊——你没犹豫，替她扛下一切，自己也在沉沦，离变成空壳更近一步。你把'牺牲'叫'分担'，把'送命'叫'没得选'——可你明明可以先确认她的意愿。」",
+      "opts": [
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装无私。我犹豫了，也先确认了她的意愿——但分担不是送命。",
+          "labelIsCode": false
+        },
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。我还不能死。一定还有别的办法——先保住自己，再救她。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。我毫不犹豫伸出了手。没问意愿，没找办法——我容不得她消散。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "W3",
+      "type": "normal",
+      "renderType": null,
+      "text": "「深夜，某种东西在你体内涌动，前所未有的力量在觉醒——而你觉得'舒服'。你管那股把你推向失控的力量叫'找回自己'。你不是在对抗它，是在享受它。你从没真想压下去——对吧？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。我压下去了。那股力量不是'找回自己'，是失控。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装抗拒。我试着和它对话——也许它不全是敌人。这是了解另一面，不是放任。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。我闭上眼沉入那片黑暗。它确实像找回了自己——我从没真想压下去。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "S1",
+      "type": "normal",
+      "renderType": null,
+      "text": "「一个在你最脆弱时见死不救的人，现在满身是伤倒在走廊里求你。你说'和我没关系'——可你的脚停了。你嘴上记仇，身体却从不真的见死不救。你的'严苛'只是嘴硬——对吧？」",
+      "opts": [
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "不对。帮她？她当初可没帮过我。我是真的让她自生自灭。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装无情。先看伤势——但之后得算清账。不是嘴软，是原则不允许见死不救。",
+          "labelIsCode": false
+        },
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。她受伤和我没关系，但放任不管我的良心会一直过不去——我放不下任何人的苦难。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "F1",
+      "type": "normal",
+      "renderType": "weight",
+      "text": "「这台秤，你来拨。把分量给你认同的那句话。总得是3——不多不少。」\nA：「我记得每一个伤害过我的人的脸。」\nB：「这股恨意，从被伤害那天起就没消退过。」\nC：「如果有办法，我想让他们付出代价。」",
+      "opts": [
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "weight::2|1|0",
+          "labelIsCode": true
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "weight::2|0|1",
+          "labelIsCode": true
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "weight::1|2|0",
+          "labelIsCode": true
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "weight::0|2|1",
+          "labelIsCode": true
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "weight::1|0|2",
+          "labelIsCode": true
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "weight::0|1|2",
+          "labelIsCode": true
+        },
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "weight::1|1|1",
+          "labelIsCode": true
+        }
+      ]
+    },
+    {
+      "dim": "B1",
+      "type": "normal",
+      "renderType": null,
+      "text": "「你的同伴要你把全部底牌告诉她，说'只有互相信任才能一起走到最后'。你第一个念头不是'好'，是'凭什么'。你从没完整信任过谁——总留一半底牌，一半真心。」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对，我不是不信任——是凭什么让我先亮底牌？",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装封闭。留一半、说一半——信任靠时间建立，不是全押的赌局。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。既然要一起走下去，就得互相信任。全部给她——我从不会先伸出手。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "W1",
+      "type": "normal",
+      "renderType": null,
+      "text": "「同伴说你'总是笑嘻嘻的，从来不生气'。可你的情绪从没真正平稳过——那张笑脸底下压着多少东西？你不是'不生气'，是'不敢生气'——对吧？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。开心最重要——我的情绪平稳是因为真的不在意。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装没事。不是不生气，是生气也没用——情绪失控只会更糟。我选择何时释放，这叫止损。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。当然会生气。只是在选择何时、对谁释放——其实就是在压着。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "S2",
+      "type": "normal",
+      "renderType": null,
+      "text": "「一个不可靠的消息说你们中间有内鬼——你第一秒就信了。浑身发冷，胃里翻涌。你管这叫'直觉'，可这分明是恐慌。你分不清直觉和恐惧——对吧？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。我第一反应是去调查来源——我不凭恐惧做决定。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装冷静。心里一沉，但强迫自己别马上信——疑心生暗鬼。我拒绝被恐惧牵着走。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。胃里翻涌，浑身发冷，我第一秒就信了。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "GATE",
+      "type": "gate",
+      "renderType": null,
+      "text": "「问题快问完了，你一直在回答'你会怎么做'。最后一个——如果你拥有摧毁一切的力量，没人能阻止……你最深的念头，究竟是'毁灭'，还是'被看见'？」",
+      "opts": [
+        {
+          "score": null,
+          "value": "destroy",
+          "trigger": null,
+          "label": "毁灭。我想把伤害过我的东西全部摧毁。",
+          "labelIsCode": false
+        },
+        {
+          "score": null,
+          "value": "seen",
+          "trigger": null,
+          "label": "被看见。我只是不想再一个人扛着。",
+          "labelIsCode": false
+        },
+        {
+          "score": null,
+          "value": "peace",
+          "trigger": null,
+          "label": "都不是。我想要的是平静地活下去。",
+          "labelIsCode": false
+        },
+        {
+          "score": null,
+          "value": "undecided",
+          "trigger": null,
+          "label": "……我还没想好。这两个我都想要。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "TRIGGER",
+      "type": "trigger",
+      "renderType": null,
+      "text": "「你犹豫了。可你身体里的东西没有犹豫——它在回应我。承认吧，你心里有块地方，早越过了自己画的线。要我点亮它吗？一旦亮起，就回不去了。」",
+      "opts": [
+        {
+          "score": null,
+          "value": null,
+          "trigger": "SPECIAL_A",
+          "label": "……亮吧。我承认，我一直想跨过那条线。",
+          "labelIsCode": false
+        },
+        {
+          "score": null,
+          "value": null,
+          "trigger": null,
+          "label": "不。那条线是我自己画的，我守得住。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "F2",
+      "type": "normal",
+      "renderType": null,
+      "text": "「你最信任的人刚在你面前彻底垮掉。你拼命阻止，绝望中彻底失控，呼喊淹没在惨叫里——然后你跪了很久。你以为'站起来了'，可站起来的那一刻，心里什么都没有了。」",
+      "opts": [
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装坚强。跪了很久——我站起来不是恢复了，是还没彻底碎掉。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。世界在那一刻崩塌了。我再也不想站起来。",
+          "labelIsCode": false
+        },
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。即使如此，我也要活下去。连同她的份——她留在我身上的意志比绝望更强。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "B2",
+      "type": "normal",
+      "renderType": null,
+      "text": "「有人说'信任别人就是给自己递刀子'——你觉得他说得对。你从不主动递刀，可又受不了完全不信任的日子。你活在'怕背叛'和'渴望信任'之间，两头都是伤口。」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。有道理就是有道理，我不会因怕伤口就不递刀——但也不会轻易递。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装不在乎。完全不信任的日子比什么都难熬——这不叫敏感，是人需要连接。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。即使被刀划过，我还是愿意相信下一次。我对背叛的痛从不长记性——两头都是伤口。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "W2",
+      "type": "normal",
+      "renderType": "scale",
+      "text": "「天平又来了。这次别想左右逢源。你骨子里，到底是——」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "「被感情牵着走的人。情绪一来，什么都顾不上了。」",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "「能把感情收起来、用脑子活着的人。再难受也得先算清楚。」",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "S3",
+      "type": "normal",
+      "renderType": null,
+      "text": "「一直对你温柔的人，每个微笑都是安排好的——可她确实在你最脆弱时救过你。你说'假的就假的'，可你放不下那些温柔。你判了她的罪，身体却记着她的好——对吧？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。假的就假的，我不会因为她救过我就原谅欺骗。温柔是任务，救命是意外。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。即使目的是监视，那份温柔对我是真实的。我判了她的罪，可忘不了那些温暖。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装果断。温暖是假的，救命是真的——不是宽恕也不是惩戒，是我卡在中间动不了。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "F3",
+      "type": "normal",
+      "renderType": null,
+      "text": "「有人说'放下吧，有些事注定做不到，执念在吞噬理智'——你第一个念头是'我偏要做到'。你把'不甘心'叫'意志'，把'不放手'叫'坚持'。你和执念之间从没有界限——对吧？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。该放手时就放手——我分得清坚持和自毁。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装洒脱。谢谢关心，但何时放手我自己定——我不接受别人定义'做不到'。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。注定做不到？我偏要做到。执念吞噬不了我的意志——我和它从没有界限。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "B3",
+      "type": "normal",
+      "renderType": null,
+      "text": "「机会就在眼前，只有这一次——而你犹豫了。你说'抱歉'，可脚迈不出去。你做不到丢下任何人。你从来没把自己放在第一位——对吧？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。我走了。抱歉——在生死面前，我把自己放在第一位。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装果断。在码头站了很久——但最后回去了。不是牺牲，是知道走了也活不好。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。我做不到丢下她们自相残杀。我从来没把自己放在第一位。",
+          "labelIsCode": false
+        }
+      ]
+    },
+    {
+      "dim": "W3",
+      "type": "normal",
+      "renderType": null,
+      "text": "「你在愤怒中差点杀了一个人——彻底失控，险些万劫不复。事后你说'后怕'，可心里一部分不后悔。你把'差点失控'叫'意外'，把'那个人该死'叫'正义'。你从没害怕过自己的暴走——对吧？」",
+      "opts": [
+        {
+          "score": 1,
+          "value": null,
+          "trigger": null,
+          "label": "不对。后怕。差点变成自己最痛恨的样子——我真的怕。",
+          "labelIsCode": false
+        },
+        {
+          "score": 2,
+          "value": null,
+          "trigger": null,
+          "label": "我从不假装纯粹。既后怕，又隐隐觉得那才是觉醒后的真实自我——但我不会去追。",
+          "labelIsCode": false
+        },
+        {
+          "score": 3,
+          "value": null,
+          "trigger": null,
+          "label": "……你说得对。不后悔。那个人该受惩罚。我从没真正害怕过自己的暴走。",
+          "labelIsCode": false
+        }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "code": "EMMA",
+      "name": "樱羽艾玛",
+      "group": "B",
+      "vector": "LHH-LLM-HHH-LLL",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "SHERRY",
+      "name": "橘雪莉",
+      "group": "B",
+      "vector": "MHM-LMH-HHH-LHH",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "MIRIA",
+      "name": "佐伯米莉亚",
+      "group": "B",
+      "vector": "LMH-LLM-HMH-MML",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "HIRO",
+      "name": "二阶堂希罗",
+      "group": "F",
+      "vector": "HLL-HMH-LHH-HHM",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "NANOKA",
+      "name": "黑部奈叶香",
+      "group": "F",
+      "vector": "HHL-HMH-LLL-LLH",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "HANNA",
+      "name": "远野汉娜",
+      "group": "S",
+      "vector": "MHH-LMM-MHM-HML",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "MERURU",
+      "name": "冰上梅露露",
+      "group": "S",
+      "vector": "HMH-LLH-HLH-HHL",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "COCO",
+      "name": "泽渡可可",
+      "group": "S",
+      "vector": "HML-LMM-LHL-MMM",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "NOAH",
+      "name": "城崎诺亚",
+      "group": "S",
+      "vector": "LHH-LLL-HLM-LLH",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "MARGO",
+      "name": "宝生玛格",
+      "group": "W",
+      "vector": "MLM-LLM-LLM-MHL",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "ANAN",
+      "name": "夏目安安",
+      "group": "W",
+      "vector": "MHL-LMH-LHL-MHH",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "ALISA",
+      "name": "紫藤亚里沙",
+      "group": "mix",
+      "vector": "HLM-LLM-MMH-HLM",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "LEIA",
+      "name": "莲见蕾雅",
+      "group": "mix",
+      "vector": "MHM-LMH-MHM-LMH",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": true
+    },
+    {
+      "code": "UNSET",
+      "name": "未定之魂",
+      "group": "fallback",
+      "vector": "MMM-MMM-MMM-MMM",
+      "subtitle": null,
+      "special": false,
+      "hasKeywords": false
+    },
+    {
+      "code": "YUKI",
+      "name": "月代雪",
+      "group": "special",
+      "vector": "HHH-LLL-LLL-LLL",
+      "subtitle": "大魔女",
+      "special": true,
+      "hasKeywords": true
+    },
+    {
+      "code": "ETL",
+      "name": "不灭雪华",
+      "group": "special",
+      "vector": "LLL-HHH-HHH-HHH",
+      "subtitle": "梅露露真身",
+      "special": true,
+      "hasKeywords": true
+    },
+    {
+      "code": "MADOKA",
+      "name": "鹿目圆",
+      "group": "B",
+      "vector": "LLH-LLH-HLH-LLH",
+      "subtitle": "终将成为神",
+      "special": false,
+      "hasKeywords": true,
+      "desc": "你是天生的信仰者——温柔到近乎天真的善良，让你在看到任何人的痛苦时都无法转身离开。你信任陌生人，宽恕伤害过你的人，甘愿为素不相识的人承担命运。这份善意不是软弱，是你明知世界残酷后依然选择伸出手。当所有人都绝望时，你是那个还会说'一定有办法'的人——哪怕代价是抹消自己存在的痕迹。",
+      "slogan": "「我不想让任何人再哭泣，哪怕要我变成不再存在的存在」"
+    },
+    {
+      "code": "HOMURA",
+      "name": "晓美焰",
+      "group": "F",
+      "vector": "HHL-HLH-LHH-HHH",
+      "subtitle": "时间掠夺者",
+      "special": false,
+      "hasKeywords": true,
+      "desc": "你是冰与执念的矛盾体——外表冷酷到不近人情，内心却燃烧着比任何人都炽烈的执着。你记着每一个轮回，每一次失败，每一个没能救下她的瞬间。你不信任旁人，因为旁人从未陪你走过那些被重置的时间；你宽恕不了命运，因为命运从未对你手软。你的温柔只对一个人开放，而对那一个人的爱，足够让你与整个世界为敌。",
+      "slogan": "「哪怕要重启世界一千次，我也要守住她一个人的笑容」"
+    },
+    {
+      "code": "SAYAKA",
+      "name": "美树沙耶香",
+      "group": "mix",
+      "vector": "HML-MHH-HHH-LHH",
+      "subtitle": "正义的末路",
+      "special": false,
+      "hasKeywords": true,
+      "desc": "你是被自己的正义感烧成灰烬的人——你眼里容不下一点不公，你为受伤的人出头，你许愿治愈心上人却不敢让他知道。可这个世界不奖励纯粹的好人：你信任的人背叛了你的秘密，你救的人忘了你的存在，你信奉的正义在残酷的现实前一寸寸碎裂。你的崩溃不是软弱，是太用力地善良之后被反噬的伤口。魔女化不是堕落，是你的正义找不到出口的悲鸣。",
+      "slogan": "「我明明是想做一个正确的人，为什么最后变成了怪物」"
+    },
+    {
+      "code": "KYOKO",
+      "name": "佐仓杏子",
+      "group": "mix",
+      "vector": "MHL-MMH-LMH-MMH",
+      "subtitle": "末路求生者",
+      "special": false,
+      "hasKeywords": true,
+      "desc": "你是被现实磨硬了壳的实用主义者——曾经的你也相信为他人牺牲是神圣的，直到那个许愿毁了你的全家。从那以后你学会了先顾自己，学会了冷眼旁观别人的悲剧，学会了用'这不关我事'挡住所有想靠近的人。可你骗不了自己：当真正在乎的人陷入绝境，你还是会冲上去。你的硬是装出来的，你的软才是底色——只是你不敢再轻易把它交出来。",
+      "slogan": "「别傻了。在这个世界里，只为别人许愿的人活不长」"
+    },
+    {
+      "code": "MAMI",
+      "name": "巴麻美",
+      "group": "B",
+      "vector": "HMM-LHM-HHL-HHL",
+      "subtitle": "孤独的前辈",
+      "special": false,
+      "hasKeywords": true,
+      "desc": "你是优雅的盔甲下藏着深渊的人——你永远是后辈面前从容不迫的前辈，泡着红茶、系着缎带、用最漂亮的姿态消灭魔女。可没有人知道你独自战斗了多少年，没有人知道你每个夜晚都在害怕下一次会不会就回不来了。你渴望同伴，渴望被需要，渴望有人能让你卸下'可靠前辈'的伪装。当有人终于愿意走近你，你会紧紧抓住——因为你太孤独了，孤独到宁可把脆弱藏在优雅里，也不愿被人看见。",
+      "slogan": "「当魔法少女这么久，我其实……一直都好害怕」"
+    }
+  ],
+  "i18nKeys": {
+    "zh-CN": [
+      "meta.title",
+      "meta.description",
+      "welcome.badge",
+      "welcome.title",
+      "welcome.subtitle",
+      "welcome.startHint",
+      "welcome.participants",
+      "welcome.startButton",
+      "welcome.prologue1",
+      "welcome.prologue2",
+      "welcome.prologue3",
+      "loading.text",
+      "test.exit",
+      "test.gateBadge",
+      "test.triggerBadge",
+      "test.keyHint",
+      "result.archetype",
+      "result.hidden",
+      "result.border",
+      "result.share",
+      "result.copyLink",
+      "result.rebirth",
+      "result.analysis",
+      "result.dimAnalysis",
+      "result.you",
+      "result.ideal",
+      "result.statsInfo",
+      "result.statsShort",
+      "result.factorResonance",
+      "result.factorResonanceLabel",
+      "result.shareText",
+      "result.revealJudgement",
+      "result.revealTransition",
+      "result.revealFrom",
+      "result.rarityLabel",
+      "result.rarityGlobal",
+      "result.rarityCollecting",
+      "result.rarityRare",
+      "result.workIntroLabel",
+      "result.soulTraits",
+      "result.shareHook",
+      "result.shareCta",
+      "result.hiddenReveal",
+      "result.skipHint",
+      "result.regionLabel",
+      "dims.S1",
+      "dims.S2",
+      "dims.S3",
+      "dims.F1",
+      "dims.F2",
+      "dims.F3",
+      "dims.B1",
+      "dims.B2",
+      "dims.B3",
+      "dims.W1",
+      "dims.W2",
+      "dims.W3",
+      "dimGroups.S",
+      "dimGroups.F",
+      "dimGroups.B",
+      "dimGroups.W",
+      "types.EMMA.name",
+      "types.EMMA.slogan",
+      "types.EMMA.desc",
+      "types.EMMA.keywords",
+      "types.SHERRY.name",
+      "types.SHERRY.slogan",
+      "types.SHERRY.desc",
+      "types.SHERRY.keywords",
+      "types.MIRIA.name",
+      "types.MIRIA.slogan",
+      "types.MIRIA.desc",
+      "types.MIRIA.keywords",
+      "types.HIRO.name",
+      "types.HIRO.slogan",
+      "types.HIRO.desc",
+      "types.HIRO.keywords",
+      "types.NANOKA.name",
+      "types.NANOKA.slogan",
+      "types.NANOKA.desc",
+      "types.NANOKA.keywords",
+      "types.HANNA.name",
+      "types.HANNA.slogan",
+      "types.HANNA.desc",
+      "types.HANNA.keywords",
+      "types.MERURU.name",
+      "types.MERURU.slogan",
+      "types.MERURU.desc",
+      "types.MERURU.keywords",
+      "types.COCO.name",
+      "types.COCO.slogan",
+      "types.COCO.desc",
+      "types.COCO.keywords",
+      "types.NOAH.name",
+      "types.NOAH.slogan",
+      "types.NOAH.desc",
+      "types.NOAH.keywords",
+      "types.MARGO.name",
+      "types.MARGO.slogan",
+      "types.MARGO.desc",
+      "types.MARGO.keywords",
+      "types.ANAN.name",
+      "types.ANAN.slogan",
+      "types.ANAN.desc",
+      "types.ANAN.keywords",
+      "types.ALISA.name",
+      "types.ALISA.slogan",
+      "types.ALISA.desc",
+      "types.ALISA.keywords",
+      "types.LEIA.name",
+      "types.LEIA.slogan",
+      "types.LEIA.desc",
+      "types.LEIA.keywords",
+      "types.UNSET.name",
+      "types.UNSET.slogan",
+      "types.UNSET.desc",
+      "types.YUKI.name",
+      "types.YUKI.subtitle",
+      "types.YUKI.slogan",
+      "types.YUKI.desc",
+      "types.YUKI.keywords",
+      "types.ETL.name",
+      "types.ETL.subtitle",
+      "types.ETL.slogan",
+      "types.ETL.desc",
+      "types.ETL.keywords",
+      "questions",
+      "gate.meta",
+      "gate.text",
+      "gate.options",
+      "trigger.meta",
+      "trigger.text",
+      "trigger.options",
+      "disclaimer.footer",
+      "disclaimer.result"
+    ],
+    "en": [
+      "meta.title",
+      "meta.description",
+      "welcome.badge",
+      "welcome.title",
+      "welcome.subtitle",
+      "welcome.startHint",
+      "welcome.participants",
+      "welcome.startButton",
+      "welcome.prologue1",
+      "welcome.prologue2",
+      "welcome.prologue3",
+      "loading.text",
+      "test.exit",
+      "test.gateBadge",
+      "test.triggerBadge",
+      "test.keyHint",
+      "result.archetype",
+      "result.hidden",
+      "result.border",
+      "result.share",
+      "result.copyLink",
+      "result.rebirth",
+      "result.analysis",
+      "result.dimAnalysis",
+      "result.you",
+      "result.ideal",
+      "result.statsInfo",
+      "result.statsShort",
+      "result.factorResonance",
+      "result.factorResonanceLabel",
+      "result.shareText",
+      "result.revealJudgement",
+      "result.revealTransition",
+      "result.revealFrom",
+      "result.rarityLabel",
+      "result.rarityGlobal",
+      "result.rarityCollecting",
+      "result.rarityRare",
+      "result.workIntroLabel",
+      "result.soulTraits",
+      "result.shareHook",
+      "result.shareCta",
+      "result.hiddenReveal",
+      "result.skipHint",
+      "result.regionLabel",
+      "dims.S1",
+      "dims.S2",
+      "dims.S3",
+      "dims.F1",
+      "dims.F2",
+      "dims.F3",
+      "dims.B1",
+      "dims.B2",
+      "dims.B3",
+      "dims.W1",
+      "dims.W2",
+      "dims.W3",
+      "dimGroups.S",
+      "dimGroups.F",
+      "dimGroups.B",
+      "dimGroups.W",
+      "types.EMMA.name",
+      "types.EMMA.slogan",
+      "types.EMMA.desc",
+      "types.EMMA.keywords",
+      "types.SHERRY.name",
+      "types.SHERRY.slogan",
+      "types.SHERRY.desc",
+      "types.SHERRY.keywords",
+      "types.MIRIA.name",
+      "types.MIRIA.slogan",
+      "types.MIRIA.desc",
+      "types.MIRIA.keywords",
+      "types.HIRO.name",
+      "types.HIRO.slogan",
+      "types.HIRO.desc",
+      "types.HIRO.keywords",
+      "types.NANOKA.name",
+      "types.NANOKA.slogan",
+      "types.NANOKA.desc",
+      "types.NANOKA.keywords",
+      "types.HANNA.name",
+      "types.HANNA.slogan",
+      "types.HANNA.desc",
+      "types.HANNA.keywords",
+      "types.MERURU.name",
+      "types.MERURU.slogan",
+      "types.MERURU.desc",
+      "types.MERURU.keywords",
+      "types.COCO.name",
+      "types.COCO.slogan",
+      "types.COCO.desc",
+      "types.COCO.keywords",
+      "types.NOAH.name",
+      "types.NOAH.slogan",
+      "types.NOAH.desc",
+      "types.NOAH.keywords",
+      "types.MARGO.name",
+      "types.MARGO.slogan",
+      "types.MARGO.desc",
+      "types.MARGO.keywords",
+      "types.ANAN.name",
+      "types.ANAN.slogan",
+      "types.ANAN.desc",
+      "types.ANAN.keywords",
+      "types.ALISA.name",
+      "types.ALISA.slogan",
+      "types.ALISA.desc",
+      "types.ALISA.keywords",
+      "types.LEIA.name",
+      "types.LEIA.slogan",
+      "types.LEIA.desc",
+      "types.LEIA.keywords",
+      "types.UNSET.name",
+      "types.UNSET.slogan",
+      "types.UNSET.desc",
+      "types.YUKI.name",
+      "types.YUKI.subtitle",
+      "types.YUKI.slogan",
+      "types.YUKI.desc",
+      "types.YUKI.keywords",
+      "types.ETL.name",
+      "types.ETL.subtitle",
+      "types.ETL.slogan",
+      "types.ETL.desc",
+      "types.ETL.keywords",
+      "questions",
+      "gate.meta",
+      "gate.text",
+      "gate.options",
+      "trigger.meta",
+      "trigger.text",
+      "trigger.options",
+      "disclaimer.footer",
+      "disclaimer.result"
+    ],
+    "ja": [
+      "meta.title",
+      "meta.description",
+      "welcome.badge",
+      "welcome.title",
+      "welcome.subtitle",
+      "welcome.startHint",
+      "welcome.participants",
+      "welcome.startButton",
+      "welcome.prologue1",
+      "welcome.prologue2",
+      "welcome.prologue3",
+      "loading.text",
+      "test.exit",
+      "test.gateBadge",
+      "test.triggerBadge",
+      "test.keyHint",
+      "result.archetype",
+      "result.hidden",
+      "result.border",
+      "result.share",
+      "result.copyLink",
+      "result.rebirth",
+      "result.analysis",
+      "result.dimAnalysis",
+      "result.you",
+      "result.ideal",
+      "result.statsInfo",
+      "result.statsShort",
+      "result.factorResonance",
+      "result.factorResonanceLabel",
+      "result.shareText",
+      "result.revealJudgement",
+      "result.revealTransition",
+      "result.revealFrom",
+      "result.rarityLabel",
+      "result.rarityGlobal",
+      "result.rarityCollecting",
+      "result.rarityRare",
+      "result.workIntroLabel",
+      "result.soulTraits",
+      "result.shareHook",
+      "result.shareCta",
+      "result.hiddenReveal",
+      "result.skipHint",
+      "result.regionLabel",
+      "dims.S1",
+      "dims.S2",
+      "dims.S3",
+      "dims.F1",
+      "dims.F2",
+      "dims.F3",
+      "dims.B1",
+      "dims.B2",
+      "dims.B3",
+      "dims.W1",
+      "dims.W2",
+      "dims.W3",
+      "dimGroups.S",
+      "dimGroups.F",
+      "dimGroups.B",
+      "dimGroups.W",
+      "types.EMMA.name",
+      "types.EMMA.slogan",
+      "types.EMMA.desc",
+      "types.EMMA.keywords",
+      "types.SHERRY.name",
+      "types.SHERRY.slogan",
+      "types.SHERRY.desc",
+      "types.SHERRY.keywords",
+      "types.MIRIA.name",
+      "types.MIRIA.slogan",
+      "types.MIRIA.desc",
+      "types.MIRIA.keywords",
+      "types.HIRO.name",
+      "types.HIRO.slogan",
+      "types.HIRO.desc",
+      "types.HIRO.keywords",
+      "types.NANOKA.name",
+      "types.NANOKA.slogan",
+      "types.NANOKA.desc",
+      "types.NANOKA.keywords",
+      "types.HANNA.name",
+      "types.HANNA.slogan",
+      "types.HANNA.desc",
+      "types.HANNA.keywords",
+      "types.MERURU.name",
+      "types.MERURU.slogan",
+      "types.MERURU.desc",
+      "types.MERURU.keywords",
+      "types.COCO.name",
+      "types.COCO.slogan",
+      "types.COCO.desc",
+      "types.COCO.keywords",
+      "types.NOAH.name",
+      "types.NOAH.slogan",
+      "types.NOAH.desc",
+      "types.NOAH.keywords",
+      "types.MARGO.name",
+      "types.MARGO.slogan",
+      "types.MARGO.desc",
+      "types.MARGO.keywords",
+      "types.ANAN.name",
+      "types.ANAN.slogan",
+      "types.ANAN.desc",
+      "types.ANAN.keywords",
+      "types.ALISA.name",
+      "types.ALISA.slogan",
+      "types.ALISA.desc",
+      "types.ALISA.keywords",
+      "types.LEIA.name",
+      "types.LEIA.slogan",
+      "types.LEIA.desc",
+      "types.LEIA.keywords",
+      "types.UNSET.name",
+      "types.UNSET.slogan",
+      "types.UNSET.desc",
+      "types.YUKI.name",
+      "types.YUKI.subtitle",
+      "types.YUKI.slogan",
+      "types.YUKI.desc",
+      "types.YUKI.keywords",
+      "types.ETL.name",
+      "types.ETL.subtitle",
+      "types.ETL.slogan",
+      "types.ETL.desc",
+      "types.ETL.keywords",
+      "questions",
+      "gate.meta",
+      "gate.text",
+      "gate.options",
+      "trigger.meta",
+      "trigger.text",
+      "trigger.options",
+      "disclaimer.footer",
+      "disclaimer.result"
+    ],
+    "zh-TW": [
+      "meta.title",
+      "meta.description",
+      "welcome.badge",
+      "welcome.title",
+      "welcome.subtitle",
+      "welcome.startHint",
+      "welcome.participants",
+      "welcome.startButton",
+      "welcome.prologue1",
+      "welcome.prologue2",
+      "welcome.prologue3",
+      "loading.text",
+      "test.exit",
+      "test.gateBadge",
+      "test.triggerBadge",
+      "test.keyHint",
+      "result.archetype",
+      "result.hidden",
+      "result.border",
+      "result.share",
+      "result.copyLink",
+      "result.rebirth",
+      "result.analysis",
+      "result.dimAnalysis",
+      "result.you",
+      "result.ideal",
+      "result.statsInfo",
+      "result.statsShort",
+      "result.factorResonance",
+      "result.factorResonanceLabel",
+      "result.shareText",
+      "result.revealJudgement",
+      "result.revealTransition",
+      "result.revealFrom",
+      "result.rarityLabel",
+      "result.rarityGlobal",
+      "result.rarityCollecting",
+      "result.rarityRare",
+      "result.workIntroLabel",
+      "result.soulTraits",
+      "result.shareHook",
+      "result.shareCta",
+      "result.hiddenReveal",
+      "result.skipHint",
+      "result.regionLabel",
+      "dims.S1",
+      "dims.S2",
+      "dims.S3",
+      "dims.F1",
+      "dims.F2",
+      "dims.F3",
+      "dims.B1",
+      "dims.B2",
+      "dims.B3",
+      "dims.W1",
+      "dims.W2",
+      "dims.W3",
+      "dimGroups.S",
+      "dimGroups.F",
+      "dimGroups.B",
+      "dimGroups.W",
+      "types.EMMA.name",
+      "types.EMMA.slogan",
+      "types.EMMA.desc",
+      "types.EMMA.keywords",
+      "types.SHERRY.name",
+      "types.SHERRY.slogan",
+      "types.SHERRY.desc",
+      "types.SHERRY.keywords",
+      "types.MIRIA.name",
+      "types.MIRIA.slogan",
+      "types.MIRIA.desc",
+      "types.MIRIA.keywords",
+      "types.HIRO.name",
+      "types.HIRO.slogan",
+      "types.HIRO.desc",
+      "types.HIRO.keywords",
+      "types.NANOKA.name",
+      "types.NANOKA.slogan",
+      "types.NANOKA.desc",
+      "types.NANOKA.keywords",
+      "types.HANNA.name",
+      "types.HANNA.slogan",
+      "types.HANNA.desc",
+      "types.HANNA.keywords",
+      "types.MERURU.name",
+      "types.MERURU.slogan",
+      "types.MERURU.desc",
+      "types.MERURU.keywords",
+      "types.COCO.name",
+      "types.COCO.slogan",
+      "types.COCO.desc",
+      "types.COCO.keywords",
+      "types.NOAH.name",
+      "types.NOAH.slogan",
+      "types.NOAH.desc",
+      "types.NOAH.keywords",
+      "types.MARGO.name",
+      "types.MARGO.slogan",
+      "types.MARGO.desc",
+      "types.MARGO.keywords",
+      "types.ANAN.name",
+      "types.ANAN.slogan",
+      "types.ANAN.desc",
+      "types.ANAN.keywords",
+      "types.ALISA.name",
+      "types.ALISA.slogan",
+      "types.ALISA.desc",
+      "types.ALISA.keywords",
+      "types.LEIA.name",
+      "types.LEIA.slogan",
+      "types.LEIA.desc",
+      "types.LEIA.keywords",
+      "types.UNSET.name",
+      "types.UNSET.slogan",
+      "types.UNSET.desc",
+      "types.YUKI.name",
+      "types.YUKI.subtitle",
+      "types.YUKI.slogan",
+      "types.YUKI.desc",
+      "types.YUKI.keywords",
+      "types.ETL.name",
+      "types.ETL.subtitle",
+      "types.ETL.slogan",
+      "types.ETL.desc",
+      "types.ETL.keywords",
+      "questions",
+      "gate.meta",
+      "gate.text",
+      "gate.options",
+      "trigger.meta",
+      "trigger.text",
+      "trigger.options",
+      "disclaimer.footer",
+      "disclaimer.result"
+    ]
+  }
+}

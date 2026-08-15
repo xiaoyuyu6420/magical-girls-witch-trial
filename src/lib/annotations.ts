@@ -7,9 +7,6 @@
 // 选文案的依据，文案本身只有行为描写。
 // ============================================================================
 
-import type { QuizPack } from "@/pack/types";
-import { scoreToTier } from "@/lib/match";
-
 /** 批注节点：答完第5/10/15题后触发 */
 export type AnnotationNode = 5 | 10 | 15;
 
@@ -77,40 +74,31 @@ export const ANNOTATION_FALLBACKS: Record<AnnotationNode, string> = {
 };
 
 /**
- * 纯函数：根据用户当前各维度总分，选一条审判官批注。
+ * 纯函数：根据用户当前三姿态累加分，选一条审判官批注。
  *
  * @param node 批注节点（5/10/15）
- * @param dimScores 用户当前各维度累计原始分（dimCode → sum of scores）
- * @param pack 内容包（用其 dimensions + algo.tiers）
+ * @param postureA 粉饰姿态累计分
+ * @param postureB 清醒姿态累计分
+ * @param postureC 扭曲姿态累计分
  * @param rng 可选随机数生成器（默认 Math.random），单测注入确定性 rng
- * @returns 行为描写文案（无维度标签/角色/百分比）
+ * @returns 行为描写文案（无姿态标签/角色/百分比）
  */
 export function pickAnnotation(
   node: AnnotationNode,
-  dimScores: Record<string, number>,
-  pack: QuizPack,
+  postureA: number,
+  postureB: number,
+  postureC: number,
   rng: () => number = Math.random,
 ): string {
-  // 找主导维度：sum 最高的真实维度（排除 GATE/TRIGGER 占位）
-  let dominantDim: string | null = null;
-  let maxSum = -Infinity;
-  for (const d of pack.dimensions) {
-    const sum = dimScores[d.code] ?? 0;
-    if (sum > maxSum) {
-      maxSum = sum;
-      dominantDim = d.code;
-    }
-  }
-
-  // 空输入或无主导维度 → fallback
-  if (!dominantDim || maxSum < 0) {
+  const total = postureA + postureB + postureC;
+  if (total <= 0) {
     return ANNOTATION_FALLBACKS[node];
   }
 
-  // 主导维度档位：scoreToTier 用 pack.algo.tiers（tiers=[2,4,5,6]→[0,1,2,3]=L/M/H/X）
-  // 归并为三档：0-1(L/M) → M偏稳；2(H) → H；3(X) → H；0(L) → L
-  const tierNum = scoreToTier(maxSum, pack);
-  const tier: Tier = tierNum <= 0 ? "L" : tierNum === 1 ? "M" : "H";
+  // 主导姿态集中度：max / total。集中度高=倾向明显(笃定 H)；低=分散(回避 L)
+  const maxPosture = Math.max(postureA, postureB, postureC);
+  const dominance = maxPosture / total;
+  const tier: Tier = dominance >= 0.5 ? "H" : dominance >= 0.34 ? "M" : "L";
 
   const pool = POOLS[node][tier];
   if (!pool || pool.length === 0) {
