@@ -87,23 +87,22 @@
     /* 强制深色渲染 scheme：不声明时浅色系统下 UA 默认控件/画布走浅色，
        是移动端浅色主题可读性差的根因之一 */
     color-scheme: dark;
-    /* ===== HTML 32 金紫黑赛博哥特 token（金标 ai_studio_code (32).html）===== */
-    --gold-hyper: #FFD700;
-    --gold-glow: rgba(255, 215, 0, 0.4);
-    --purple-neon: #D800FF;
-    --violet-deep: #7B2CBF;
-    --rose: #FF0055;
-    --void: #030305;
-    --card-glass-neo: rgba(12, 10, 18, 0.65);
-    --border-neon-gold: rgba(255, 215, 0, 0.35);
-    --border-purple: rgba(157, 0, 255, 0.3);
-    --text-primary: #F0EFF5;
-    --text-dim: #7C7A8D;
+    /* ===== 全站统一 token：32 金紫黑 → 桌面旧金暗色（2026-08-15 视觉统一，
+       手机/电脑同一套色板，消除双皮肤彩色分裂）===== */
+    --gold-hyper: #d4af37;              /* 原 #FFD700 超金 → 旧金 */
+    --gold-glow: rgba(212, 175, 55, 0.4);
+    --purple-neon: #d4af37;             /* 原 #D800FF 霓虹紫 → 旧金 */
+    --violet-deep: #8a6d3b;             /* 原 #7B2CBF 深紫 → 深金棕 */
+    --rose: #d4af37;                    /* 原 #FF0055 玫红 → 旧金 */
+    --void: #0c0a14;                    /* 原 #030305 → 桌面旧底 */
+    --card-glass-neo: rgba(18, 14, 26, 0.6);
+    --border-neon-gold: rgba(212, 175, 55, 0.3);
+    --border-purple: rgba(212, 175, 55, 0.25);
+    --text-primary: #ede9f3;
+    --text-dim: rgba(237, 233, 243, 0.45);
+    --reveal-bg: var(--c-void);
 
-    /* 定义点重定向（final.md 决策 2：4 行翻转 24 个 var() 消费者）
-       2026-08-14 回滚：桌面答题页配色回归 HEAD 迁移前旧金（#d4af37）——
-       --c-void/--c-gold 只被桌面答题页 + 死代码 welcome/cursor 消费，恢复旧值安全；
-       32 超金/紫 token 保留，由 mobile-skin / 结果页 32 类直接引用。 */
+    /* 桌面旧金基色（2026-08-15 起为全站唯一色板，32 金紫 token 已在上方统一重定向） */
     --c-void: #0c0a14;
     --c-gold: #d4af37;
     --c-accent: rgba(255,255,255,0.85);
@@ -142,17 +141,17 @@
     --chart-5: #999;
     --radius: 0.75rem;
 
-    /* ===== 香槟暗黑 token → 全部重定向到 32 金紫黑（final.md 决策2）===== */
-    --champagne-main: var(--gold-hyper);         /* 原 #d8c8b0 → 超金（R1 香槟清除） */
-    --champagne-light: #F2EFE9;                  /* 原米白保留为正文浅色（≈32 #F0EFF5） */
-    --champagne-dim: var(--violet-deep);         /* 原 #9e9282 → 深紫 */
-    --champagne-bg: var(--void);                 /* 原 #0a0a0c → 虚空黑 */
-    --card-glass: var(--card-glass-neo);         /* 原 rgba(18,18,22,.75) → 32 玻璃态 */
-    --border-muted: var(--border-purple);        /* 原 rgba(216,200,176,.15) → 紫边 */
-    --border-highlight: var(--border-neon-gold); /* 原 rgba(216,200,176,.4) → 金边 */
-    /* --f-syne bug 修复（final.md 盲点 #2）：next/font 注入的是哈希字体族名，
-       只能经 var(--font-syne) 取到；写 'Syne' 字面量会回退系统 sans */
-    --f-syne: var(--font-syne), sans-serif;
+    /* ===== 香槟暗黑 token → 派生自统一旧金（保留兼容层，消费方零改动）===== */
+    --champagne-main: var(--gold-hyper);         /* 原 #d8c8b0 → 旧金 */
+    --champagne-light: #F2EFE9;                  /* 米白正文浅色 */
+    --champagne-dim: var(--violet-deep);         /* 原 #9e9282 → 深金棕 */
+    --champagne-bg: var(--void);                 /* 虚空黑 */
+    --card-glass: var(--card-glass-neo);         /* 暗色玻璃态 */
+    --border-muted: var(--border-purple);        /* 旧金边 */
+    --border-highlight: var(--border-neon-gold); /* 亮金边 */
+    /* --f-syne 全站重定向到 Cinzel（2026-08-15 视觉统一：手机 32 无衬线 Syne
+       与桌面衬线分叉，统一为 --f-title 消除两端字体差异） */
+    --f-syne: var(--f-title);
   }
 }
 
@@ -165,10 +164,10 @@
     width: 100vw; height: 100vh; height: 100dvh;
     -webkit-font-smoothing: antialiased;
     background-image:
-      radial-gradient(ellipse at 20% 40%, rgba(40,15,60,0.7) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 20%, rgba(15,20,50,0.6) 0%, transparent 45%),
-      radial-gradient(ellipse at 50% 90%, rgba(30,10,45,0.5) 0%, transparent 55%),
-      radial-gradient(ellipse at 50% 50%, rgba(20,10,35,0.4) 0%, transparent 70%);
+      radial-gradient(ellipse at 20% 40%, rgba(60, 45, 20, 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(30, 28, 15, 0.28) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 90%, rgba(45, 34, 14, 0.22) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 50%, rgba(25, 22, 12, 0.2) 0%, transparent 70%);
   }
 
   @media (pointer: coarse) { #cursor-dot, #cursor-ring { display: none !important; } }
@@ -176,7 +175,7 @@
 
 /* ===== Base：布局 / 结构 / 全局组件（两端通用）===== */
 @layer app-base {
-  /* ===== Progress Line（桌面回 HEAD 迁移前旧金渐变；移动端 32 三段渐变见 mobile-skin）===== */
+  /* ===== Progress Line（全站统一：黑→金→深红渐变）===== */
   #progress-line {
     position: fixed; top: 0; left: 0; height: 2px;
     background: linear-gradient(90deg, var(--c-void), var(--c-gold), var(--c-blood));
@@ -526,7 +525,7 @@
     opacity: 0.6;
   }
 
-  /* ===== tag-pill + pulse-orb（32 提取：金色胶囊 + 紫色脉冲点）===== */
+  /* ===== tag-pill + pulse-orb（金色胶囊 + 金色脉冲点）===== */
   .tag-pill {
     display: flex;
     align-items: center;
@@ -557,7 +556,7 @@
     to { opacity: 1; transform: scale(1.4); }
   }
 
-  /* ===== 答题页 toast（32：紫色 `✦ 契约已被记录 ✦`）===== */
+  /* ===== 答题页 toast（金色 `✦ 契约已被记录 ✦`）===== */
   .toast-verdict {
     position: absolute; top: 0.5rem; right: 0.85rem; z-index: 6;
     font-family: var(--f-body); font-size: 0.75rem; color: var(--purple-neon);
@@ -597,7 +596,7 @@
     .opt-block:hover .opt-text { opacity: 1; font-weight: 500; }
   }
 
-  /* ===== 天平题（scale）真实倾斜 — 桌面旧金（HEAD 气质）；移动端 32 金紫黑见 mobile-skin ===== */
+  /* ===== 天平题（scale）真实倾斜 — 旧金 ===== */
   .balance-stage {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
     width: 100%; padding: 3vh 6vw; gap: 2vh; position: relative; z-index: 2;
@@ -638,7 +637,7 @@
   }
   .balance-pan.is-up { opacity: 0.42; transform: translateY(-14px); }
 
-  /* ===== 筹码题（weight）点阵点击 — 桌面旧金；移动端 32 金紫黑见 mobile-skin ===== */
+  /* ===== 筹码题（weight）点阵点击 — 旧金 ===== */
   .weight-stage {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
     width: 100%; padding: 3vh 6vw; gap: 2.5vh; position: relative; z-index: 2;
@@ -689,10 +688,10 @@
   .opt-block.is-dimmed { flex: 0.01 !important; background: transparent !important; border-color: transparent !important; }
   .opt-block.is-dimmed .opt-content { opacity: 0 !important; transform: scale(0.8) !important; }
 
-  /* ===== 桌面回 HEAD 旧金气质（2026-08-14 回滚：HUD/tag-pill 去 32 胶囊化、
-     背景氛围层移除。移动端 32 风格由 mobile-skin 层优先级保住，不受影响）===== */
+  /* ===== 桌面特化：HUD 去胶囊化 → 角落文字（Cinzel 旧金，无底无边框）；
+     移动端保留胶囊 HUD。背景氛围层两端统一移除（组件层 BackgroundLayers 仅移动端渲染）。===== */
   @media (min-width: 769px) {
-    /* HUD：去 32 玻璃胶囊 → 旧版角落文字（Cinzel 旧金，无底无边框） */
+    /* HUD：去玻璃胶囊 → 旧版角落文字（Cinzel 旧金，无底无边框） */
     .hud-capsule {
       background: none; border: none; box-shadow: none;
       backdrop-filter: none; -webkit-backdrop-filter: none;
@@ -715,21 +714,12 @@
     /* 背景氛围层移除（32 canvas 粒子/浮雕题号/胶片颗粒 → 旧版干净背景）。
        组件层 BackgroundLayers 也不启动（双保险）。 */
     #bg-canvas, .bg-typography, .film-grain, .grain-overlay-test { display: none !important; }
-    /* q-text 回 HEAD 排版参数：Space Mono 等宽（HEAD 从 page.tsx 容器继承的
-       终端感字体）、行高 1.6、无字距追踪、weight 500。base 层的 1.9 行高 /
-       letter-spacing 是移动端 32 皮肤配合长文案的设计，手机端不受此覆盖。 */
-    .q-text {
-      font-family: "Space Mono", monospace;
-      font-weight: 500;
-      line-height: 1.6;
-      letter-spacing: normal;
-    }
   }
 
   /* 桌面端隐藏 toast（桌面靠挤压动效反馈，不需要文字 toast） */
   @media (min-width: 769px) and (pointer: fine) { .toast-verdict { display: none; } }
 
-  /* ===== Result（F14：深色金紫黑 + 桌面可滚动修复 V16/V24）===== */
+  /* ===== Result（深色旧金 + 桌面可滚动修复 V16/V24）===== */
   #view-result {
     position: absolute; top: 0; left: 0; width: 100vw;
     height: 100vh; height: 100dvh; min-height: 100vh;
@@ -752,7 +742,7 @@
   .r-name { font-size: clamp(3.5rem, 8vw, 7rem); font-weight: 900; line-height: 0.9; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: -0.05em; color: var(--gold-hyper); }
 
   .r-stats { font-family: var(--f-title); font-size: 0.85rem; color: var(--rose); letter-spacing: 0.2em; margin-bottom: 2rem; opacity: 0.8; }
-  .r-stats span { display: inline-block; margin-right: 1.5rem; border-bottom: 1px solid rgba(255,0,85,0.3); padding-bottom: 2px; }
+  .r-stats span { display: inline-block; margin-right: 1.5rem; border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 2px; }
 
   .r-right {
     flex: 1; padding: 2vw 4vw; font-size: clamp(1.1rem, 2vw, 1.25rem); line-height: 2.2; font-weight: 500;
@@ -760,7 +750,7 @@
   }
   .r-right::before {
     content: '\201C'; position: absolute; top: -20px; left: 10px;
-    font-family: var(--f-title); font-size: 8rem; color: rgba(216,0,255,0.06); line-height: 1; pointer-events: none;
+    font-family: var(--f-title); font-size: 8rem; color: rgba(212,175,55,0.07); line-height: 1; pointer-events: none;
   }
   @media (max-width: 768px) { .r-right { border-left: none; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 2rem; margin-top: 1rem; text-align: justify; } }
 
@@ -864,7 +854,7 @@
     border: 1px solid var(--gold-hyper);
     box-shadow:
       0 30px 80px rgba(0, 0, 0, 0.9),
-      0 0 40px rgba(216, 0, 255, 0.25);
+      0 0 40px rgba(212, 175, 55, 0.15);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -898,7 +888,7 @@
     gap: 16px;
     padding: 30px;
     text-align: center;
-    background: radial-gradient(circle, rgba(216, 0, 255, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
     z-index: 1;
   }
 
@@ -1100,48 +1090,28 @@
     outline-offset: 2px;
   }
 
-  /* ===== 桌面结果页：去 32 霓虹 → 旧金暗色（2026-08-15，与桌面答题页气质一致）
-     ResultScreen 的 inline styles 全部走 var() token，在 #view-result 子树内
-     重定义霓虹 token 为旧金系即可整页生效，无需逐个改组件。
-     reveal overlay 底色经 --reveal-bg 变量化（ResultScreen），随此统一为答题页底色。
-     显式覆盖（字面量 rgba 未走 var()）必须声明在本层结果页类之后——
-     同层同特异性按声明顺序，后者赢。移动端（≤768px）不命中，保留 32 金紫霓虹。 ===== */
-  @media (min-width: 769px) {
-    #view-result {
-      --gold-hyper: var(--c-gold);
-      --purple-neon: var(--c-gold);
-      --violet-deep: #8a6d3b;
-      --rose: var(--c-gold);
-      --void: var(--c-void);
-      --border-neon-gold: rgba(212, 175, 55, 0.3);
-      --border-purple: rgba(212, 175, 55, 0.25);
-      --card-glass-neo: rgba(18, 14, 26, 0.6);
-      --text-primary: var(--c-text);
-      --text-dim: rgba(237, 233, 243, 0.45);
-      --reveal-bg: var(--c-void);
-      background: var(--c-void);
-    }
-    /* 字面量霓虹 rgba（未走 var()，需单独覆盖）：塔罗框紫 glow / 占位紫 radial */
-    .tarot-card-frame {
-      border-color: var(--c-gold);
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(212, 175, 55, 0.15);
-    }
-    .tarot-placeholder { background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%); }
-    .result-header-badge {
-      background: rgba(212, 175, 55, 0.06);
-      border-color: rgba(212, 175, 55, 0.3);
-      box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
-    }
-    /* 主按钮渐变金紫 → 旧金实色（同 btn-confirm-weight.active 的 HEAD 气质） */
-    .btn-neo-primary {
-      background: var(--c-gold);
-      box-shadow: 0 0 30px rgba(212, 175, 55, 0.35);
-    }
-    .btn-neo-primary:hover { box-shadow: 0 0 45px rgba(212, 175, 55, 0.5); }
+  /* ===== 结果页字面量覆盖：32 霓虹 rgba → 旧金（token 已在 :root 统一为旧金，
+     这里只覆盖未走 var() 的字面量。两端一致，无媒体查询分支。）===== */
+  /* 塔罗框金边 + 金 glow */
+  .tarot-card-frame {
+    border-color: var(--c-gold);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(212, 175, 55, 0.15);
   }
+  .tarot-placeholder { background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%); }
+  .result-header-badge {
+    background: rgba(212, 175, 55, 0.06);
+    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+  }
+  /* 主按钮渐变金紫 → 旧金实色（同 btn-confirm-weight.active 的 HEAD 气质） */
+  .btn-neo-primary {
+    background: var(--c-gold);
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.35);
+  }
+  .btn-neo-primary:hover { box-shadow: 0 0 45px rgba(212, 175, 55, 0.5); }
 }
 
-/* ===== Mobile Skin：手机赛博哥特（32 逐像素，覆盖 desktop-skin）===== */
+/* ===== Mobile Skin：手机布局特化（同色板，仅布局/尺寸适配）===== */
 @layer mobile-skin {
   @media (max-width: 768px) {
     /* Welcome - Flex Layout mobile（死代码，与 base 内 welcome 同源） */
@@ -1208,9 +1178,8 @@
        never moves between questions (regardless of 2 vs 4 lines of text).
        No transition: the stage stays put when an answer is selected, keeping
        the visual focus stable (no height/opacity animation = no reflow jank). */
-    /* ── 移动端赛博哥特玻璃题卡（32 逐像素）：backdrop-blur 30px + 紫色 inset
-       glow + 顶部金线（::before）。上一版"中性墨色分三层"立场本轮被 32 金紫黑
-       玻璃态取代：玻璃承载深度，金色只作精线，紫色作内辉。 */
+    /* ── 移动端玻璃题卡：backdrop-blur 30px + 金色 inset glow + 顶部金线（::before）。
+       玻璃承载深度，金色只作精线。 */
     .question-stage {
       flex: 0 0 auto;
       height: 12rem;
@@ -1225,7 +1194,7 @@
       backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%);
       border: 1px solid var(--border-muted);
       border-radius: 18px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 30px rgba(123,44,191,0.15), inset 0 1px 0 rgba(255,255,255,0.2);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 30px rgba(212,175,55,0.08), inset 0 1px 0 rgba(255,255,255,0.2);
     }
     /* 顶部金线（32 .card::before） */
     .question-stage::before {
@@ -1284,8 +1253,8 @@
       padding: 1.1rem 1.3rem;
     }
     .opt-content { position: relative; width: 100%; max-width: none; padding: 0; text-align: left; display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 1rem; }
-    /* 序号 01/02/03（32 逐像素）：Syne 800 金色，去物质化无框——选中时才提亮
-       到正金（precision accent），其余时刻安静。仅 color 过渡（GPU 友好）。 */
+    /* 序号（2026-08-15 统一罗马数字 + Cinzel 衬线，与桌面一致）：金色，
+       去物质化无框——选中时才提亮到正金，其余时刻安静。仅 color 过渡。 */
     .opt-index {
       flex-shrink: 0;
       font-family: var(--f-syne);
@@ -1308,6 +1277,14 @@
 
     /* Result（深色适配；滚动由 desktop-skin 的 #view-result overflow-y:auto 提供） */
     .result-layout { flex-direction: column; text-align: center; padding: 3rem 1.5rem 4rem; }
+    /* editorial 布局（32 新类）手机适配：塔罗卡限高、标题缩小、徽章居中，
+       避免 3:4 卡 500px + 12vw 标题溢出首屏（2026-08-15 视觉统一） */
+    .result-header-badge { align-self: center; font-size: 0.65rem; padding: 6px 14px; letter-spacing: 2px; }
+    .tarot-card-frame { aspect-ratio: auto; height: 38vh; max-height: 280px; }
+    .res-title.r-name { font-size: clamp(1.35rem, 6vw, 1.8rem); }
+    .editorial-grid { gap: 20px; }
+    .verdict-editorial-card { padding: 20px; gap: 14px; }
+    .section-body { font-size: 0.88rem; line-height: 1.75; }
     .r-left { align-items: center; }
     .r-arch { font-size: clamp(0.9rem, 3.5vw, 1.3rem); letter-spacing: 0.3em; margin-bottom: 0.6rem; }
     .r-name { font-size: clamp(2.5rem, 12vw, 4.5rem); margin-bottom: 1.2rem; }
@@ -1363,8 +1340,8 @@
     .opt-block {
       opacity: 1;
       transform: none;
-      /* 32 opt-btn 逐像素：近实底 + 细边框（白 2% 底 + 白 8% 边），
-         选中态由金紫渐变 + 金边 + glow 承载（32 .opt-btn.selected）。
+      /* 近实底 + 细边框（白 2% 底 + 白 8% 边），
+         选中态由金色渐变 + 金边 + glow 承载。
          保留中性外阴影帮助卡片在纯黑背景上分离。 */
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1401,11 +1378,11 @@
     /* 按压反馈：金化（金色在本体系里是"选中承诺"，按压提亮过渡到承诺） */
     .opt-block:active { background: rgba(255, 215, 0, 0.08); border-color: var(--border-highlight); transform: scale(0.97); }
     .opt-block:active .opt-text { opacity: 1; }
-    /* 32 .opt-btn.selected：金紫渐变 + 金边 + 金光 */
+    /* 32 .opt-btn.selected → 旧金（渐变两端同色系，选中由金线+金光承载） */
     .opt-block.is-selected {
-      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(216, 0, 255, 0.15)) !important;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.08)) !important;
       border-color: var(--gold-hyper) !important;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.2) !important;
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.25) !important;
     }
     /* 选中卡的序号/文字提亮到白 + 金光（32 .opt-btn.selected .opt-index/.opt-content）。
        显式覆盖桌面 .opt-block.is-selected .opt-index 的 opacity:0.6 + scale(1.5)
@@ -1424,12 +1401,12 @@
     }
     .btn-restart { cursor: pointer; }
 
-    /* ===== 移动端锁 32 金紫黑（2026-08-14 桌面回滚的镜像：desktop-skin 的
-       天平/筹码/进度条已回 HEAD 旧金，此处按 32 金标值覆盖回来）===== */
-    /* 进度条：32 三段渐变（violet→purple→gold）+ 紫光 */
+    /* ===== 移动端进度条/天平/筹码：随 :root token 统一为旧金（原 32 紫渐变已随
+       token 重定向自动变金，此处仅对齐桌面款的实色形态）===== */
+    /* 进度条：与桌面同款（void→gold→blood） */
     #progress-line {
-      background: linear-gradient(90deg, var(--violet-deep), var(--purple-neon), var(--gold-hyper));
-      box-shadow: 0 0 15px var(--purple-neon);
+      background: linear-gradient(90deg, var(--c-void), var(--c-gold), var(--c-blood));
+      box-shadow: 0 0 10px var(--c-gold);
     }
     /* 天平题：32 玻璃态 + 超金 */
     .balance-svg { color: var(--gold-hyper); }
@@ -1444,7 +1421,7 @@
       background: rgba(255, 215, 0, 0.14); border-color: var(--gold-hyper);
       box-shadow: 0 0 34px rgba(255, 215, 0, 0.28), inset 0 0 40px rgba(255, 215, 0, 0.08);
     }
-    /* 筹码题：32 金紫黑 */
+    /* 筹码题：旧金（token 统一后自动跟随） */
     .weight-card { background: rgba(255, 255, 255, 0.02); border-color: var(--border-muted); }
     .weight-card:focus-visible { outline-color: var(--gold-hyper); }
     .weight-card:hover { border-color: var(--border-highlight); background: rgba(255, 215, 0, 0.05); }
@@ -1454,7 +1431,7 @@
     .node-dot.active { background: var(--gold-hyper); border-color: var(--gold-hyper); box-shadow: 0 0 10px rgba(255, 215, 0, 0.55); }
     .weight-status { color: var(--champagne-dim); }
     .btn-confirm-weight { border-color: var(--border-muted); color: var(--champagne-dim); font-family: var(--f-syne); font-size: 0.82rem; font-weight: 700; }
-    .btn-confirm-weight.active { background: linear-gradient(90deg, var(--gold-hyper), var(--purple-neon)); color: var(--void); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+    .btn-confirm-weight.active { background: var(--c-gold); color: var(--c-void); box-shadow: 0 0 30px rgba(212, 175, 55, 0.5); }
   }
 }
 
@@ -1519,9 +1496,8 @@
   /* ===== 极光转场（32 提取；z8000 复用 loading overlay 位置，final.md 盲点 #8）。
      给 IM3 AuroraBurst：全屏暗幕 opacity 淡入淡出——无爆点、无中心亮点，
      消除"突亮闪屏"（2026-08-15 复审：爆点式转场在暗色答题页上即"闪一下"）。
-     桌面纯暗幕与答题页同色（#0c0a14），移动端 32 金紫暗幕（柔和 radial）。
-     transition 只挂在 .active 上：淡入平滑 0.7s；淡出瞬间归零（无感——
-     底下揭晓幕布同色全屏覆盖，视觉零变化，省去 0.7s 无意义黑屏）。===== */
+     两端统一纯暗幕（与答题页同色 #0c0a14）；原移动端金紫 radial 已随
+     2026-08-15 视觉统一移除。===== */
   .aurora-burst {
     position: absolute;
     inset: 0;
@@ -1533,13 +1509,6 @@
   .aurora-burst.active {
     opacity: 1;
     transition: opacity 0.7s ease;
-  }
-
-  /* 移动端：32 金紫暗幕（柔和 radial，无硬边、无爆点） */
-  @media (max-width: 768px) {
-    .aurora-burst {
-      background: radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.28) 0%, rgba(216, 0, 255, 0.2) 45%, #0c0a14 78%);
-    }
   }
 }
 

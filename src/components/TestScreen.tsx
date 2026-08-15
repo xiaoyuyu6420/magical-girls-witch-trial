@@ -478,8 +478,8 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
                 onClick={() => handleSelect(option)}
               >
                 <div className="opt-content">
-                  {/* 桌面回 HEAD：罗马数字序号（I/II/III）；移动端 32 皮肤：零填充阿拉伯 01/02/03 */}
-                  <div className="opt-index" aria-hidden="true">{isDesktop ? ROMAN[idx] : String(idx + 1).padStart(2, "0")}</div>
+                  {/* 2026-08-15 统一：两端同一罗马数字序号（I/II/III），消除手机/桌面分叉 */}
+                  <div className="opt-index" aria-hidden="true">{ROMAN[idx] ?? (idx + 1)}</div>
                   <div className="opt-text">{option.label}</div>
                 </div>
               </button>
@@ -645,15 +645,15 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
             <span>{String(questions.length).padStart(2, "0")}</span>
           </div>
         </div>
-        {/* EXIT 按钮（桌面回 HEAD：t("test.exit") 文案；移动端 32 皮肤保留写死 RESTART） */}
+        {/* 退出按钮（2026-08-15 统一：两端同一文案，不再按端分支） */}
         <div className="hud-capsule">
           <button type="button" className="hud-btn" onClick={() => { localStorage.removeItem(STORAGE_KEY); onExit(); }}>
-            {isDesktop ? (t("test.exit") || "EXIT") : "RESTART"}
+            {t("test.exit") || "EXIT"}
           </button>
         </div>
       </div>
       <div className="watermark-index" aria-hidden="true">
-        {isDesktop ? (ROMAN[safeIndex] || (safeIndex + 1)) : String(safeIndex + 1).padStart(2, "0")}
+        {ROMAN[safeIndex] ?? (safeIndex + 1)}
       </div>
       <div ref={stageRef} id="test-stage-wrapper" className={stageFadeOut ? "stage-fade-out" : ""}>
         {/* 题卡：.card.enter 为 floatIn 进场钩子（key remount 接线，见上方 I2 注释）。

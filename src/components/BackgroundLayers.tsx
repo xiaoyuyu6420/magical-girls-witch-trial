@@ -8,7 +8,7 @@ import type { JSX } from "react";
  *
  * 纯展示、零状态、零 E2E 锚点。渲染三层（z 低→高，CSS 见 globals.css atmosphere 层）：
  *   1. <canvas id="bg-canvas">       —— 移植金标（ai_studio_code (32).html）initCanvas/drawCanvas
- *                                      的紫粒子：45 个、rgba(216,0,255,α)、shadowBlur=10、
+ *                                      的金粒子：45 个、rgba(212,175,55,α)、shadowBlur=10、
  *                                      rAF 循环、边界反弹、resize 重设尺寸。
  *   2. <div class="bg-typography">   —— 巨型浮雕题号（"01".."26"），questionIndex 变化由
  *                                      React 直接更新文本，无需 effect。
@@ -18,8 +18,8 @@ import type { JSX } from "react";
  *   - SSR（typeof window === 'undefined'）→ return null（盲点 #11）。
  *   - reducedMotion → 不渲染 canvas、不启 rAF（盲点 #7 / P8 红线；题号浮雕与 grain 是
  *     静态层，照常渲染，CSS reduced-motion 层已给 transition:none / opacity 降级）。
- *   - 桌面（>768px）→ return null：2026-08-14 桌面回滚 HEAD 旧版干净背景，
- *     粒子/浮雕/颗粒只保留在移动端 32 皮肤（rAF 也不启动，零开销）。
+ *   - 桌面（>768px）→ return null：与移动端同源（2026-08-15 视觉统一：
+ *     粒子/浮雕/颗粒仅移动端渲染；桌面干净背景，rAF 也不启动，零开销）。
  *   - 卸载清理：cancelAnimationFrame + removeEventListener('resize')，防泄漏。
  */
 
@@ -86,7 +86,8 @@ export function BackgroundLayers({
       }
     };
 
-    /** 金标 drawCanvas：逐粒子移动 + 边界反弹 + 紫辉填充，rAF 续帧 */
+    /** 金标 drawCanvas：逐粒子移动 + 边界反弹 + 金辉填充（2026-08-15 视觉统一：
+        原紫粒子 rgba(216,0,255) → 旧金 rgba(212,175,55)，与全站黑金一致） */
     const drawCanvas = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (const p of particles) {
@@ -97,9 +98,9 @@ export function BackgroundLayers({
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(216, 0, 255, ${p.alpha})`;
+        ctx.fillStyle = `rgba(212, 175, 55, ${p.alpha})`;
         ctx.shadowBlur = 10;
-        ctx.shadowColor = "#D800FF";
+        ctx.shadowColor = "#D4AF37";
         ctx.fill();
       }
       rafId = requestAnimationFrame(drawCanvas);
