@@ -39,6 +39,9 @@ interface YamlChar {
   slogan: string;
   desc: string;
   keywords?: string;
+  prosecution?: string;
+  softlanding?: string;
+  tags?: string;
 }
 
 const doc = yamlParse(fs.readFileSync(YAML_FILE, "utf8")) as {
@@ -54,6 +57,19 @@ function sfOf(file: string) {
 function stripLock(s: string): string {
   // 去 "🔒 " / "✏️ " 前缀和括号注释
   return String(s ?? "").replace(/^[🔒✏️]+\s*/u, "").replace(/\s*\(编码.*\)$/, "").trim();
+}
+function stripEditable(s: string): string {
+  // ✏️ 是内容编辑标记，不应进入运行时题面或数据库。
+  return String(s ?? "").replace(/^✏️\s*/u, "").trim();
+}
+function runtimeQuestionFields(question: YamlQuestion): { meta: string; text: string } {
+  const lockedDim = stripLock(question._dim);
+  // 普通 NQ 题在 YAML 中用 _dim 保存锁定的题号标题，用 meta 保存可编辑题干。
+  // scale / weight / gate / trigger 则直接使用各自的 meta + text 字段。
+  if (/^Q\d+\s*·/u.test(lockedDim)) {
+    return { meta: lockedDim, text: stripEditable(question.meta) };
+  }
+  return { meta: stripEditable(question.meta), text: stripEditable(question.text) };
 }
 function expectLock(s: string, field: string, expected: string, ctx: string) {
   const v = stripLock(s);
@@ -72,13 +88,13 @@ function updateTsFile(file: string, varName: string, kind: "questions" | "types"
 
   function visitQuestions(elem: ts.Node, expected: YamlQuestion) {
     arrIdx++;
+    const fields = runtimeQuestionFields(expected);
     if (ts.isCallExpression(elem)) {
-      // Q(dim, meta, text, options[], scores[]) → args[1]=meta, args[2]=text, args[3]=options 数组
+      // NQ(meta, text, options)：args[0] 是锁定题号，args[1] 是可编辑题干。
       const args = elem.arguments;
       expectLock(expected._dim, "dim", strVal(args[0]) ?? "", `第${arrIdx + 1}题`);
-      if (args[1] && ts.isStringLiteral(args[1])) targets.push({ start: args[1].getStart(sf), end: args[1].getEnd(), newVal: JSON.stringify(expected.meta) });
-      if (args[2] && ts.isStringLiteral(args[2])) targets.push({ start: args[2].getStart(sf), end: args[2].getEnd(), newVal: JSON.stringify(expected.text) });
-      const optsArr = args[3];
+      if (args[1] && ts.isStringLiteral(args[1])) targets.push({ start: args[1].getStart(sf), end: args[1].getEnd(), newVal: JSON.stringify(fields.text) });
+      const optsArr = args[2];
       if (optsArr && ts.isArrayLiteralExpression(optsArr)) {
         optsArr.elements.forEach((o, i) => {
           if (ts.isStringLiteral(o) && expected.options[i]) {
@@ -93,8 +109,8 @@ function updateTsFile(file: string, varName: string, kind: "questions" | "types"
       for (const p of elem.properties) {
         if (!ts.isPropertyAssignment(p)) continue;
         const name = p.name.getText();
-        if (name === "meta" && ts.isStringLiteral(p.initializer)) targets.push({ start: p.initializer.getStart(sf), end: p.initializer.getEnd(), newVal: JSON.stringify(expected.meta) });
-        else if (name === "text" && ts.isStringLiteral(p.initializer)) targets.push({ start: p.initializer.getStart(sf), end: p.initializer.getEnd(), newVal: JSON.stringify(expected.text) });
+        if (name === "meta" && ts.isStringLiteral(p.initializer)) targets.push({ start: p.initializer.getStart(sf), end: p.initializer.getEnd(), newVal: JSON.stringify(fields.meta) });
+        else if (name === "text" && ts.isStringLiteral(p.initializer)) targets.push({ start: p.initializer.getStart(sf), end: p.initializer.getEnd(), newVal: JSON.stringify(fields.text) });
         else if (name === "options" && ts.isArrayLiteralExpression(p.initializer)) {
           p.initializer.elements.forEach((o, i) => {
             if (!ts.isObjectLiteralExpression(o) || !expected.options[i]) return;
@@ -116,11 +132,13 @@ function updateTsFile(file: string, varName: string, kind: "questions" | "types"
       if (name === "slogan" && ts.isStringLiteral(p.initializer)) targets.push({ start: p.initializer.getStart(sf), end: p.initializer.getEnd(), newVal: JSON.stringify(expected.slogan) });
       else if (name === "desc" && ts.isStringLiteral(p.initializer)) targets.push({ start: p.initializer.getStart(sf), end: p.initializer.getEnd(), newVal: JSON.stringify(expected.desc) });
       else if (name === "keywords" && ts.isStringLiteral(p.initializer)) targets.push({ start: p.initializer.getStart(sf), end: p.initializer.getEnd(), newVal: JSON.stringify(expected.keywords ?? "") });
+      else if (name === "prosecution" && ts.isStringLiteral(p.initializer)) targets.push({ start: p.initializer.getStart(sf), end: p.initializer.getEnd(), newVal: JSON.stringify(expected.prosecution ?? "") });
+      else if (name === "softlanding" && ts.isStringLiteral(p.initializer)) targets.push({ start: p.initializer.getStart(sf), end: p.initializer.getEnd(), newVal: JSON.stringify(expected.softlanding ?? "") });
+      else if (name === "tags" && ts.isStringLiteral(p.initializer)) targets.push({ start: p.initializer.getStart(sf), end: p.initializer.getEnd(), newVal: JSON.stringify(expected.tags ?? "") });
     }
   }
 
   let qIdx = -1;
-  let tIdx = -1;
   for (const stmt of sf.statements) {
     if (!ts.isVariableStatement(stmt)) continue;
     for (const decl of stmt.declarationList.declarations) {
@@ -132,14 +150,10 @@ function updateTsFile(file: string, varName: string, kind: "questions" | "types"
           if (expected) visitQuestions(elem, expected);
         } else {
           // types: witch-trial (16) 或 madoka (5)，按 source 过滤
-          const candidate = doc.characters[tIdx + 1];
           // 简化：按 code 匹配
           const code = ts.isObjectLiteralExpression(elem) ? strVal(propOf(elem, "code")) : null;
           const expected = code ? doc.characters.find((c) => stripLock(c._code) === code) : null;
-          if (expected) {
-            tIdx++;
-            visitTypes(elem, expected);
-          }
+          if (expected) visitTypes(elem, expected);
         }
       }
     }
@@ -218,14 +232,15 @@ async function updateDB() {
       const dbQ = normalQs[i];
       const yq = yamlNormalQs[i];
       if (!dbQ || !yq) continue;
-      await prisma.question.update({ where: { id: dbQ.id }, data: { text: yq.text, meta: yq.meta } });
+      const fields = runtimeQuestionFields(yq);
+      await prisma.question.update({ where: { id: dbQ.id }, data: fields });
       qUpdated++;
       for (let j = 0; j < dbQ.options.length; j++) {
         const dbO = dbQ.options[j];
         const yo = yq.options[j];
         if (!dbO || !yo) continue;
         if (yo.label.startsWith("🔒") || yo.label.includes("weight::")) continue;
-        await prisma.option.update({ where: { id: dbO.id }, data: { label: yo.label } });
+        await prisma.option.update({ where: { id: dbO.id }, data: { label: stripEditable(yo.label) } });
         oUpdated++;
       }
     }
@@ -233,22 +248,22 @@ async function updateDB() {
     if (gateQ) {
       const yGate = doc.questions.find((q) => stripLock(q._type).startsWith("gate"));
       if (yGate) {
-        await prisma.question.update({ where: { id: gateQ.id }, data: { text: yGate.text, meta: yGate.meta } });
+        await prisma.question.update({ where: { id: gateQ.id }, data: runtimeQuestionFields(yGate) });
         qUpdated++;
         for (let j = 0; j < gateQ.options.length; j++) {
           const yo = yGate.options[j];
-          if (yo && !yo.label.startsWith("🔒")) await prisma.option.update({ where: { id: gateQ.options[j].id }, data: { label: yo.label } });
+          if (yo && !yo.label.startsWith("🔒")) await prisma.option.update({ where: { id: gateQ.options[j].id }, data: { label: stripEditable(yo.label) } });
         }
       }
     }
     if (trigQ) {
       const yTrig = doc.questions.find((q) => stripLock(q._type).startsWith("trigger"));
       if (yTrig) {
-        await prisma.question.update({ where: { id: trigQ.id }, data: { text: yTrig.text, meta: yTrig.meta } });
+        await prisma.question.update({ where: { id: trigQ.id }, data: runtimeQuestionFields(yTrig) });
         qUpdated++;
         for (let j = 0; j < trigQ.options.length; j++) {
           const yo = yTrig.options[j];
-          if (yo && !yo.label.startsWith("🔒")) await prisma.option.update({ where: { id: trigQ.options[j].id }, data: { label: yo.label } });
+          if (yo && !yo.label.startsWith("🔒")) await prisma.option.update({ where: { id: trigQ.options[j].id }, data: { label: stripEditable(yo.label) } });
         }
       }
     }
@@ -259,7 +274,14 @@ async function updateDB() {
       if (!yt) continue;
       await prisma.personalityType.update({
         where: { id: dbT.id },
-        data: { slogan: yt.slogan, desc: yt.desc, keywords: yt.keywords ?? null },
+        data: {
+          slogan: yt.slogan,
+          desc: yt.desc,
+          keywords: yt.keywords ?? null,
+          prosecution: yt.prosecution ?? "",
+          softlanding: yt.softlanding ?? "",
+          tags: yt.tags ?? "",
+        },
       });
       tUpdated++;
     }

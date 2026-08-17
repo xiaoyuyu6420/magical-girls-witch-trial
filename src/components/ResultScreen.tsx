@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { getActivePack } from "@/pack/load";
 import { getIpMeta } from "@/content/packs/ip-registry";
 import { useLocalizedContent } from "@/lib/use-localized-content";
 import { toPng } from "html-to-image";
@@ -22,6 +21,13 @@ const REVEAL_TIMINGS = {
   cardReady: 1800, // 名字渐显(0.8s)+完整展示后 revealPhase → done
 } as const;
 
+/* 手机不是“无动画”，而是把同一段仪式压缩成一个可感知的短句。
+   这个节奏留给极光转场一个收尾拍，再让结果牌自然接管视线。 */
+const COMPACT_REVEAL_TIMINGS = {
+  nameReveal: 180,
+  cardReady: 980,
+} as const;
+
 /** R4: ease-out-expo cubic-bezier(0.16,1,0.3,1) */
 const EASE_OUT_EXPO = "cubic-bezier(0.16,1,0.3,1)";
 /** R3: motion-7 名字 blur cross-fade 时长 */
@@ -35,7 +41,7 @@ interface ResultData {
   translations?: string;
   /** 角色 IP 归属（跨IP全局匹配，结果页按此查作品信息） */
   ipCode?: string;
-  /** posture 体系：审判官逼视 / 温柔落点 / 标签 / 姿态占比 */
+  /** 旧版结果字段，保留以兼容现有 API；新版页面只使用 localized 文案。 */
   prosecution?: string;
   softlanding?: string;
   tags?: string;
@@ -46,34 +52,44 @@ interface ResultScreenProps {
   result: ResultData;
   stats?: { totalParticipants: number; typePercentage: number; typeCount: number } | null;
   onRestart: () => void;
+  compactMotion?: boolean;
 }
 
-/** POSTURE 三姿态（A 粉饰 / B 清醒 / C 扭曲） */
-const POSTURE_ROWS = [
-  ["A", "粉饰"],
-  ["B", "清醒"],
-  ["C", "扭曲"],
-] as const;
-
-export default function ResultScreen({ result, stats, onRestart }: ResultScreenProps) {
-  const pack = getActivePack();
+export default function ResultScreen({ result, stats, onRestart, compactMotion = false }: ResultScreenProps) {
   const { t } = useI18n();
   const localized = useLocalizedContent(
     result.code, result.name, result.slogan, result.desc, result.keywords, result.subtitle, result.translations
   );
-
-  /* ── A1: Internal reveal phase（骨架保留）── */
-  const [revealPhase, setRevealPhase] = useState<"revealing" | "done">("revealing");
-  const [nameRevealed, setNameRevealed] = useState(false); // 单名字闪现（O1=B）
-  const [revealLayerOut, setRevealLayerOut] = useState(false); // true = overlay 淡出中
-  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const displayName = localized.name.split(/[·•|｜]/)[0]?.trim() || localized.name;
+  const sloganText = localized.slogan;
+  const keywordList = localized.keywords
+    .split(/[、,，]/)
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
+  const ipMeta = getIpMeta(result.ipCode);
+  const ipTitle = t(`works.${ipMeta.ipCode}.title`);
+  const workIntro = t(`works.${ipMeta.ipCode}.intro`);
+  const fromTitle = t("result.revealFrom", { title: ipTitle });
 
   /* ── R5: prefers-reduced-motion check ── */
-  const prefersReducedMotion = useRef(
+  const [prefersReducedMotion] = useState(() =>
     typeof window !== "undefined"
       ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
       : false
-  ).current;
+  );
+  // compactMotion 只缩短时序，不跳过结果揭示。此前手机把整段 reveal
+  // 直接设成 done，Aurora 一收就只剩一张已经排好的长页面，仪式感因此被砍掉。
+  const instantReveal = prefersReducedMotion;
+  const nameRevealDelay = compactMotion ? COMPACT_REVEAL_TIMINGS.nameReveal : REVEAL_TIMINGS.nameReveal;
+  const cardReadyDelay = compactMotion ? COMPACT_REVEAL_TIMINGS.cardReady : REVEAL_TIMINGS.cardReady;
+
+  /* ── A1: Internal reveal phase（骨架保留）── */
+  const [revealPhase, setRevealPhase] = useState<"revealing" | "done">(
+    instantReveal ? "done" : "revealing"
+  );
+  const [nameRevealed, setNameRevealed] = useState(instantReveal); // 单名字闪现（O1=B）
+  const [revealLayerOut, setRevealLayerOut] = useState(instantReveal); // true = overlay 淡出中
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   /* ── Share card state ── */
   const shareCardRef = useRef<HTMLDivElement>(null);
@@ -94,10 +110,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
   useEffect(() => {
     document.body.classList.add("revealed");
 
-    // R5: reduced-motion → skip directly to done
-    if (prefersReducedMotion) {
-      setNameRevealed(true);
-      setRevealPhase("done");
+    if (instantReveal) {
       return () => { document.body.classList.remove("revealed"); };
     }
 
@@ -109,16 +122,16 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
       timers.push(id);
     };
 
-    schedule(() => setNameRevealed(true), REVEAL_TIMINGS.nameReveal);
+    schedule(() => setNameRevealed(true), nameRevealDelay);
     schedule(() => {
       setRevealPhase("done");
-    }, REVEAL_TIMINGS.cardReady);
+    }, cardReadyDelay);
 
     return () => {
       timers.forEach(clearTimeout);
       document.body.classList.remove("revealed");
     };
-  }, [prefersReducedMotion]);
+  }, [instantReveal, nameRevealDelay, cardReadyDelay]);
 
   /* ── R9: motion-6 edge blur detection ── */
   useEffect(() => {
@@ -171,21 +184,18 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
 
   /* ── Reveal layer fade-out after done ── */
   useEffect(() => {
-    if (revealPhase === "done" && !prefersReducedMotion) {
+    if (revealPhase === "done" && !instantReveal) {
       // Small delay so the state settles before starting the CSS transition
       const id = setTimeout(() => setRevealLayerOut(true), 50);
       return () => clearTimeout(id);
     }
-    if (revealPhase === "done" && prefersReducedMotion) {
-      setRevealLayerOut(true);
-    }
-  }, [revealPhase, prefersReducedMotion]);
+  }, [revealPhase, instantReveal]);
 
   /* ═══════════════════════════════════════════
      Share logic (preserved from original — R10)
      ═══════════════════════════════════════════ */
   const shareText = t("result.shareText", {
-    name: localized.name,
+    name: displayName,
     slogan: localized.slogan,
     url: typeof window !== "undefined" ? window.location.href : "",
   });
@@ -237,15 +247,6 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
   })();
   const rarityBarPercent = typePercentage !== null ? Math.min(typePercentage, 100) : 0;
 
-  /* ── 跨IP作品信息（R7：按 result.ipCode 查，A1/A3 per-IP）── */
-  const ipMeta = getIpMeta(result.ipCode);
-  /* posture 体系：三姿态占比（A 粉饰 / B 清醒 / C 扭曲） */
-  const posturePct = result.posturePct;
-  /* 标语回退：5 角色无 slogan，用首个灵魂特质替代 */
-  const sloganText = localized.slogan || (result.tags ? result.tags.split(",")[0] : "");
-  const workIntro = ipMeta.workIntro;
-  const fromTitle = t("result.revealFrom", { title: ipMeta.title });
-
   /* ═══════════════════════════════════════════
      RENDER — 32 塔罗分栏（editorial-grid；CSS 由 globals.css IM1 定义）
      ═══════════════════════════════════════════ */
@@ -265,14 +266,14 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           resultLayoutRef.current = node;
           profileRef.current = node;
         }}
-        className="result-layout"
+        className={`result-layout ${revealPhase === "done" ? "is-ready" : "is-revealing"}`}
         role="region"
         aria-label={t("result.regionLabel")}
         aria-hidden={revealPhase !== "done"}
         tabIndex={-1}
         style={{
           opacity: revealPhase === "done" ? 1 : 0,
-          transition: prefersReducedMotion ? "none" : `opacity 0.8s ${EASE_OUT_EXPO}`,
+          transition: instantReveal ? "none" : `opacity ${compactMotion ? "0.34s" : "0.8s"} ${EASE_OUT_EXPO}`,
           /* 32 金标为列式编辑布局：badge 在上、editorial-grid 在下 */
           flexDirection: "column",
           alignItems: "flex-start",
@@ -281,104 +282,80 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           width: "100%",
         }}
       >
-        <div className="result-header-badge">SOUL ARCHETYPE · VERDICT SEALED</div>
+        <div className="result-header">
+          <div className="result-header-badge">{t("result.archetype")}</div>
+          <div className="result-header-meta" aria-hidden="true">
+            <span>{t("result.matchLabel")}</span>
+            <span className="result-header-rule" />
+            <span>{ipTitle}</span>
+          </div>
+        </div>
 
         <div className="editorial-grid" style={{ width: "100%" }}>
-          {/* 左栏：塔罗卡框（3:4 金边紫 glow） */}
-          <div className="tarot-card-frame">
-            {/* 未来替换为立绘（当前 src 空 + display:none，金标同构） */}
-            <img src="" alt={localized.name} className="character-img" />
+          {/* 左栏：克制的角色判印卡；未来角色图可直接覆盖占位层。 */}
+          <div className={`tarot-card-frame ${revealPhase === "done" ? "is-shimmering" : ""}`} data-character-code={result.code}>
+            <div className="tarot-card-topline" aria-hidden="true">
+              <span>{t("result.matchLabel")}</span>
+              <span>{ipTitle}</span>
+            </div>
             <div className="tarot-placeholder">
-              <svg className="tarot-icon" viewBox="0 0 24 24">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-              </svg>
-              <div style={{ fontFamily: "var(--f-syne)", fontWeight: 800, fontSize: "0.9rem", color: "var(--gold-hyper)", letterSpacing: "0.08em" }}>
-                {localized.name}
+              <div className="tarot-sigil" aria-hidden="true">
+                <span className="tarot-sigil-orbit" />
+                <svg className="tarot-icon" viewBox="0 0 72 72">
+                  <path d="M36 7 43 28l21 8-21 8-7 21-7-21-21-8 21-8 7-21Z" />
+                  <circle cx="36" cy="36" r="29" />
+                  <circle cx="36" cy="36" r="3" className="tarot-sigil-dot" />
+                </svg>
               </div>
-              <div style={{ fontSize: "0.72rem", color: "var(--text-dim)" }}>
-                {localized.subtitle || "CHARACTER PORTRAIT"}
+              <div className="tarot-card-name">
+                {displayName}
               </div>
+              <div className="tarot-card-subtitle">
+                {sloganText}
+              </div>
+            </div>
+            <div className="tarot-card-footer" aria-hidden="true">
+              <span>{t("result.matchedLabel")}</span>
+              <span className="tarot-card-footer-mark">✦</span>
+              <span>{t("result.referenceOnly")}</span>
             </div>
           </div>
 
-          {/* 右栏：艺术排版详情 */}
+          {/* 右栏：只保留匹配结论、原因、特质与分享动作。 */}
           <div className="result-details">
-            <div>
-              <div className="res-ip-tag">{t("result.workIntroLabel")}：《{ipMeta.title}》</div>
+            <div className="result-identity">
+              <div className="res-ip-tag">{fromTitle}</div>
               {/* 渐变标题（res-title）+ E2E 锚点（r-name）同节点 */}
-              <h1 className="res-title r-name">{localized.name}</h1>
-              {localized.subtitle && (
-                <div style={{
-                  fontFamily: "var(--f-title)",
-                  fontSize: "0.75rem",
-                  letterSpacing: "0.2em",
-                  color: "var(--text-dim)",
-                  marginTop: "0.4rem",
-                }}>
-                  {localized.subtitle}
-                </div>
-              )}
+              <h1 className="res-title r-name">{displayName}</h1>
+              <div className="r-slogan">{sloganText}</div>
             </div>
 
-            {/* 标语（E2E 锚点 .r-slogan） */}
-            <div className="r-slogan" style={{ marginTop: "0.4rem" }}>{sloganText}</div>
-
-            {/* 一句话作品介绍（R7，reveal.spec 断言 pack.workIntro） */}
+            {/* 一句话作品介绍（reveal.spec 断言 pack.workIntro） */}
             {workIntro && (
-              <div style={{
-                fontSize: "0.8rem",
-                color: "rgba(255,255,255,0.5)",
-                fontStyle: "italic",
-                lineHeight: 1.7,
-                paddingBottom: "1rem",
-                borderBottom: "1px solid rgba(255,255,255,0.08)",
-              }}>
+              <div className="result-work-intro">
                 {workIntro}
               </div>
             )}
 
-            {/* 灵魂特质 → 32 芯片（E2E 锚点 .r-keywords/.r-keyword-tag 同节点） */}
-            {result.tags && (
+            {/* 具体特质（E2E 锚点 .r-keywords/.r-keyword-tag 同节点） */}
+            {keywordList.length > 0 && (
               <div className="tag-cloud r-keywords">
-                {result.tags.split(/[、,，]/).map((kw: string, i: number) => (
-                  <span key={i} className="neo-chip r-keyword-tag">{kw.trim()}</span>
+                {keywordList.map((keyword) => (
+                  <span key={keyword} className="neo-chip r-keyword-tag">{keyword}</span>
                 ))}
               </div>
             )}
 
-            {/* 审判官的逼视 + 温柔的落点 */}
-            <div className="verdict-editorial-card">
-              {result.prosecution && (
-                <div className="r-desc">
-                  <div className="section-label">⚖️ 审判官的逼视</div>
-                  <p className="section-body" style={{ marginTop: 8 }}>{result.prosecution}</p>
-                </div>
-              )}
-              {result.softlanding && (
-                <div>
-                  <div className="section-label" style={{ color: "var(--purple-neon)" }}>🕊️ 温柔的落点</div>
-                  <p className="section-body" style={{ marginTop: 8 }}>{result.softlanding}</p>
-                </div>
-              )}
-            </div>
-
-            {/* 姿态占比柱图（32 霓虹柱图；reduced-motion 的 transition 守卫在 globals.css .stat-fill） */}
-            {posturePct && (
-              <div className="stat-bars-container">
-                {POSTURE_ROWS.map(([k, label]) => (
-                  <div key={k} className="stat-row">
-                    <span className="stat-name">POSTURE {k} ({label})</span>
-                    <div className="stat-track">
-                      <div className="stat-fill" style={{ width: `${posturePct[k]}%` }} />
-                    </div>
-                    <span className="stat-val">{posturePct[k]}%</span>
-                  </div>
-                ))}
+            {/* 单段匹配理由，不再做“控诉 + 安抚”的诊断式二段模板。 */}
+            {localized.desc && (
+              <div className="match-reason-card r-desc">
+                <div className="section-label"><span aria-hidden="true">01</span> {t("result.analysis")}</div>
+                <p className="section-body">{localized.desc}</p>
               </div>
             )}
 
             {/* R11: 稀有度（保留；深色金紫适配，仅宽 transition 且有 reduced-motion 守卫） */}
-            <div style={{ marginTop: "0.5rem" }}>
+            <div className="rarity-meter" style={{ marginTop: "0.5rem" }}>
               <div style={{
                 fontSize: "0.65rem",
                 fontFamily: "var(--f-title)",
@@ -464,6 +441,8 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
       <div
         role="status"
         aria-live="polite"
+        aria-hidden={revealLayerOut}
+        className={`result-reveal-overlay ${revealLayerOut ? "is-leaving" : "is-active"}`}
         style={{
           position: "absolute",
           inset: 0,
@@ -477,13 +456,16 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           fontFamily: "var(--f-body)",
           pointerEvents: revealLayerOut ? "none" : "auto",
           opacity: revealLayerOut ? 0 : 1,
+          visibility: revealLayerOut ? "hidden" : "visible",
           transition: revealLayerOut
-            ? (prefersReducedMotion ? "none" : `opacity 0.8s ${EASE_OUT_EXPO}`)
+            ? (instantReveal
+              ? "none"
+              : `opacity ${compactMotion ? "0.3s" : "0.8s"} ${EASE_OUT_EXPO}, visibility 0s linear ${compactMotion ? "0.3s" : "0.8s"}`)
             : "none",
         }}
       >
         {/* Skip hint（#12：result.skipHint 键保留） */}
-        {!revealLayerOut && revealPhase === "revealing" && !prefersReducedMotion && (
+        {!revealLayerOut && revealPhase === "revealing" && !instantReveal && (
           <div style={{
             position: "absolute",
             bottom: "5vh",
@@ -496,7 +478,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           </div>
         )}
 
-        <div style={{
+        <div className="result-reveal-stage" style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -504,10 +486,16 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           padding: "0 2rem",
           maxWidth: 500,
         }}>
+          <div className="result-reveal-kicker">{t("result.revealJudgement")}</div>
+          <div className="result-reveal-sigil" aria-hidden="true">
+            <span className="result-reveal-sigil-ring result-reveal-sigil-ring-outer" />
+            <span className="result-reveal-sigil-ring result-reveal-sigil-ring-inner" />
+            <span className="result-reveal-sigil-core">✦</span>
+          </div>
           {/* 单名字闪现 — R3 motion-7 柔和浮现（2026-08-15：blur20px+scale 金光凝聚
               在暗幕上读作"闪一下"，改 opacity+translateY+浅 blur 的柔和浮现；
               渐变经 token：桌面重定义后 = 米白→旧金，移动端保留 超金→霓虹紫） */}
-          <div role="heading" aria-level={1} style={{
+          <div className="result-reveal-name" role="heading" aria-level={1} style={{
             fontSize: "clamp(2.8rem, 10vw, 5.5rem)",
             fontWeight: 900,
             lineHeight: 1.1,
@@ -518,12 +506,13 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
             WebkitTextFillColor: "transparent",
             color: "transparent",
             opacity: nameRevealed ? 1 : 0,
-            filter: nameRevealed ? "blur(0px)" : "blur(8px)",
-            transform: nameRevealed ? "translateY(0)" : "translateY(26px)",
-            transition: prefersReducedMotion ? "none" : `opacity ${MOTION7_DURATION} ${EASE_OUT_EXPO}, transform ${MOTION7_DURATION} ${EASE_OUT_EXPO}, filter ${MOTION7_DURATION} ${EASE_OUT_EXPO}`,
+            filter: instantReveal || nameRevealed ? "blur(0px)" : "blur(8px)",
+            transform: instantReveal || nameRevealed ? "translateY(0)" : "translateY(26px)",
+            transition: instantReveal ? "none" : `opacity ${MOTION7_DURATION} ${EASE_OUT_EXPO}, transform ${MOTION7_DURATION} ${EASE_OUT_EXPO}, filter ${MOTION7_DURATION} ${EASE_OUT_EXPO}`,
           }}>
-            {localized.name}
+            {displayName}
           </div>
+          <div className="result-reveal-caption">{fromTitle}</div>
         </div>
       </div>
 
@@ -546,7 +535,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           }}
         >
           <div>
-            {/* R14: Hook text — "我接受了灵魂审判。" */}
+            {/* 分享卡标题 */}
             <div style={{
               fontFamily: "'Cinzel', serif",
               fontSize: "0.55rem",
@@ -561,17 +550,8 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
               fontSize: "1.8rem", fontWeight: 900, lineHeight: 1.15,
               color: "#fff", marginBottom: "0.4rem",
             }}>
-              {localized.name}
+              {displayName}
             </div>
-            {/* English subtitle */}
-            {localized.subtitle && (
-              <div style={{
-                fontSize: "0.75rem", color: "#888", letterSpacing: "0.15em",
-                marginBottom: "0.3rem",
-              }}>
-                {localized.subtitle}
-              </div>
-            )}
             {/* 标语 */}
             <div style={{
               fontSize: "0.75rem", fontStyle: "italic",
@@ -579,7 +559,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
             }}>
               {sloganText}
             </div>
-            {/* 来自《魔女审判》 */}
+            {/* 作品出处 */}
             <div style={{
               fontSize: "0.55rem", fontFamily: "'Cinzel', serif",
               letterSpacing: "0.15em", color: "rgba(255,255,255,0.25)",
@@ -590,15 +570,15 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
           </div>
           <div>
             {/* Keywords */}
-            {localized.keywords && (
+            {keywordList.length > 0 && (
               <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "1rem" }}>
-                {localized.keywords.split(/[、,，]/).map((kw: string, i: number) => (
-                  <span key={i} style={{
+                {keywordList.map((keyword) => (
+                  <span key={keyword} style={{
                     fontSize: "0.55rem", padding: "0.15rem 0.45rem",
                     border: "1px solid rgba(255,215,0,0.25)", borderRadius: 999,
                     color: "rgba(255,215,0,0.7)",
                   }}>
-                    {kw.trim()}
+                    {keyword}
                   </span>
                 ))}
               </div>
@@ -631,7 +611,7 @@ export default function ResultScreen({ result, stats, onRestart }: ResultScreenP
                   </div>
                 )}
               </div>
-              {/* R14: CTA — "来接受审判 →" */}
+              {/* 分享页 CTA */}
               <div style={{
                 fontSize: "0.6rem", letterSpacing: "0.15em",
                 color: "rgba(255,215,0,0.5)",

@@ -28,6 +28,8 @@ export default function TestPage() {
   const [lastCompletion, setLastCompletion] = useState<{ answers: { questionId: number; optionId: number }[] } | null>(null);
   // prefers-reduced-motion 检测：传给 AuroraBurst 缩短最小时长（C3）。
   const [reducedMotion, setReducedMotion] = useState(false);
+  // 手机使用紧凑转场：只保留一次短暗场，桌面维持原揭示节奏。
+  const [compactMotion, setCompactMotion] = useState(false);
   const startedAtRef = useRef<number>(0);
   // 极光最小时长信号的 resolve 句柄：AuroraBurst 的 onComplete 在 minDurationMs 后调用，
   // 与 fetch 完成信号 Promise.all（ADR 盲点 #13 / 风险1）。
@@ -67,8 +69,16 @@ export default function TestPage() {
   // 检测 prefers-reduced-motion，供 AuroraBurst 缩短最小时长（C3）。
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mq.matches);
+    queueMicrotask(() => setReducedMotion(mq.matches));
     const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    queueMicrotask(() => setCompactMotion(mq.matches));
+    const handler = (e: MediaQueryListEvent) => setCompactMotion(e.matches);
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   }, []);
@@ -161,10 +171,6 @@ export default function TestPage() {
     window.location.href = "/";
   }, []);
 
-  const handleExit = useCallback(() => {
-    window.location.href = "/";
-  }, []);
-
   return (
     <ErrorBoundary>
       <div style={{
@@ -174,16 +180,21 @@ export default function TestPage() {
         fontFamily: "'Space Mono', monospace"
       }}>
         {showResult && result ? (
-          <ResultScreen result={result} stats={stats} onRestart={handleRestart} />
+          <ResultScreen
+            result={result}
+            stats={stats}
+            onRestart={handleRestart}
+            compactMotion={compactMotion}
+          />
         ) : loadError && !questions.length ? (
           <div style={{
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
             minHeight: "100vh", padding: "2rem", textAlign: "center",
             fontFamily: "'Noto Serif SC', serif",
           }}>
-            <div style={{ fontSize: "1.2rem", color: "#d4af37", marginBottom: "1rem", fontFamily: "'Cinzel', serif", letterSpacing: "0.2em" }}>审判通道中断</div>
+            <div style={{ fontSize: "1.2rem", color: "#d4af37", marginBottom: "1rem", fontFamily: "'Cinzel', serif", letterSpacing: "0.2em" }}>题目加载失败</div>
             <div style={{ fontSize: "0.8rem", color: "#888", marginBottom: "1.5rem" }}>
-              无法连接到审判庭，请稍后再试。
+              暂时无法加载题目，请稍后再试。
             </div>
             <button
               onClick={() => { setLoadError(null); loadQuiz(); }}
@@ -202,9 +213,9 @@ export default function TestPage() {
             minHeight: "100vh", padding: "2rem", textAlign: "center",
             fontFamily: "'Noto Serif SC', serif",
           }}>
-            <div style={{ fontSize: "1.2rem", color: "#d4af37", marginBottom: "1rem", fontFamily: "'Cinzel', serif", letterSpacing: "0.2em" }}>审判提交中断</div>
+            <div style={{ fontSize: "1.2rem", color: "#d4af37", marginBottom: "1rem", fontFamily: "'Cinzel', serif", letterSpacing: "0.2em" }}>结果生成失败</div>
             <div style={{ fontSize: "0.8rem", color: "#888", marginBottom: "1.5rem", maxWidth: 420, lineHeight: 1.7 }}>
-              结果未能安全写入，请稍后重新提交。{submitError}
+              结果暂时没有生成成功，请稍后重新提交。{submitError}
             </div>
             <button
               onClick={() => {
@@ -232,7 +243,7 @@ export default function TestPage() {
 
         <AuroraBurst
           active={auroraActive}
-          minDurationMs={1300}
+          minDurationMs={compactMotion ? 720 : 1300}
           reducedMotion={reducedMotion}
           onComplete={() => resolveAuroraRef.current?.()}
         />

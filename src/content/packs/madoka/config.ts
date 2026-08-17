@@ -8,5 +8,5 @@
 
 /** 小圆 pack 元信息 */
 export const MADOKA_TITLE = "魔法少女小圆";
-export const MADOKA_WORK_INTRO = "一部关于「为了一个人反复重启世界」的故事";
+export const MADOKA_WORK_INTRO = "少女们的愿望都会实现，只是每个愿望都要付出代价。";
 export const MADOKA_IP_CODE = "madoka";

@@ -31,30 +31,6 @@ const STORAGE_KEY = "witch-trial-progress";
 const ROMAN = ["I", "II", "III", "IV", "V"];
 const INTERJECTION_NODES: AnnotationNode[] = [5, 10, 15];
 
-/** 砝码题：解析 weight::a|b|c 格式的 label */
-function parseWeightLabel(label: string): [number, number, number] | null {
-  if (!label.startsWith("weight::")) return null;
-  const parts = label.slice(8).split("|");
-  if (parts.length !== 3) return null;
-  const nums = parts.map(Number);
-  if (nums.some((n) => isNaN(n))) return null;
-  return nums as [number, number, number];
-}
-
-/** 砝码题：解析 question.text 里的三槽主题文案 */
-function parseSlotThemes(text: string): [string, string, string] {
-  // text 格式：... A：「...」\nB：「...」\nC：「...」
-  const lines = text.split("\n");
-  const themes: string[] = [];
-  for (const line of lines) {
-    const m = line.match(/^[ABC]：「(.+?)」$/);
-    if (m) themes.push(m[1]);
-  }
-  if (themes.length === 3) return themes as [string, string, string];
-  // fallback：用 A/B/C
-  return ["审判之秤 · A", "审判之秤 · B", "审判之秤 · C"];
-}
-
 function readSavedProgress(): {
   currentIndex: number;
   answers: { questionId: number; optionId: number }[];
@@ -207,15 +183,22 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
 
   // ── 砝码题：当题切换时重置 slots 为 0（HTML「审判庭」从零分配）──
   useEffect(() => {
-    if (current?.renderType === "weight") {
-      setWeightSlots([0, 0, 0]);
-    }
+    let disposed = false;
+    queueMicrotask(() => {
+      if (!disposed && current?.renderType === "weight") setWeightSlots([0, 0, 0]);
+    });
+    return () => { disposed = true; };
   }, [safeIndex, current?.renderType]);
 
   // ── 换题时恢复已选高亮（回看场景：进入已答题显示上次的选择）──
   useEffect(() => {
-    const saved = answers[safeIndex];
-    setSelectedOptionId(saved ? saved.optionId : null);
+    let disposed = false;
+    queueMicrotask(() => {
+      if (disposed) return;
+      const saved = answers[safeIndex];
+      setSelectedOptionId(saved ? saved.optionId : null);
+    });
+    return () => { disposed = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [safeIndex]);
 
@@ -285,10 +268,17 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     setSelectedOptionId(option.id);
     document.body.classList.remove("hovering");
 
-    // ✦ 契约已被记录 ✦ —— 选中后闪现 400ms（HTML「审判庭」toast）
+    const isTouchFeedback = touchFeedbackRef.current
+      || window.matchMedia("(max-width: 768px)").matches;
+
+    // ✦ 契约已被记录 ✦ —— desktop 保留；手机 CSS 隐藏，卡片金边本身
+    // 已经是更直接的确认反馈。仍维护短计时以保持状态机/无障碍契约不变。
     setToastVerdict(true);
     clearTimeout(toastTimerRef.current);
-    toastTimerRef.current = window.setTimeout(() => setToastVerdict(false), 400);
+    toastTimerRef.current = window.setTimeout(
+      () => setToastVerdict(false),
+      isTouchFeedback ? 260 : 400
+    );
 
     const answer = { questionId: current.id, optionId: option.id };
     // 按 safeIndex 覆盖（支持回看改答）：写入当前位置，保留后续已答
@@ -297,15 +287,15 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     let newGateValue = gateValue;
     if (current.type === "gate" && option.value) { newGateValue = option.value; setGateValue(option.value); }
 
-    const isTouchFeedback = touchFeedbackRef.current;
     if (navigator.vibrate) navigator.vibrate(isTouchFeedback ? 12 : 40);
 
     const isLast = safeIndex >= displayQuestions.length - 1;
     pendingRef.current = { answers: newAnswers, gateValue: newGateValue, isLast };
 
-    // Touch gets a shorter (but still visible) squeeze, mouse keeps the full beat.
-    const feedbackDelay = isTouchFeedback ? 320 : 400;
-    const totalDelay = isTouchFeedback ? 680 : 700;
+    // Mobile keeps one quiet confirmation beat: 180ms selected state followed
+    // by an opacity-only crossfade. Desktop retains the original cadence.
+    const feedbackDelay = isTouchFeedback ? 180 : 400;
+    const totalDelay = isTouchFeedback ? 360 : 700;
     fadeTimerRef.current = window.setTimeout(() => {
       setStageFadeOut(true);
     }, feedbackDelay);
@@ -446,7 +436,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
                     role="radio"
                     aria-checked={isSel}
                     aria-label={option.label}
-                    style={{ animationDelay: `${idx * 0.08}s`, pointerEvents: isAnimating ? "none" : "auto" }}
+                    style={{ pointerEvents: isAnimating ? "none" : "auto" }}
                     onClick={() => handleSelect(option)}
                   >
                     <span className="balance-pan-key" aria-hidden="true">{ROMAN[idx]}</span>
@@ -474,7 +464,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
                 role="radio"
                 aria-checked={false}
                 aria-label={option.label}
-                style={{ animationDelay: `${idx * 0.05}s`, pointerEvents: isAnimating ? "none" : "auto" }}
+                style={{ pointerEvents: isAnimating ? "none" : "auto" }}
                 onClick={() => handleSelect(option)}
               >
                 <div className="opt-content">
@@ -518,7 +508,6 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
               role="button"
               tabIndex={0}
               aria-label={`${slotThemes[slotIdx]}：当前 ${val} 点`}
-              style={{ animationDelay: `${slotIdx * 0.08}s` }}
               onClick={() => cycleSlot(slotIdx)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") { e.preventDefault(); cycleSlot(slotIdx); }

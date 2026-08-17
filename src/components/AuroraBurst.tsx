@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { JSX } from "react";
+import { useI18n } from "@/lib/i18n";
 
 /**
- * AuroraBurst —— 32 同款极光转场幕布（替换 loading spinner）。
+ * AuroraBurst —— 答题与结果之间的短转场幕布。
  *
  * 视觉：fixed 全屏覆盖层（z8000，复用原 loading overlay 层位，ADR 盲点 #8），
  * 内含 IM1 已在 globals.css 定义的 `.aurora-burst` 圆点
@@ -27,6 +28,7 @@ export function AuroraBurst({ active, minDurationMs = 1300, reducedMotion = fals
   reducedMotion?: boolean;
   onComplete?: () => void;
 }): JSX.Element | null {
+  const { t } = useI18n();
   // 未激活过则完全不渲染（避免常驻空 fixed 层挡交互）；激活后常驻以播放淡出。
   const [everActive, setEverActive] = useState(false);
   // onComplete 经 ref 取最新引用，避免 effect 闭包陈旧。
@@ -38,12 +40,20 @@ export function AuroraBurst({ active, minDurationMs = 1300, reducedMotion = fals
 
   useEffect(() => {
     if (!active) return;
-    setEverActive(true);
+    // Defer the mount flag one microtask so the activation effect only
+    // schedules external work; this avoids a synchronous cascading render.
+    let disposed = false;
+    queueMicrotask(() => {
+      if (!disposed) setEverActive(true);
+    });
     const effectiveDuration = reducedMotion ? REDUCED_MIN_MS : minDurationMs;
     const timer = window.setTimeout(() => {
       onCompleteRef.current?.();
     }, effectiveDuration);
-    return () => window.clearTimeout(timer);
+    return () => {
+      disposed = true;
+      window.clearTimeout(timer);
+    };
   }, [active, minDurationMs, reducedMotion]);
 
   if (!everActive) return null;
@@ -63,7 +73,12 @@ export function AuroraBurst({ active, minDurationMs = 1300, reducedMotion = fals
         pointerEvents: active ? "auto" : "none",
       }}
     >
-      <div className={`aurora-burst${active ? " active" : ""}`} />
+      <div className={`aurora-burst${active ? " active" : ""}`}>
+        <span className="aurora-burst-orbit aurora-burst-orbit-outer" />
+        <span className="aurora-burst-orbit aurora-burst-orbit-inner" />
+        <span className="aurora-burst-core">✦</span>
+        <span className="aurora-burst-caption">{t("loading.text")}</span>
+      </div>
     </div>
   );
 }

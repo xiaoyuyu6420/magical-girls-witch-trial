@@ -135,6 +135,8 @@ export default function FullscreenButton() {
 
   return (
     <button
+      className="fullscreen-toggle"
+      data-fullscreen-toggle="true"
       onClick={toggle}
       aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
       style={{

@@ -430,10 +430,25 @@
       display: none;
       background: #030303;
       z-index: 30000;
+      opacity: 0;
+      transform: scale(1.012);
+      filter: brightness(0.72);
+      transition: opacity 0.58s cubic-bezier(0.16, 1, 0.3, 1), transform 0.72s cubic-bezier(0.16, 1, 0.3, 1), filter 0.58s ease;
     }
 
     body.test-embedded #test-embed {
       display: block;
+      opacity: 1;
+      transform: none;
+      filter: brightness(1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #test-embed {
+        transform: none;
+        filter: none;
+        transition: opacity 0.2s ease;
+      }
     }
 
     /* =========================================

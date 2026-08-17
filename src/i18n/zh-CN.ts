@@ -1,7 +1,17 @@
 const t = {
+  works: {
+    "witch-trial": {
+      title: "魔女审判",
+      intro: "26 道情境题，观察你在关系、责任和自我保护之间的取舍。",
+    },
+    madoka: {
+      title: "魔法少女小圆",
+      intro: "一个关于愿望、代价与选择的故事。",
+    },
+  },
   meta: {
-    title: "魔女审判",
-    description: "在因子侵蚀的尽头，审判等待着你。魔法少女的魔女审判人格测试。",
+    title: "",
+    description: "",
   },
   welcome: {
     badge: "",
@@ -15,7 +25,7 @@ const t = {
     prologue3: "",
   },
   loading: {
-    text: "审判通道开启中…",
+    text: "正在整理你的答案…",
   },
   test: {
     exit: "退出",
@@ -25,34 +35,39 @@ const t = {
     weightHint: "点击卡片分配筹码",
   },
   result: {
-    archetype: "灵魂原型",
+    archetype: "你的角色",
+    matchLabel: "角色匹配",
+    matchedLabel: "已匹配",
+    referenceOnly: "仅供参考",
     hidden: "隐藏",
     border: "边界",
-    share: "保存契约",
+    share: "分享结果",
     copyLink: "复制链接",
-    rebirth: "重新审判",
-    analysis: "分析",
-    dimAnalysis: "姿态分析",
+    rebirth: "再测一次",
+    analysis: "匹配理由",
+    dimAnalysis: "选择倾向",
     you: "你",
     ideal: "理想",
     statsInfo: "统计信息",
     statsShort: "统计",
-    factorResonance: "共鸣",
-    factorResonanceLabel: "姿态共鸣",
-    shareText: "我接受了灵魂审判，被审判为「{name}」——{slogan} {url}",
+    factorResonance: "匹配度",
+    factorResonanceLabel: "角色匹配度",
+    shareText: "我的测试结果是「{name}」：{slogan} {url}",
+    revealJudgement: "匹配完成",
+    revealTransition: "你的角色是——",
     // ── 揭晓时刻 ──
     revealFrom: "来自《{title}》",
-    rarityLabel: "审判占比",
-    rarityGlobal: "与你相同者 {percentage}%",
-    rarityCollecting: "采集中…",
-    rarityRare: "稀有 · 仅 {percentage}%",
-    workIntroLabel: "作品",
-    soulTraits: "灵魂特质",
-    shareHook: "我接受了灵魂审判",
-    shareCta: "来接受审判 →",
-    hiddenReveal: "隐藏人格显现",
-    skipHint: "点击任意处跳过",
-    regionLabel: "灵魂审判结果",
+    rarityLabel: "相同结果",
+    rarityGlobal: "有 {percentage}% 的人也得到这个结果",
+    rarityCollecting: "统计中…",
+    rarityRare: "这个结果占 {percentage}%",
+    workIntroLabel: "角色出处",
+    soulTraits: "你的特点",
+    shareHook: "我的结果是",
+    shareCta: "测测你会是谁 →",
+    hiddenReveal: "解锁隐藏结果",
+    skipHint: "点击任意处继续",
+    regionLabel: "角色测试结果",
   },
   dims: {
     S1: "", S2: "", S3: "",
@@ -89,6 +104,31 @@ const t = {
     SAYAKA: { name: "", subtitle: "", slogan: "", desc: "", keywords: "" },
     KYOKO: { name: "", subtitle: "", slogan: "", desc: "", keywords: "" },
     MAMI: { name: "", subtitle: "", slogan: "", desc: "", keywords: "" },
+    homura_devil: {
+      name: "晓美焰", slogan: "重要的人一旦认定，你就很难退开。",
+      desc: "你不是拒绝亲近，只是靠近之前会观察很久。一旦认定一个人重要，你会把对方的事当成自己的事；局面失控时，又会先收紧边界，尽量自己处理。你和焰相似的地方不是什么黑化，而是这份很难收回的认真。",
+      keywords: "谨慎,边界感,行动先于表达",
+    },
+    madoka_god: {
+      name: "鹿目圆", slogan: "你常常先注意到别人的需要。",
+      desc: "气氛一不对，你通常会先看谁在难受，然后想自己能做什么。照顾人时你很有行动力，问题是自己的需要常常被排到后面。你和圆相似的地方，是温柔不只是态度，也会真的动手去做。",
+      keywords: "敏感,照顾,行动力",
+    },
+    sayaka_siren: {
+      name: "美树沙耶香", slogan: "你对公平和承诺很敏感。",
+      desc: "答应过的事，你会当真；看到敷衍和偏袒，也比一般人更难受。事情没做好时，你容易先检讨自己，再把失望压成愤怒。你和沙耶香相似的地方，是不愿意用“随便啦”处理重要关系。",
+      keywords: "原则感,认真,自我要求",
+    },
+    kyoko_pragmatist: {
+      name: "佐仓杏子", slogan: "你的关心，常常包在现实判断里。",
+      desc: "你习惯先算可行性，再决定要不要投入，不喜欢把气氛说得很满。但真正认定一个人后，你会用具体行动帮忙，只是不一定会承认自己在意。你和杏子相似的地方，是嘴上留余地，事上不轻易退。",
+      keywords: "务实,有底线,嘴硬心软",
+    },
+    emma_truth: {
+      name: "樱羽艾玛", slogan: "你想弄清楚事情本来的样子。",
+      desc: "你不擅长用“算了”糊过去。一句话前后对不上，或者有人在关系里回避问题，你会注意到，也会想继续问。答案让人不舒服时，你仍宁愿先知道事实，再决定怎么处理。",
+      keywords: "求真,有边界,不轻易自欺",
+    },
   },
   // ⚠️ 死代码：questions / gate / trigger 下方数组不参与渲染。
   // 渲染权威源是 src/data/quiz-content.ts → prisma db seed → /api → /test 页面。
@@ -136,8 +176,8 @@ const t = {
     options: ["", ""],
   },
   disclaimer: {
-    footer: "本测试为同人二创作品，与原作版权方无隶属关系",
-    result: "角色版权归原作方所有",
+    footer: "",
+    result: "",
   },
 };
 

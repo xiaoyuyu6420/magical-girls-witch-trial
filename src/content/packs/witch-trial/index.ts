@@ -41,7 +41,7 @@ export const witchTrialPack: QuizPack = {
       idealLabelKey: "result.ideal",
     },
   },
-  workIntro: "一部关于「在死亡回溯中守住一个人」的故事",
+  workIntro: "26 道情境题，观察你在关系、责任和自我保护之间的取舍。",
 };
 
 export default witchTrialPack;

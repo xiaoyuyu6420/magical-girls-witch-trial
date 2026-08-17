@@ -170,6 +170,12 @@
       radial-gradient(ellipse at 50% 50%, rgba(25, 22, 12, 0.2) 0%, transparent 70%);
   }
 
+  /* The test/result surfaces own their viewport and their scroll container;
+     the global disclaimer would otherwise consume a hidden extra 48px and
+     clip the last answer on short phones. The landing page keeps the footer. */
+  body:has(.view-test) footer,
+  body:has(#view-result) footer { display: none; }
+
   @media (pointer: coarse) { #cursor-dot, #cursor-ring { display: none !important; } }
 }
 
@@ -457,6 +463,9 @@
   }
   .opt-block:focus-visible { outline: 2px solid var(--c-gold); outline-offset: -2px; }
   @keyframes staggerIn { to { opacity: 1; transform: translateY(0); } }
+  .opt-block:nth-child(2), .balance-pan:nth-child(2), .weight-card:nth-child(2) { animation-delay: 0.05s; }
+  .opt-block:nth-child(3), .balance-pan:nth-child(3), .weight-card:nth-child(3) { animation-delay: 0.1s; }
+  .opt-block:nth-child(4) { animation-delay: 0.15s; }
 
   .opt-content { position: absolute; width: 90%; max-width: 400px; text-align: center; pointer-events: none; transition: opacity 0.2s, transform 0.4s var(--ease-out-expo); }
   .opt-index { font-family: var(--f-title); font-size: 3rem; opacity: 0.1; margin-bottom: 0.5rem; transition: all 0.3s; line-height: 1; }
@@ -676,17 +685,21 @@
   /* active 态旧金实色（HEAD 气质：金底深字 + 金 glow） */
   .btn-confirm-weight.active { background: var(--c-gold); color: var(--c-void); border-color: transparent; cursor: pointer; box-shadow: 0 0 30px rgba(212, 175, 55, 0.5); }
 
-  .opt-block.is-selected {
-    flex: 8 !important;
-    background: rgba(212, 175, 55, 0.2) !important;
-    box-shadow: inset 0 0 80px rgba(212, 175, 55, 0.1) !important;
-    border-color: var(--c-gold) !important; z-index: 20;
+  /* The dramatic flex squeeze belongs to the desktop composition only. Keep
+     it out of the mobile cascade entirely so a phone selection never reflows. */
+  @media (min-width: 769px) {
+    .opt-block.is-selected {
+      flex: 8 !important;
+      background: rgba(212, 175, 55, 0.2) !important;
+      box-shadow: inset 0 0 80px rgba(212, 175, 55, 0.1) !important;
+      border-color: var(--c-gold) !important; z-index: 20;
+    }
+    .opt-block.is-selected .opt-index { opacity: 0.6; transform: scale(1.5); color: var(--c-gold); }
+    .opt-block.is-selected .opt-text { opacity: 1; transform: scale(1.05); font-weight: 700; color: #fff; text-shadow: 0 0 15px rgba(212,175,55,0.6); }
+    /* dimmed 回 HEAD 透明退场（旧版被淘汰选项完全安静消失） */
+    .opt-block.is-dimmed { flex: 0.01 !important; background: transparent !important; border-color: transparent !important; }
+    .opt-block.is-dimmed .opt-content { opacity: 0 !important; transform: scale(0.8) !important; }
   }
-  .opt-block.is-selected .opt-index { opacity: 0.6; transform: scale(1.5); color: var(--c-gold); }
-  .opt-block.is-selected .opt-text { opacity: 1; transform: scale(1.05); font-weight: 700; color: #fff; text-shadow: 0 0 15px rgba(212,175,55,0.6); }
-  /* dimmed 回 HEAD 透明退场（旧版被淘汰选项完全安静消失） */
-  .opt-block.is-dimmed { flex: 0.01 !important; background: transparent !important; border-color: transparent !important; }
-  .opt-block.is-dimmed .opt-content { opacity: 0 !important; transform: scale(0.8) !important; }
 
   /* ===== 桌面特化：HUD 去胶囊化 → 角落文字（Cinzel 旧金，无底无边框）；
      移动端保留胶囊 HUD。背景氛围层两端统一移除（组件层 BackgroundLayers 仅移动端渲染）。===== */
@@ -713,7 +726,7 @@
     .pulse-orb { display: none; }
     /* 背景氛围层移除（32 canvas 粒子/浮雕题号/胶片颗粒 → 旧版干净背景）。
        组件层 BackgroundLayers 也不启动（双保险）。 */
-    #bg-canvas, .bg-typography, .film-grain, .grain-overlay-test { display: none !important; }
+    #bg-canvas, .mobile-ambient-backdrop, .bg-typography, .film-grain, .grain-overlay-test { display: none !important; }
   }
 
   /* 桌面端隐藏 toast（桌面靠挤压动效反馈，不需要文字 toast） */
@@ -722,20 +735,96 @@
   /* ===== Result（深色旧金 + 桌面可滚动修复 V16/V24）===== */
   #view-result {
     position: absolute; top: 0; left: 0; width: 100vw;
-    height: 100vh; height: 100dvh; min-height: 100vh;
+    height: 100vh; height: 100dvh; min-height: 100vh; min-height: 100dvh;
     z-index: 10; display: flex; justify-content: center; align-items: flex-start;
     overflow-y: auto; -webkit-overflow-scrolling: touch;
     background: var(--void);
     color: var(--text-primary);
+    isolation: isolate;
   }
   .result-layout {
     display: flex; width: 100%; max-width: 1300px; padding: 5vw; align-items: center;
     opacity: 1; transform: translateY(0);
     transition: transform 1.2s var(--ease-out-expo);
+    position: relative; z-index: 1;
+  }
+
+  .result-reveal-stage { position: relative; }
+
+  .result-reveal-kicker,
+  .result-reveal-caption {
+    font-family: var(--f-title);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(242, 239, 233, 0.48);
+  }
+
+  .result-reveal-kicker {
+    margin-bottom: 1.75rem;
+    font-size: 0.62rem;
+    animation: revealKickerIn 0.7s var(--ease-out-expo) 0.05s both;
+  }
+
+  .result-reveal-caption {
+    margin-top: 1.5rem;
+    font-size: 0.55rem;
+    opacity: 0;
+    animation: revealCaptionIn 0.7s var(--ease-out-expo) 0.42s both;
+  }
+
+  .result-reveal-sigil {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 6rem;
+    height: 6rem;
+    margin-bottom: 1.25rem;
+    color: var(--gold-hyper);
+    animation: revealSigilIn 0.9s var(--ease-out-expo) 0.08s both;
+  }
+
+  .result-reveal-sigil-ring {
+    position: absolute;
+    border: 1px solid rgba(212, 175, 55, 0.42);
+    border-radius: 50%;
+  }
+
+  .result-reveal-sigil-ring-outer { inset: 0; opacity: 0.35; }
+  .result-reveal-sigil-ring-inner { inset: 0.75rem; opacity: 0.65; border-style: dashed; }
+  .result-reveal-sigil-core { font-size: 1.8rem; text-shadow: 0 0 22px rgba(212, 175, 55, 0.65); }
+
+  @keyframes revealKickerIn {
+    from { opacity: 0; transform: translateY(8px); letter-spacing: 0.5em; }
+    to { opacity: 1; transform: none; letter-spacing: 0.28em; }
+  }
+  @keyframes revealSigilIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes revealCaptionIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 0.55; transform: none; }
   }
   /* body.revealed ← Reveal 层挂载/卸载该类门控 result-layout 可见性（final.md 盲点 #9，勿拆） */
   body.revealed .result-layout { opacity: 1; transform: translateY(0); }
   @media (max-width: 768px) { .result-layout { flex-direction: column; text-align: center; } }
+
+  /* Generated ambience is intentionally mobile-only. Desktop keeps the
+     editorial black field, while phones get a quiet sense of place behind
+     the card without introducing a second visual focal point. */
+  @media (max-width: 768px) {
+    #view-result::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(212, 175, 55, 0.08), transparent 42%),
+        linear-gradient(180deg, rgba(5, 3, 8, 0.92), rgba(5, 3, 8, 0.98));
+      opacity: 0.28;
+    }
+  }
 
   .r-left { flex: 1; display: flex; flex-direction: column; position: relative; }
   .r-arch { font-family: var(--f-title); font-size: clamp(1.2rem, 3vw, 2rem); font-weight: 600; color: var(--purple-neon); letter-spacing: 0.4em; margin-bottom: 1rem; }
@@ -831,6 +920,34 @@
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
   }
 
+  .result-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .result-header-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--text-dim);
+    font-family: var(--f-title);
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    white-space: nowrap;
+  }
+
+  .result-header-rule {
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold-hyper), transparent);
+    opacity: 0.55;
+  }
+
   .editorial-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -863,6 +980,33 @@
     transition: transform 0.5s var(--ease-out-expo);
   }
 
+  .tarot-card-frame::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: 15px;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  .tarot-card-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 20%, rgba(255, 238, 170, 0.14) 42%, transparent 55%);
+    transform: translateX(-120%);
+    z-index: 5;
+  }
+
+  .tarot-card-frame.is-shimmering::after { animation: tarotSweep 1.1s var(--ease-out-expo) 0.25s both; }
+
+  @keyframes tarotSweep {
+    from { transform: translateX(-120%); }
+    to { transform: translateX(120%); }
+  }
+
   @media (hover: hover) {
     .tarot-card-frame:hover { transform: translateY(-6px) rotate(0.5deg); }
   }
@@ -888,8 +1032,103 @@
     gap: 16px;
     padding: 30px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
     background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
     z-index: 1;
+  }
+
+  /* A quiet archival seal keeps the card intentional while optional portrait
+     art is unavailable. It is entirely static and disappears behind a future
+     .character-img without changing the card's geometry. */
+  .tarot-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 23%;
+    left: 21%;
+    width: 58%;
+    aspect-ratio: 1;
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 12px rgba(212, 175, 55, 0.025),
+      inset 0 0 32px rgba(212, 175, 55, 0.05),
+      0 0 38px rgba(212, 175, 55, 0.08);
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0 1px, transparent 2px);
+    pointer-events: none;
+  }
+  .tarot-placeholder::after {
+    content: '';
+    position: absolute;
+    top: 13%;
+    bottom: 13%;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(212, 175, 55, 0.16), transparent);
+    pointer-events: none;
+  }
+  .tarot-placeholder .tarot-icon,
+  .tarot-placeholder > div { position: relative; z-index: 1; }
+
+  .tarot-card-topline,
+  .tarot-card-footer {
+    position: absolute;
+    left: 1.25rem;
+    right: 1.25rem;
+    z-index: 6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--f-title);
+    font-size: 0.52rem;
+    letter-spacing: 0.2em;
+    color: rgba(242, 239, 233, 0.48);
+  }
+
+  .tarot-card-topline { top: 1.15rem; }
+  .tarot-card-footer { bottom: 1.15rem; }
+  .tarot-card-footer-mark { color: var(--gold-hyper); font-size: 0.8rem; }
+
+  .tarot-sigil {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 7.5rem;
+    height: 7.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .tarot-sigil-orbit {
+    position: absolute;
+    inset: 0.5rem;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 50%;
+    box-shadow: 0 0 35px rgba(212, 175, 55, 0.1), inset 0 0 30px rgba(212, 175, 55, 0.05);
+  }
+
+  .tarot-icon { width: 5.2rem; height: 5.2rem; }
+  .tarot-icon circle { stroke: rgba(212, 175, 55, 0.35); stroke-width: 0.8; }
+  .tarot-icon .tarot-sigil-dot { fill: var(--gold-hyper); stroke: none; }
+
+  .tarot-card-name {
+    position: relative;
+    z-index: 2;
+    max-width: 82%;
+    font-family: var(--f-body);
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--gold-hyper);
+    letter-spacing: 0.08em;
+  }
+
+  .tarot-card-subtitle {
+    position: relative;
+    z-index: 2;
+    max-width: 80%;
+    font-size: 0.68rem;
+    line-height: 1.5;
+    color: var(--text-dim);
   }
 
   .tarot-icon {
@@ -909,6 +1148,25 @@
     color: var(--purple-neon);
     letter-spacing: 3px;
     text-transform: uppercase;
+  }
+
+  .result-identity { display: flex; flex-direction: column; gap: 0.45rem; }
+
+  .result-subtitle {
+    font-family: var(--f-title);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+  }
+
+  .result-work-intro {
+    margin-top: 0.3rem;
+    padding: 0.85rem 0 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.5);
+    font-size: 0.8rem;
+    font-style: italic;
+    line-height: 1.7;
   }
 
   .res-title {
@@ -952,6 +1210,19 @@
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   }
 
+  .verdict-block { position: relative; }
+  .verdict-block-soft { padding-top: 0.1rem; }
+
+  .match-reason-card {
+    padding: 1.45rem 1.55rem;
+    border: 1px solid rgba(212, 175, 55, 0.16);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.025);
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
+  }
+
+  .match-reason-card .section-body { margin-top: 0.85rem; }
+
   .section-label {
     font-family: var(--f-syne);
     font-size: 0.75rem;
@@ -988,6 +1259,11 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
     padding: 20px;
+  }
+
+  .rarity-meter {
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
   }
 
   .stat-row {
@@ -1135,7 +1411,11 @@
     /* Fix the broken height chain: .view-test becomes a real flex column sized
        to the viewport, so #test-stage-wrapper's flex:1 and the vertical squeeze
        (is-selected flex:8 / is-dimmed flex:0.01) actually resolve. */
-    .view-test { display: flex; flex-direction: column; }
+    .view-test { display: flex; flex-direction: column; isolation: isolate; overflow: hidden; }
+    /* Base sets height:100% for the desktop stage. In a mobile flex column that
+       makes the stage one full viewport tall *after* the HUD, pushing its last
+       answer below the clipped body. Let flex consume only the true remainder. */
+    #test-stage-wrapper { height: auto; min-height: 0; }
     /* 复用欢迎页 HUD 四角符文边框（摄影机记录感）：单个 ::before 承载 1px 淡金
        取景框 + 4 层背景（四角 cross-in-circle 符文，与 public/index.html 同款
        SVG）。pointer-events:none 不挡点击；纯静态装饰，无动画，GPU 友好。
@@ -1188,7 +1468,7 @@
       /* padding-top 1.7rem（= 原 0.85rem + q-meta 行高 ~13px）：q-meta 已
          absolute 飞出到顶部边框下方，此处补偿其占位，保证 q-text 起始 y
          恒定（题目位置恒定的硬约束不破）。 */
-      padding: 1.7rem 1.25rem 0.85rem;
+      padding: 1.15rem 1.25rem 0.85rem;
       justify-content: flex-start;
       background: var(--card-glass);
       backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%);
@@ -1219,13 +1499,16 @@
        下方 ~6px。pointer-events:none 不挡按钮。题目位置由 question-stage
        padding-top 1.7rem 补偿（见上）。 */
     .question-stage .q-meta {
-      position: absolute;
-      top: -80px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 41;
+      position: static;
+      top: auto;
+      left: auto;
+      transform: none;
+      z-index: auto;
       pointer-events: none;
       white-space: nowrap;
+      width: 100%;
+      justify-content: flex-start;
+      margin-bottom: 0.55rem;
     }
     .q-hint { display: none; }
     .q-text { font-size: clamp(1.15rem, 5vw, 1.5rem); line-height: 1.55; font-weight: 500; letter-spacing: 0.03em; color: var(--champagne-light); }
@@ -1235,12 +1518,16 @@
       min-height: 0;
       flex-direction: column;
       width: 100%;
-      padding: 1rem 4vw calc(env(safe-area-inset-bottom, 0px) + 1rem);
+      padding: 1rem 4vw calc(env(safe-area-inset-bottom, 0px) + 4.5rem);
       /* 用户选定「中间平衡」：固定间距 1.6rem(26px) + 顶部锚定。不用 space-evenly
          （大屏卡间撑到 58px 被否为"拉太开"）。大屏底部留白 ~170px 为版面呼吸。 */
       justify-content: flex-start;
-      gap: 1.6rem;
+      gap: 1.2rem;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
     }
+    .options-stage::-webkit-scrollbar { display: none; }
     .opt-block {
       /* 用户选定「中间平衡」：卡片 ~120px（大屏）。clamp(5.5rem, 13vh, 7.5rem)
          让卡片随视口适度变化——小屏(667)~88px、大屏(895)~116px、上限 120px。
@@ -1276,13 +1563,19 @@
     .hud-counter { font-size: 0.8rem; letter-spacing: 2px; }
 
     /* Result（深色适配；滚动由 desktop-skin 的 #view-result overflow-y:auto 提供） */
-    .result-layout { flex-direction: column; text-align: center; padding: 3rem 1.5rem 4rem; }
+    .result-layout {
+      flex-direction: column;
+      text-align: left;
+      padding: calc(2.5rem + env(safe-area-inset-top, 0px)) 1.25rem calc(6rem + env(safe-area-inset-bottom, 0px));
+      gap: 0;
+    }
     /* editorial 布局（32 新类）手机适配：塔罗卡限高、标题缩小、徽章居中，
        避免 3:4 卡 500px + 12vw 标题溢出首屏（2026-08-15 视觉统一） */
     .result-header-badge { align-self: center; font-size: 0.65rem; padding: 6px 14px; letter-spacing: 2px; }
-    .tarot-card-frame { aspect-ratio: auto; height: 38vh; max-height: 280px; }
+    .tarot-card-frame { width: min(78vw, 270px); aspect-ratio: 3 / 4; height: auto; max-height: none; border-radius: 18px; }
     .res-title.r-name { font-size: clamp(1.35rem, 6vw, 1.8rem); }
-    .editorial-grid { gap: 20px; }
+    .editorial-grid { gap: 24px; justify-items: center; }
+    .result-details { width: 100%; text-align: left; }
     .verdict-editorial-card { padding: 20px; gap: 14px; }
     .section-body { font-size: 0.88rem; line-height: 1.75; }
     .r-left { align-items: center; }
@@ -1300,6 +1593,61 @@
 
     .r-keywords { justify-content: center; }
     .r-keyword-tag { font-size: 0.6rem; padding: 0.15rem 0.5rem; }
+
+    /* One stable selection highlight is enough on a phone. Remove the extra
+       moving toast and turn the category dot into a quiet static marker. */
+    .toast-verdict { display: none; }
+    .pulse-orb {
+      animation: none;
+      transform: none;
+      opacity: 0.55;
+      box-shadow: 0 0 6px var(--gold-hyper);
+    }
+
+    /* Keep fixed controls and the third answer card from competing on short
+       phones; the scroll fallback still protects larger text/locale variants. */
+    .options-stage { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4.5rem); }
+    /* The landing shell already offers the immersive/fullscreen action. On a
+       phone, keeping this fixed button over the answer/result scroll surface
+       costs more hierarchy than it adds. */
+    body.in-test .fullscreen-toggle,
+    body.revealed .fullscreen-toggle,
+    #view-result ~ .fullscreen-toggle { display: none !important; }
+  }
+
+  @media (max-width: 768px) and (max-height: 720px) {
+    .question-stage {
+      height: 10.5rem;
+      margin-top: 2.35rem;
+      padding-top: 1.35rem;
+    }
+    .options-stage { gap: 0.8rem; padding-top: 0.8rem; }
+    .opt-block { min-height: 5.15rem; padding: 0.8rem 1rem; }
+    .balance-stage,
+    .weight-stage {
+      min-height: 0;
+      justify-content: flex-start;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 0.8rem 4vw calc(0.9rem + env(safe-area-inset-bottom, 0px));
+      scrollbar-width: none;
+    }
+    .balance-stage::-webkit-scrollbar,
+    .weight-stage::-webkit-scrollbar { display: none; }
+  }
+
+  @media (max-width: 400px) {
+    .result-header-badge {
+      padding-inline: 10px;
+      font-size: 0.58rem;
+      letter-spacing: 1.2px;
+      white-space: nowrap;
+    }
+    .stat-row { gap: 8px; flex-wrap: wrap; }
+    .stat-name { width: auto; flex: 0 0 96px; font-size: 0.65rem; }
+    .stat-track { min-width: 70px; }
+    .stat-val { width: 36px; font-size: 0.75rem; }
+    .tarot-card-frame { width: min(76vw, 248px); }
   }
 
   @media (max-width: 480px) {
@@ -1326,17 +1674,41 @@
     .r-right { font-size: clamp(0.85rem, 4vw, 0.95rem); line-height: 1.9; }
   }
 
-  /* New-question entrance for mobile options.  Triggered on each option's
-     remount (key=option.id changes per question), staggered by the inline
-     animationDelay in TestScreen.  GPU-friendly: only opacity + transform. */
+  /* 手机题面沿同一条安静动线依次落位；只动 opacity/transform，
+     不改变卡片高度或 flex，避免撑开式布局。 */
+  @keyframes mobileViewIn {
+    from { opacity: 0; transform: scale(1.01); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes mobileQuestionIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes mobileMetaIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes mobileTextIn {
+    from { opacity: 0; transform: translateY(7px); }
+    to { opacity: 1; transform: none; }
+  }
   @keyframes mobileOptIn {
-    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    from { opacity: 0; transform: translateY(10px) scale(0.99); }
     to   { opacity: 1; transform: none; }
   }
 
   @media (max-width: 768px), (pointer: coarse) {
-    #test-stage-wrapper { transition: opacity 0.25s var(--ease-out-expo), transform 0.25s var(--ease-out-expo); justify-content: flex-start; }
-    .stage-fade-out { transform: translateY(-8px); }
+    #test-stage-wrapper {
+      transition: opacity 0.24s ease;
+      justify-content: flex-start;
+    }
+    .stage-fade-out { transform: none; }
+    .view-test { animation: mobileViewIn 0.72s var(--ease-out-expo) both; }
+    .card.enter { animation: mobileQuestionIn 0.56s var(--ease-out-expo) both; }
+    .card.exit { animation: none; }
+    .question-stage.card.enter .q-meta { animation: mobileMetaIn 0.44s var(--ease-out-expo) 0.06s both; }
+    .question-stage.card.enter .q-text { animation: mobileTextIn 0.5s var(--ease-out-expo) 0.11s both; }
+    /* Mobile answer cards stay a fixed stack, but mount in a short cascade. */
     .opt-block {
       opacity: 1;
       transform: none;
@@ -1352,10 +1724,14 @@
          border-color 加入过渡：1px 宽不变 → 仅 repaint 无 reflow，GPU 安全；
          选中时金线淡入比硬切更精致。transform 160ms 供 :active 按压。
          backwards fill 保错峰进场首帧；不 pin 终帧，:active scale 可自由过渡。 */
-      transition: background-color 0.2s var(--ease-out-expo), opacity 0.2s var(--ease-out-expo), border-color 0.2s var(--ease-out-expo), transform 160ms var(--ease-out-expo);
-      animation: mobileOptIn 0.3s var(--ease-out-expo) backwards;
+      transition: background-color 0.22s ease, opacity 0.22s ease, border-color 0.22s ease, box-shadow 0.28s ease, transform 0.18s var(--ease-out-expo);
+      animation: mobileOptIn 0.5s var(--ease-out-expo) both;
     }
-    .opt-content { transition: opacity 0.3s var(--ease-out-expo); }
+    .opt-block:nth-child(1) { animation-delay: 0.14s; }
+    .opt-block:nth-child(2) { animation-delay: 0.2s; }
+    .opt-block:nth-child(3) { animation-delay: 0.26s; }
+    .opt-block:nth-child(4) { animation-delay: 0.32s; }
+    .opt-content { transition: color 0.2s ease, opacity 0.2s ease; }
     /* 32 hover：translateX(4px) + 左 3px 金条（::before）。仅在 (hover:hover)
        下启用，避免触摸设备"点击后 hover 残留"让金条粘在点过的卡上
        （微偏离金标：金标无守卫；层化后本规则天然压过 desktop-skin 的
@@ -1376,10 +1752,11 @@
       .opt-block:hover::before { opacity: 1; }
     }
     /* 按压反馈：金化（金色在本体系里是"选中承诺"，按压提亮过渡到承诺） */
-    .opt-block:active { background: rgba(255, 215, 0, 0.08); border-color: var(--border-highlight); transform: scale(0.97); }
+    .opt-block:active { background: rgba(255, 215, 0, 0.08); border-color: var(--border-highlight); transform: none; }
     .opt-block:active .opt-text { opacity: 1; }
     /* 32 .opt-btn.selected → 旧金（渐变两端同色系，选中由金线+金光承载） */
     .opt-block.is-selected {
+      flex: none !important;
       background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.08)) !important;
       border-color: var(--gold-hyper) !important;
       box-shadow: 0 0 25px rgba(212, 175, 55, 0.25) !important;
@@ -1391,6 +1768,7 @@
     .opt-block.is-selected .opt-text { color: #fff; text-shadow: 0 0 10px var(--gold-hyper); transform: none; }
     /* A3 中性灰 dimmed（与桌面统一） */
     .opt-block.is-dimmed {
+      flex: none !important;
       opacity: 0.4;
       background: rgba(18,18,22,0.4) !important;
       border-color: rgba(255,215,0,0.05) !important;
@@ -1399,12 +1777,26 @@
       opacity: 1 !important;
       transform: none !important;
     }
+
+    /* Alternate question controls use the same quiet, non-reflow response. */
+    .balance-pan,
+    .weight-card { animation: mobileOptIn 0.5s var(--ease-out-expo) both; }
+    .balance-pan:nth-child(1), .weight-card:nth-child(1) { animation-delay: 0.14s; }
+    .balance-pan:nth-child(2), .weight-card:nth-child(2) { animation-delay: 0.21s; }
+    .weight-card:nth-child(3) { animation-delay: 0.28s; }
+    .balance-pan.is-up { opacity: 0.42; }
+    .balance-pan.is-down,
+    .balance-pan.is-up,
+    .weight-card:active { transform: translateY(1px); }
+    .balance-svg { transition: transform 0.36s var(--ease-out-expo); }
+    .balance-svg.tilt-left { transform: rotate(-3deg); }
+    .balance-svg.tilt-right { transform: rotate(3deg); }
     .btn-restart { cursor: pointer; }
 
     /* ===== 移动端进度条/天平/筹码：随 :root token 统一为旧金（原 32 紫渐变已随
        token 重定向自动变金，此处仅对齐桌面款的实色形态）===== */
     /* 进度条：与桌面同款（void→gold→blood） */
-    #progress-line {
+  #progress-line {
       background: linear-gradient(90deg, var(--c-void), var(--c-gold), var(--c-blood));
       box-shadow: 0 0 10px var(--c-gold);
     }
@@ -1433,10 +1825,235 @@
     .btn-confirm-weight { border-color: var(--border-muted); color: var(--champagne-dim); font-family: var(--f-syne); font-size: 0.82rem; font-weight: 700; }
     .btn-confirm-weight.active { background: var(--c-gold); color: var(--c-void); box-shadow: 0 0 30px rgba(212, 175, 55, 0.5); }
   }
+
+  /* ===== Mobile result redesign: 判词封面 → 身份 → 判词 → 数据 ===== */
+  @media (max-width: 768px) {
+    #view-result {
+      scrollbar-width: none;
+      background:
+        radial-gradient(circle at 50% -8%, rgba(154, 113, 40, 0.18), transparent 42%),
+        linear-gradient(180deg, #08070b 0%, #0c0910 48%, #070609 100%);
+    }
+    #view-result::-webkit-scrollbar { display: none; }
+    #view-result::before {
+      opacity: 1;
+      background:
+        linear-gradient(rgba(212,175,55,0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212,175,55,0.018) 1px, transparent 1px),
+        radial-gradient(circle at 50% 13%, rgba(212, 175, 55, 0.1), transparent 38%);
+      background-size: 32px 32px, 32px 32px, auto;
+      mask-image: linear-gradient(180deg, black, transparent 62%);
+      -webkit-mask-image: linear-gradient(180deg, black, transparent 62%);
+    }
+
+    .result-layout {
+      padding: calc(1.35rem + env(safe-area-inset-top, 0px)) 1rem calc(4.5rem + env(safe-area-inset-bottom, 0px));
+    }
+    .result-header {
+      margin-bottom: 1rem;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    .result-header-badge {
+      flex: 0 0 auto;
+      align-self: auto;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+      font-size: 0.55rem;
+      letter-spacing: 0.16em;
+      white-space: nowrap;
+    }
+    .result-header-meta {
+      min-width: 0;
+      flex: 1;
+      gap: 0.45rem;
+      font-size: 0.46rem;
+      letter-spacing: 0.1em;
+    }
+    .result-header-meta > span:last-child { display: none; }
+    .result-header-rule { flex: 1; width: auto; }
+
+    .editorial-grid {
+      width: 100%;
+      gap: 1.35rem;
+      justify-items: stretch;
+    }
+    .tarot-card-frame {
+      justify-self: center;
+      width: min(calc(100vw - 3rem), 340px);
+      aspect-ratio: 4 / 5;
+      border-radius: 17px;
+      border-color: rgba(212, 175, 55, 0.72);
+      background:
+        radial-gradient(circle at 50% 35%, rgba(212, 175, 55, 0.13), transparent 32%),
+        linear-gradient(155deg, rgba(27, 20, 30, 0.96), rgba(8, 7, 11, 0.99));
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.025);
+    }
+    .tarot-card-frame::before { inset: 7px; border-radius: 12px; }
+    .tarot-placeholder {
+      gap: 0.65rem;
+      padding: 3.1rem 1.4rem 3rem;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(212,175,55,0.09), transparent 38%),
+        linear-gradient(180deg, transparent 54%, rgba(0,0,0,0.42));
+    }
+    .tarot-placeholder::before { top: 18%; left: 24%; width: 52%; }
+    .tarot-placeholder::after { top: 17%; bottom: 17%; opacity: 0.7; }
+    .tarot-sigil { width: 7.8rem; height: 7.8rem; margin-bottom: 0.8rem; }
+    .tarot-card-name { max-width: 90%; font-size: clamp(1rem, 4.6vw, 1.22rem); line-height: 1.45; }
+    .tarot-card-subtitle { max-width: 88%; font-size: 0.65rem; }
+    .tarot-card-topline, .tarot-card-footer { left: 1.35rem; right: 1.35rem; font-size: 0.48rem; }
+
+    .result-details { width: 100%; display: flex; flex-direction: column; gap: 1.25rem; text-align: left; }
+    .result-identity { gap: 0.4rem; padding: 0 0.25rem; }
+    .res-ip-tag { font-size: 0.62rem; letter-spacing: 0.14em; }
+    .res-title.r-name {
+      max-width: 100%;
+      margin: 0.1rem 0 0;
+      font-size: clamp(1.65rem, 7.2vw, 2.05rem);
+      line-height: 1.18;
+      letter-spacing: 0;
+      background: linear-gradient(105deg, #f5f0e5 8%, #e3c76b 88%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .result-subtitle { margin-top: 0.1rem; font-size: 0.62rem; letter-spacing: 0.13em; }
+    .r-slogan { margin: 0.4rem 0 0 !important; font-size: 0.92rem; line-height: 1.65; color: rgba(242,239,233,0.72); }
+    .result-work-intro { margin-top: 0.15rem; padding: 0.8rem 0 0; border: 0; font-size: 0.72rem; line-height: 1.65; }
+    .r-keywords { justify-content: flex-start; margin: -0.15rem 0 0; gap: 0.45rem; }
+    .r-keyword-tag { padding: 0.28rem 0.65rem; border-radius: 999px; font-size: 0.58rem; font-weight: 500; }
+    .match-reason-card {
+      padding: 1.15rem 1.15rem 1.2rem;
+      border-radius: 15px;
+      border-color: rgba(212,175,55,0.14);
+      background: rgba(13, 11, 16, 0.62);
+      box-shadow: 0 14px 36px rgba(0,0,0,0.28);
+    }
+    .match-reason-card .section-body {
+      margin-top: 0.72rem;
+      font-size: 0.86rem;
+      line-height: 1.82;
+      color: rgba(242,239,233,0.82);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .verdict-editorial-card {
+      gap: 0;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 15px;
+      border-color: rgba(212,175,55,0.16);
+      background: rgba(13, 11, 16, 0.72);
+      box-shadow: 0 16px 42px rgba(0,0,0,0.34);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .verdict-block { padding: 1.15rem 1.1rem 1.15rem 1.25rem; }
+    .verdict-block-primary::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 1.15rem;
+      bottom: 1.15rem;
+      width: 2px;
+      background: linear-gradient(180deg, var(--gold-hyper), rgba(212,175,55,0.08));
+    }
+    .verdict-block-soft {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.012);
+    }
+    .section-label { gap: 0.6rem; font-size: 0.62rem; letter-spacing: 0.14em; }
+    .section-label::after { opacity: 0.45; }
+    .section-body { margin-top: 0.7rem !important; font-size: 0.86rem; line-height: 1.82; color: rgba(242,239,233,0.82); }
+    .r-desc { margin-bottom: 0; }
+
+    .stat-bars-container {
+      gap: 0.9rem;
+      padding: 1rem;
+      border-radius: 14px;
+      border-color: rgba(255,255,255,0.07);
+      background: rgba(8,7,10,0.5);
+    }
+    .stat-row { gap: 0.7rem; flex-wrap: nowrap; }
+    .stat-name { flex: 0 0 6.5rem; width: auto; font-size: 0.59rem; letter-spacing: 0.04em; }
+    .stat-track { min-width: 0; height: 4px; background: rgba(255,255,255,0.07); }
+    .stat-fill {
+      background: linear-gradient(90deg, #765e2a, #d4af37);
+      box-shadow: none;
+      transition-duration: 0.52s;
+    }
+    .stat-val { flex: 0 0 2.3rem; width: auto; font-size: 0.7rem; }
+    .rarity-meter { margin-top: 0 !important; padding: 0.95rem 0.2rem 0; }
+
+    .action-row.r-actions { gap: 0.65rem; margin-top: 0.2rem; }
+    .btn-neo {
+      min-height: 48px;
+      margin-top: 0;
+      padding: 0.8rem 0.65rem;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+    }
+    .btn-neo-primary {
+      color: #0b0906;
+      background: linear-gradient(135deg, #e1c45f, #b88b2b);
+      box-shadow: 0 10px 28px rgba(158,111,25,0.2);
+    }
+    .btn-neo-secondary { border-color: rgba(242,239,233,0.18); background: rgba(255,255,255,0.025); }
+
+    .result-reveal-overlay { overflow: hidden; }
+    .result-reveal-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 45%, rgba(212,175,55,0.08), transparent 38%);
+    }
+    .result-reveal-stage { width: 100%; }
+    .result-reveal-kicker { margin-bottom: 1.35rem; font-size: 0.56rem; }
+    .result-reveal-sigil { width: 5.2rem; height: 5.2rem; margin-bottom: 1.1rem; }
+    .result-reveal-name { max-width: 18rem; font-size: clamp(1.75rem, 8.5vw, 2.35rem) !important; line-height: 1.22 !important; letter-spacing: 0.07em !important; }
+    .result-reveal-caption { margin-top: 1.1rem; font-size: 0.48rem; letter-spacing: 0.2em; }
+
+    .result-layout.is-ready .result-header { animation: resultLayerIn 0.48s var(--ease-out-expo) both; }
+    .result-layout.is-ready .tarot-card-frame { animation: resultCardIn 0.66s var(--ease-out-expo) 0.06s both; }
+    .result-layout.is-ready .result-identity { animation: resultLayerIn 0.58s var(--ease-out-expo) 0.16s both; }
+    .result-layout.is-ready .r-keywords { animation: resultLayerIn 0.52s var(--ease-out-expo) 0.23s both; }
+    .result-layout.is-ready .match-reason-card { animation: resultLayerIn 0.52s var(--ease-out-expo) 0.3s both; }
+    .result-layout.is-ready .rarity-meter { animation: resultLayerIn 0.48s var(--ease-out-expo) 0.37s both; }
+    .result-layout.is-ready .r-actions { animation: resultLayerIn 0.46s var(--ease-out-expo) 0.43s both; }
+  }
+
+  @keyframes resultCardIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.985); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes resultLayerIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
 }
 
 /* ===== Atmosphere：背景层（z 0-1，内容之下；给 IM2 BackgroundLayers）===== */
 @layer atmosphere {
+  /* Low-contrast project art gives the mobile quiz a sense of place without
+     competing with the question or answer cards. */
+  .mobile-ambient-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 50% 18%, rgba(212, 175, 55, 0.1), transparent 44%),
+      linear-gradient(180deg, rgba(5, 3, 8, 0.82), rgba(5, 3, 8, 0.9));
+    opacity: 0.24;
+    mix-blend-mode: screen;
+  }
+
   /* 宿主页深渊背景（死代码：DOM 只在 public/index.html；iframe 内由 #bg-canvas 取代） */
   #abyss-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 0; pointer-events: none; filter: blur(40px); opacity: 0.6; mix-blend-mode: screen; }
   .noise-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 1; pointer-events: none; mix-blend-mode: overlay; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"); }
@@ -1450,7 +2067,7 @@
   /* ---- 32 背景层（金标提取；z-index 表规定背景 0-1 内容之下，故 film-grain
      与 bg-typography 由金标 z999/z2 降到 z1——iframe 内容层 z≥2，
      颗粒盖内容已有 .grain-overlay-test(z3) 承担）---- */
-  /* Canvas 紫粒子（IM2 挂载；reduced-motion 下组件不启 rAF + 本层 display:none） */
+  /* Canvas 金色尘点（IM2 挂载；reduced-motion 下组件不渲染 + 本层 display:none） */
   #bg-canvas {
     position: fixed;
     top: 0;
@@ -1501,14 +2118,68 @@
   .aurora-burst {
     position: absolute;
     inset: 0;
-    background: #0c0a14;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 50% 48%, rgba(212,175,55,0.08), transparent 28%),
+      #0c0a14;
     opacity: 0;
     z-index: 8000;
+  }
+
+  .aurora-burst-orbit {
+    position: absolute;
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 50%;
+    opacity: 0;
+  }
+  .aurora-burst-orbit-outer { width: 8rem; height: 8rem; }
+  .aurora-burst-orbit-inner { width: 5.7rem; height: 5.7rem; border-style: dashed; }
+  .aurora-burst-core {
+    color: var(--gold-hyper);
+    font-size: 1.6rem;
+    opacity: 0;
+    text-shadow: 0 0 24px rgba(212,175,55,0.75);
+  }
+  .aurora-burst-caption {
+    position: absolute;
+    top: calc(50% + 5.5rem);
+    font-family: var(--f-title);
+    font-size: 0.52rem;
+    letter-spacing: 0.26em;
+    color: rgba(242,239,233,0.4);
+    opacity: 0;
   }
 
   .aurora-burst.active {
     opacity: 1;
     transition: opacity 0.7s ease;
+  }
+
+  .aurora-burst.active .aurora-burst-orbit-outer { animation: auroraOrbitIn 0.66s var(--ease-out-expo) 0.06s both; }
+  .aurora-burst.active .aurora-burst-orbit-inner { animation: auroraOrbitIn 0.62s var(--ease-out-expo) 0.13s both; }
+  .aurora-burst.active .aurora-burst-core { animation: auroraCoreIn 0.52s var(--ease-out-expo) 0.2s both; }
+  .aurora-burst.active .aurora-burst-caption { animation: auroraCaptionIn 0.5s var(--ease-out-expo) 0.28s both; }
+
+  @keyframes auroraOrbitIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 0.8; transform: scale(1); }
+  }
+  @keyframes auroraCoreIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes auroraCaptionIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 0.55; transform: none; }
+  }
+
+  @media (max-width: 768px) {
+    .aurora-burst,
+    .aurora-burst.active { transition: opacity 0.3s ease; }
+    .aurora-burst-orbit-outer { width: 6.6rem; height: 6.6rem; }
+    .aurora-burst-orbit-inner { width: 4.8rem; height: 4.8rem; }
+    .aurora-burst-caption { top: calc(50% + 4.7rem); }
   }
 }
 
@@ -1543,11 +2214,27 @@
     .bg-typography { transition: none; }
     .film-grain { opacity: 0.03; }
     .aurora-burst, .aurora-burst.active { transition: opacity 0.4s ease; }
+    .aurora-burst.active .aurora-burst-orbit,
+    .aurora-burst.active .aurora-burst-core,
+    .aurora-burst.active .aurora-burst-caption { animation: none; opacity: 0.6; transform: none; }
     .pulse-orb { animation: none; }
     .toast-verdict { transition: opacity 0.2s ease; transform: none; }
     .card.enter, .card.exit { animation: none; opacity: 1; transform: none; }
+    .result-layout.is-ready .result-header,
+    .result-layout.is-ready .tarot-card-frame,
+    .result-layout.is-ready .result-identity,
+    .result-layout.is-ready .r-keywords,
+    .result-layout.is-ready .match-reason-card,
+    .result-layout.is-ready .verdict-editorial-card,
+    .result-layout.is-ready .stat-bars-container,
+    .result-layout.is-ready .rarity-meter,
+    .result-layout.is-ready .r-actions { animation: none; opacity: 1; transform: none; }
+    .result-reveal-kicker,
+    .result-reveal-sigil,
+    .result-reveal-caption { animation: none; opacity: 1; transform: none; }
     .stat-fill { transition: none; }
     .tarot-card-frame, .tarot-card-frame:hover, .btn-neo-primary:hover, .btn-neo-secondary:hover { transform: none; }
+    .tarot-card-frame.is-shimmering::after { animation: none; }
   }
   @keyframes viewTestEnterReduce { from { opacity: 0; } to { opacity: 1; } }
 }

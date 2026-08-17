@@ -23,7 +23,7 @@ export const IP_REGISTRY: Record<string, IpMeta> = {
   "witch-trial": {
     ipCode: "witch-trial",
     title: witchTrialPack.title, // "魔女审判"
-    workIntro: witchTrialPack.workIntro ?? "", // "一部关于「在死亡回溯中守住一个人」的故事"
+    workIntro: witchTrialPack.workIntro ?? "",
   },
   [MADOKA_IP_CODE]: {
     ipCode: MADOKA_IP_CODE,

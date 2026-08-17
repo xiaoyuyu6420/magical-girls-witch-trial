@@ -10,6 +10,7 @@
  * 退出码：0 = 通过；1 = 有 FAIL；2 = 使用错误/快照缺失。
  */
 import * as ts from "typescript";
+import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -275,7 +276,7 @@ function cmdSnapshot() {
 
   fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
   const content = fs.readFileSync(BACKUP_TGZ);
-  const hash = require("node:crypto").createHash("sha256").update(content).digest("hex").slice(0, 12);
+  const hash = createHash("sha256").update(content).digest("hex").slice(0, 12);
   const snap: Snapshot = { hash, questions: quiz.questions, types: allTypes, i18nKeys };
   fs.writeFileSync(SNAPSHOT_FILE, JSON.stringify(snap, null, 2));
   console.log(`[OK] 快照已生成: ${SNAPSHOT_FILE}`);
