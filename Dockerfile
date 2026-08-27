@@ -18,14 +18,17 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/src/data ./src/data
+COPY --from=builder /app/src/i18n ./src/i18n
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/scripts/backup.sh /app/scripts/backup.sh
+COPY --from=builder /app/scripts/seed-translations.ts /app/scripts/seed-translations.ts
 RUN chmod +x /app/scripts/backup.sh
 
 RUN echo '#!/bin/sh' > /app/entrypoint.sh && \
     echo 'set -e' >> /app/entrypoint.sh && \
     echo 'mkdir -p /app/data /backups' >> /app/entrypoint.sh && \
     echo 'if [ ! -f /app/data/witch-trial.db ]; then npx prisma db push && npx prisma db seed; fi' >> /app/entrypoint.sh && \
+    echo 'npx tsx scripts/seed-translations.ts' >> /app/entrypoint.sh && \
     echo '/app/scripts/backup.sh' >> /app/entrypoint.sh && \
     echo 'echo "0 */6 * * * /app/scripts/backup.sh" | crontab -' >> /app/entrypoint.sh && \
     echo 'crond' >> /app/entrypoint.sh && \

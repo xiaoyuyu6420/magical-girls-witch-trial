@@ -47,11 +47,15 @@ export const metadata: Metadata = {
     locale: "zh_CN",
     alternateLocale: ["zh_TW", "en_US", "ja_JP"],
     siteName: "Witch Trial",
+    images: [
+      { url: "/og-image.png", width: 1200, height: 630, alt: "WITCH TRIAL 魔女审判" },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "魔女审判 | WITCH TRIAL",
     description: "卸下伪装，测测你最像哪位魔法少女。",
+    images: ["/og-image.png"],
   },
   robots: { index: true, follow: true },
   appleWebApp: {
