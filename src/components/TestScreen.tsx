@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { BalanceScaleIcon } from "./BalanceScaleIcon";
 import { useI18n } from "@/lib/i18n";
 import type { AnnotationNode } from "@/lib/annotations";
 import { ANNOTATION_FALLBACKS } from "@/lib/annotations";
@@ -316,13 +317,27 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     }
   }, [current, weightSlots, handleSelect]);
 
+  // ── 中止当前题的推进动画（动画中回退时调用：丢弃未确认的作答，清掉
+  //    stage-fade-out 压缩/淡出残影，避免视觉上"被压缩的题"残留）──
+  const cancelPending = useCallback(() => {
+    clearTimeout(timerRef.current);
+    clearTimeout(fadeTimerRef.current);
+    clearTimeout(toastTimerRef.current);
+    pendingRef.current = null;
+    setIsAnimating(false);
+    setStageFadeOut(false);
+    setSelectedOptionId(null);
+    setToastVerdict(false);
+  }, []);
+
   // ── 返回上一题（回看 + 可改，高亮由 [safeIndex] useEffect 自动恢复）──
   const handleBack = useCallback(() => {
-    if (isAnimating) return;
     if (safeIndex <= 0) return;
-    setStageFadeOut(false);
+    // 动画中点击回退：丢弃当前未确认的作答并中止推进，再回退，
+    // 否则回退请求被吞、fade 残影残留出现"压缩"视觉。
+    if (isAnimating) cancelPending();
     setCurrentIndex(safeIndex - 1);
-  }, [safeIndex, isAnimating]);
+  }, [safeIndex, isAnimating, cancelPending]);
 
   // Keyboard support
   useEffect(() => {
@@ -401,29 +416,12 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   const renderOptions = () => {
     switch (renderType) {
       case "scale":
-        // 天平题：SVG 天平图形（横梁+支点+托盘）+ 下方双选项，选中侧横梁倾斜
+        // 天平题：game-icons 天平图形 + 下方双选项，选中后天平变暗
         return (
           <div className="balance-stage" role="radiogroup" aria-labelledby={questionLabelId}>
-            <svg
-              className={`balance-svg ${
-                selectedOptionId === current.options[0]?.id ? "tilt-left"
-                : selectedOptionId === current.options[1]?.id ? "tilt-right"
-                : ""
-              }`}
-              viewBox="0 0 220 130"
-              aria-hidden="true"
-            >
-              {/* 支点（尖端朝上） */}
-              <polygon points="110,12 96,40 124,40" fill="currentColor" opacity="0.55" />
-              {/* 横梁 */}
-              <line x1="20" y1="40" x2="200" y2="40" stroke="currentColor" strokeWidth="2" />
-              {/* 挂绳 */}
-              <line x1="35" y1="40" x2="35" y2="72" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
-              <line x1="185" y1="40" x2="185" y2="72" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
-              {/* 托盘（弧线） */}
-              <path d="M 15 72 Q 35 94 55 72" stroke="currentColor" strokeWidth="2" fill="none" />
-              <path d="M 165 72 Q 185 94 205 72" stroke="currentColor" strokeWidth="2" fill="none" />
-            </svg>
+            <BalanceScaleIcon
+              className={`balance-svg ${selectedOptionId !== null ? "is-resolved" : ""}`}
+            />
             <div className="balance-beam-options">
               {current.options.map((option, idx) => {
                 const isSel = selectedOptionId === option.id;
@@ -631,7 +629,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
           <div className="hud-counter">
             <span>{String(safeIndex + 1).padStart(2, "0")}</span>
             <span className="counter-slash">/</span>
-            <span>{String(questions.length).padStart(2, "0")}</span>
+            <span>{String(displayQuestions.length).padStart(2, "0")}</span>
           </div>
         </div>
         {/* 退出按钮（2026-08-15 统一：两端同一文案，不再按端分支） */}

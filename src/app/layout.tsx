@@ -36,13 +36,13 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://witch-trial.vercel.app"), // replace with prod domain before launch
   title: "魔女审判 | WITCH TRIAL — 魔法少女人格测试",
-  description: "在因子侵蚀的尽头，审判等待着你。十三名预备魔女，一座孤岛监牢。测测你会被审判为谁？魔女审判人格测试，探索属于你的魔女原型。",
+  description: "26 道情境题，卸下伪装照见真实的自己。测测你最像哪位魔法少女——晓美焰、鹿目圆、沙耶香、杏子，还是清醒的审判者艾玛？",
   keywords: ["魔女审判", "人格测试", "魔法少女", "性格测试", "Witch Trial", "personality test", "MBTI"],
   authors: [{ name: "Witch Trial" }],
   formatDetection: { telephone: false, email: false, address: false },
   openGraph: {
     title: "魔女审判 | WITCH TRIAL",
-    description: "十三名预备魔女，一座孤岛监牢。测测你会被审判为谁？",
+    description: "卸下伪装，测测你最像哪位魔法少女。",
     type: "website",
     locale: "zh_CN",
     alternateLocale: ["zh_TW", "en_US", "ja_JP"],
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "魔女审判 | WITCH TRIAL",
-    description: "十三名预备魔女，一座孤岛监牢。测测你会被审判为谁？",
+    description: "卸下伪装，测测你最像哪位魔法少女。",
   },
   robots: { index: true, follow: true },
   appleWebApp: {

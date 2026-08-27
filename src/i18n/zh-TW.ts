@@ -10,8 +10,8 @@ const t = {
     },
   },
   meta: {
-    title: "",
-    description: "",
+    title: "魔女審判 | WITCH TRIAL",
+    description: "26 道情境題，卸下偽裝照見真實的自己。測測你最像哪位魔法少女。",
   },
   welcome: {
     badge: "",
@@ -176,8 +176,8 @@ const t = {
     options: ["", ""],
   },
   disclaimer: {
-    footer: "",
-    result: "",
+    footer: "本測試為同人二創作品，與原作版權方無隸屬關係 · 測試結果僅供參考",
+    result: "角色版權歸原作方所有 · 測試結果僅供參考",
   },
 };
 

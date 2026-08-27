@@ -53,7 +53,7 @@ questions:
     _dim: 🔒 POSTURE
     _type: 🔒 normal (scale)
     meta: ✏️ Q8 · 守护与自我
-    text: 假若天平的两端，一端是“不惜牺牲自己的情绪去换取大家的幸福”，另一端是“死守护住自己的界限哪怕让身边的人失望”。你会将筹码掷向——
+    text: 天平两端，一端是“压下自己的情绪，换大家都好”，另一端是“守住自己的界限，哪怕让身边的人失望”。你把筹码放在——
     options:
       - _score: 🔒 3
         _value: 🔒 SACRIFICE
@@ -95,7 +95,7 @@ questions:
     _dim: 🔒 POSTURE
     _type: 🔒 normal (weight)
     meta: ✏️ Q14 · 崩塌时刻的筹码分配
-    text: 面对接踵而至的误解与压力，你的世界正处于崩塌边缘。请将手中仅存的 3 点心理筹码，分配给不同的应对姿态：
+    text: 误解和压力一件接一件压下来，快撑不住了。把手里仅剩的 3 点心理筹码，分给下面三种应对方式：
     options:
       - _score: 🔒 3
         label: 🔒 weight::2|1|0 (编码，勿动)
@@ -133,25 +133,25 @@ questions:
     _dim: 🔒 GATE
     _type: 🔒 gate
     meta: ✏️ Q18 · 灵魂的路径抉择
-    text: 当所有的伪装剥落，现实的残酷如冰水般将你彻底浇透。站在这个无声的悬崖边，你内心中最强烈的声音是——
+    text: 伪装一层层剥落，现实的凉意从头浇到脚。站在这道无声的悬崖边，你心里最响的声音是——
     options:
       - _score: 🔒 4
         _value: 🔒 destroy
-        label: 【毁灭线】既然这个世界如此脏乱与不公，那就彻底掀翻它，让一切都归于灰烬。
+        label: 【毁灭线】这个世界又脏又不公——那就掀翻它，让一切归于灰烬。
       - _score: 🔒 4
         _value: 🔒 seen
         label: 【被看见线】哪怕流血、哪怕粉身碎骨，我也要这世界睁开眼，看看我究竟有多痛！
       - _score: 🔒 4
         _value: 🔒 peace
-        label: 【平静线】闭上双眼，不再挣扎，接受所有的残缺与遗憾，任由自己归于沉寂。
+        label: 【平静线】闭上眼，不再挣扎。接受所有的残缺和遗憾，让自己慢慢沉下去。
       - _score: 🔒 3
         _value: 🔒 undecided
-        label: 【游离线】我不知道……我只是在风里悬浮着，找不到落脚点，也不知该往何处去。
+        label: 【游离线】我不知道……我就悬在风里，找不到落脚的地方，也不知道要去哪。
   - _index: 19
     _dim: 🔒 TRIGGER
     _type: 🔒 trigger
     meta: ✏️ Q19 · 隐藏角色契约
-    text: 迷雾深处，走出一个遍体鳞伤、正小声啜泣的“小时候的你”。她怀里抱着一把沾满锈迹与血迹的锁匙，抬起湿润的眼睛问你：“你还愿意相信奇迹吗？”
+    text: 迷雾深处，走出一个小声啜泣的小孩——是小时候的你。她怀里抱着一把生锈的钥匙，抬头问你：“你还愿意相信奇迹吗？”
     options:
       - _score: 🔒 3
         _value: 🔒 true
@@ -175,7 +175,7 @@ questions:
     _dim: 🔒 POSTURE
     _type: 🔒 normal (scale)
     meta: ✏️ Q22 · 终极代价
-    text: 审判官将你逼至死角，天平两端只能二选一：是“牺牲你自己，让身边所有爱过你的人重获幸福”，还是“拉着世界陪葬，只为抱紧你唯一的真情”？
+    text: 审判官把你逼到死角，天平两端只能选一个：是“牺牲你自己，换爱过你的人重新幸福”，还是“拉着整个世界陪葬，也要抱紧你唯一的真情”？
     options:
       - _score: 🔒 3
         _value: 🔒 SACRIFICE
@@ -186,7 +186,7 @@ questions:
   - _index: 23
     _dim: 🔒 Q23 · 隐秘的恶意与嫉妒
     _type: 🔒 normal
-    meta: ✏️ 当得知那个平时处处压你一头、完美无瑕的人突然遭遇了重大挫折时，你内心深处第一闪过的念头是——
+    meta: ✏️ 听说那个处处压你一头、一直完美的人突然栽了大跟头，我心里第一下闪过的念头是——
     text: ""
     options: []
   - _index: 24
@@ -198,13 +198,13 @@ questions:
   - _index: 25
     _dim: 🔒 Q25 · 悬崖边的告别
     _type: 🔒 normal
-    meta: ✏️ 假若所有的希望都已破灭，站在荒芜的终点，看着那个一路走来伤痕累累的自己，你想对她说——
+    meta: ✏️ 如果所有希望都破灭了，站在路的尽头，看着那个一路伤痕累累的自己，我想对她说——
     text: ""
     options: []
   - _index: 26
     _dim: 🔒 Q26 · 审判终章确认
     _type: 🔒 normal
-    meta: ✏️ 审判的声音在空旷的精神世界回响：“看清了吗？这就是你皮囊下的真实——包含了懦弱、妥协、阴暗与执拗的你自己。现在，你愿意以这样的真面目，签下这份生存的契约吗？”
+    meta: ✏️ 审判的声音在空旷的精神世界回响：“看清了吗？这就是你皮囊底下的真实——懦弱、妥协、阴暗、执拗，一样都不少的你。现在，愿意带着这副真面目，签下这份生存契约吗？”
     text: ""
     options: []
 characters:
@@ -267,15 +267,15 @@ characters:
 ui:
   zh-CN:
     works:
-      witch-trial:
+      '"witch-trial"':
         title: 魔女审判
         intro: 26 道情境题，观察你在关系、责任和自我保护之间的取舍。
       madoka:
         title: 魔法少女小圆
         intro: 一个关于愿望、代价与选择的故事。
     meta:
-      title: ""
-      description: ""
+      title: 魔女审判 | WITCH TRIAL
+      description: 26 道情境题，卸下伪装照见真实的自己。测测你最像哪位魔法少女。
     welcome:
       badge: ""
       title: ""
@@ -457,6 +457,31 @@ ui:
         slogan: ""
         desc: ""
         keywords: ""
+      homura_devil:
+        name: 晓美焰
+        slogan: 重要的人一旦认定，你就很难退开。
+        desc: 你不是拒绝亲近，只是靠近之前会观察很久。一旦认定一个人重要，你会把对方的事当成自己的事；局面失控时，又会先收紧边界，尽量自己处理。你和焰相似的地方不是什么黑化，而是这份很难收回的认真。
+        keywords: 谨慎,边界感,行动先于表达
+      madoka_god:
+        name: 鹿目圆
+        slogan: 你常常先注意到别人的需要。
+        desc: 气氛一不对，你通常会先看谁在难受，然后想自己能做什么。照顾人时你很有行动力，问题是自己的需要常常被排到后面。你和圆相似的地方，是温柔不只是态度，也会真的动手去做。
+        keywords: 敏感,照顾,行动力
+      sayaka_siren:
+        name: 美树沙耶香
+        slogan: 你对公平和承诺很敏感。
+        desc: 答应过的事，你会当真；看到敷衍和偏袒，也比一般人更难受。事情没做好时，你容易先检讨自己，再把失望压成愤怒。你和沙耶香相似的地方，是不愿意用“随便啦”处理重要关系。
+        keywords: 原则感,认真,自我要求
+      kyoko_pragmatist:
+        name: 佐仓杏子
+        slogan: 你的关心，常常包在现实判断里。
+        desc: 你习惯先算可行性，再决定要不要投入，不喜欢把气氛说得很满。但真正认定一个人后，你会用具体行动帮忙，只是不一定会承认自己在意。你和杏子相似的地方，是嘴上留余地，事上不轻易退。
+        keywords: 务实,有底线,嘴硬心软
+      emma_truth:
+        name: 樱羽艾玛
+        slogan: 你想弄清楚事情本来的样子。
+        desc: 你不擅长用“算了”糊过去。一句话前后对不上，或者有人在关系里回避问题，你会注意到，也会想继续问。答案让人不舒服时，你仍宁愿先知道事实，再决定怎么处理。
+        keywords: 求真,有边界,不轻易自欺
     questions: |-
       [
           { meta: "", text: "", options: ["", "", ""] },
@@ -499,19 +524,19 @@ ui:
       text: ""
       options: '["", ""]'
     disclaimer:
-      footer: ""
-      result: ""
+      footer: 本测试为同人二创作品，与原作版权方无隶属关系 · 测试结果仅供参考
+      result: 角色版权归原作方所有 · 测试结果仅供参考
   en:
     works:
-      witch-trial:
+      '"witch-trial"':
         title: Witch Trial
         intro: A 26-question test about relationships, responsibility, and self-protection.
       madoka:
         title: Madoka Magica
         intro: A story about wishes, costs, and the choices people make.
     meta:
-      title: ""
-      description: ""
+      title: Witch Trial — Magical Girl Personality Test
+      description: 26 scenarios that show who you really are. Which magical girl are you?
     welcome:
       badge: ""
       title: ""
@@ -548,14 +573,14 @@ ui:
       statsShort: Stats
       factorResonance: Match
       factorResonanceLabel: Character match
-      shareText: 'My test result is “{name}”: {slogan} {url}'
+      shareText: "My test result is “{name}”: {slogan} {url}"
       revealJudgement: Match complete
       revealTransition: Your character is—
       revealFrom: From “{title}”
       rarityLabel: Same result
-      rarityGlobal: '{percentage}% of people got this result too'
+      rarityGlobal: "{percentage}% of people got this result too"
       rarityCollecting: Collecting data…
-      rarityRare: 'This result accounts for {percentage}%'
+      rarityRare: This result accounts for {percentage}%
       workIntroLabel: Character source
       soulTraits: Your traits
       shareHook: My result
@@ -693,6 +718,31 @@ ui:
         slogan: ""
         desc: ""
         keywords: ""
+      homura_devil:
+        name: Homura Akemi
+        slogan: Once someone matters, it is hard for you to step back.
+        desc: You are not refusing closeness; you observe first. When someone becomes important, their concerns start to feel like your own. When things feel unstable, you tighten your boundaries and try to handle it yourself. Like Homura, your steadiness comes from a seriousness that is difficult to withdraw.
+        keywords: careful,boundaries,action before words
+      madoka_god:
+        name: Madoka Kaname
+        slogan: You often notice other people's needs first.
+        desc: When the mood changes, you look for who is struggling and what you can do. Your care has real action behind it; the difficulty is that your own needs often move to the end of the line. Like Madoka, your gentleness is not passive.
+        keywords: sensitive,caring,practical kindness
+      sayaka_siren:
+        name: Sayaka Miki
+        slogan: Fairness and promises matter to you.
+        desc: You take commitments seriously, and carelessness or favoritism can sting for a long time. When something goes wrong, you may blame yourself first, then turn disappointment into anger. Like Sayaka, you do not want to treat important relationships casually.
+        keywords: principled,earnest,high standards
+      kyoko_pragmatist:
+        name: Kyoko Sakura
+        slogan: Your care often arrives as practical judgment.
+        desc: You consider whether something is realistic before you invest, and you avoid making promises merely for the mood. Once you truly care about someone, however, you help through concrete action. Like Kyoko, you leave room in words while remaining firm in deeds.
+        keywords: pragmatic,boundaries,guarded warmth
+      emma_truth:
+        name: Emma
+        slogan: You want to see things as they are.
+        desc: You have difficulty letting things go with a vague answer. When a story does not add up or someone keeps avoiding the issue, you notice and want to ask more. Even when the truth is uncomfortable, you would rather know it before deciding what to do.
+        keywords: truth-seeking,boundaries,honest with yourself
     questions: |-
       [
           { meta: "", text: "", options: ["", "", ""] },
@@ -735,19 +785,19 @@ ui:
       text: ""
       options: '["", ""]'
     disclaimer:
-      footer: ""
-      result: ""
+      footer: A fan-made test, not affiliated with the original copyright holders · Results are for reference only
+      result: Characters belong to their original creators · Results are for reference only
   ja:
     works:
-      witch-trial:
+      '"witch-trial"':
         title: 魔女裁判
-        intro: 关係、責任、自分を守る方法を見る 26 問のテスト。
+        intro: 関係、責任、自分を守る方法を見る 26 問のテスト。
       madoka:
         title: 魔法少女まどか☆マギカ
         intro: 願いと代償、そして選択の物語。
     meta:
-      title: ""
-      description: ""
+      title: 魔女裁判 — 魔法少女性格診断
+      description: 26 のシチュエーション問題で、あなたの本当の姿を見つめる。あなたはどの魔法少女？
     welcome:
       badge: ""
       title: ""
@@ -784,14 +834,14 @@ ui:
       statsShort: 統計
       factorResonance: マッチ度
       factorResonanceLabel: キャラクターマッチ
-      shareText: '私のテスト結果は「{name}」：{slogan} {url}'
+      shareText: 私のテスト結果は「{name}」：{slogan} {url}
       revealJudgement: マッチ完了
       revealTransition: あなたのキャラクターは——
       revealFrom: 『{title}』より
       rarityLabel: 同じ結果
-      rarityGlobal: '同じ結果になった人は {percentage}%'
+      rarityGlobal: 同じ結果になった人は {percentage}%
       rarityCollecting: 集計中…
-      rarityRare: 'この結果は {percentage}%'
+      rarityRare: この結果は {percentage}%
       workIntroLabel: 作品
       soulTraits: あなたの特徴
       shareHook: 私の結果
@@ -929,6 +979,31 @@ ui:
         slogan: ""
         desc: ""
         keywords: ""
+      homura_devil:
+        name: 暁美ほむら
+        slogan: 大切だと思った人から、簡単には引けない。
+        desc: 人を遠ざけているわけではなく、近づく前にまずよく見ています。大切な人ができると、その人の問題まで自分事に感じてしまう。不安なときは境界を引き、まず自分で処理しようとする。ほむらに似ているのは、簡単には引き戻せない真剣さです。
+        keywords: 慎重,境界,言葉より行動
+      madoka_god:
+        name: 鹿目まどか
+        slogan: あなたはまず相手の必要に気づく。
+        desc: 空気が変わると、誰が困っているかを探し、自分に何ができるかを考えます。世話焼きには行動力があるのに、自分の必要は後回しになりがちです。まどかに似ているのは、優しさが態度だけではなく実行を伴うことです。
+        keywords: 感受性,思いやり,行動力
+      sayaka_siren:
+        name: 美樹さやか
+        slogan: 公平や約束に敏感です。
+        desc: 約束は本気にします。いい加減な扱いやえこひいきは、人より長く心に残ります。うまくいかないとき、まず自分を責めてから失望を怒りに変えることもある。さやかに似ているのは、大事な関係を「まあいいか」で済ませたくない気持ちです。
+        keywords: 原則,真面目,自我要求
+      kyoko_pragmatist:
+        name: 佐倉杏子
+        slogan: 気にかける気持ちは、現実的な判断に包まれる。
+        desc: まず現実的に可能かを考えてから関わります。空気だけで約束は作りません。それでも本当に大切な人には、具体的な行動で手を貸します。杏子に似ているのは、口では余地を残しながら、事態からは簡単に退かない強さです。
+        keywords: 現実的,境界,不器用な優しさ
+      emma_truth:
+        name: 桜羽エマ
+        slogan: 物事をあるままの形で知りたい。
+        desc: 曖昧な「まあいいか」では済ませられません。話が合わないとき、関係が避けられているとき、あなたは気づき、さらに問いかけます。答えが心地悪くても、まず事実を知ってから次を決めたいタイプです。
+        keywords: 求真,境界,自己欺瞞しない
     questions: |-
       [
           { meta: "", text: "", options: ["", "", ""] },
@@ -971,19 +1046,19 @@ ui:
       text: ""
       options: '["", ""]'
     disclaimer:
-      footer: ""
-      result: ""
+      footer: 本テストは二次創作であり、原作の権利者とは関係ありません · 診断結果は参考程度にお楽しみください
+      result: キャラクターの権利は原作側に帰属します · 診断結果は参考程度に
   zh-TW:
     works:
-      witch-trial:
+      '"witch-trial"':
         title: 魔女審判
         intro: 26 道情境題，觀察你在關係、責任和自我保護之間的取捨。
       madoka:
         title: 魔法少女小圓
         intro: 一個關於願望、代價與選擇的故事。
     meta:
-      title: ""
-      description: ""
+      title: 魔女審判 | WITCH TRIAL
+      description: 26 道情境題，卸下偽裝照見真實的自己。測測你最像哪位魔法少女。
     welcome:
       badge: ""
       title: ""
@@ -1165,6 +1240,31 @@ ui:
         slogan: ""
         desc: ""
         keywords: ""
+      homura_devil:
+        name: 曉美焰
+        slogan: 重要的人一旦認定，你就很難退開。
+        desc: 你不是拒絕親近，只是靠近之前會觀察很久。一旦認定一個人重要，你會把對方的事當成自己的事；局面失控時，又會先收緊邊界，盡量自己處理。你和焰相似的地方不是什麼黑化，而是這份很難收回的認真。
+        keywords: 謹慎,邊界感,行動先於表達
+      madoka_god:
+        name: 鹿目圓
+        slogan: 你常常先注意到別人的需要。
+        desc: 氣氛一不對，你通常會先看誰在難受，然後想自己能做什麼。照顧人時你很有行動力，問題是自己的需要常常被排到後面。你和圓相似的地方，是溫柔不只是態度，也會真的動手去做。
+        keywords: 敏感,照顧,行動力
+      sayaka_siren:
+        name: 美樹沙耶香
+        slogan: 你對公平和承諾很敏感。
+        desc: 答應過的事，你會當真；看到敷衍和偏袒，也比一般人更難受。事情沒做好時，你容易先檢討自己，再把失望壓成憤怒。你和沙耶香相似的地方，是不願意用「隨便啦」處理重要關係。
+        keywords: 原則感,認真,自我要求
+      kyoko_pragmatist:
+        name: 佐倉杏子
+        slogan: 你的關心，常常包在現實判斷裡。
+        desc: 你習慣先算可行性，再決定要不要投入，不喜歡把氣氛說得很滿。但真正認定一個人後，你會用具體行動幫忙，只是不一定會承認自己在意。你和杏子相似的地方，是嘴上留餘地，事上不輕易退。
+        keywords: 務實,有底線,嘴硬心軟
+      emma_truth:
+        name: 櫻羽艾瑪
+        slogan: 你想弄清楚事情本來的樣子。
+        desc: 你不擅長用「算了」糊過去。一句話前後對不上，或者有人在關係裡回避問題，你會注意到，也會想繼續問。答案讓人不舒服時，你仍寧願先知道事實，再決定怎麼處理。
+        keywords: 求真,有邊界,不輕易自欺
     questions: |-
       [
           { meta: "", text: "", options: ["", "", ""] },
@@ -1207,5 +1307,5 @@ ui:
       text: ""
       options: '["", ""]'
     disclaimer:
-      footer: ""
-      result: ""
+      footer: 本測試為同人二創作品，與原作版權方無隸屬關係 · 測試結果僅供參考
+      result: 角色版權歸原作方所有 · 測試結果僅供參考

@@ -47,6 +47,9 @@ interface CharSlot {
   slogan: string;
   desc: string;
   keywords: string;
+  prosecution: string | null;
+  softlanding: string | null;
+  tags: string | null;
   source: "witch-trial" | "madoka";
 }
 
@@ -60,6 +63,10 @@ function parseQuestions(file: string): QSlot[] {
       for (const elem of decl.initializer.elements) {
         if (ts.isCallExpression(elem)) {
           // Q(dim, meta, text, options[], scores[])
+          // 注意：现行 NQ(meta, text, options) 三参调用会被下面的旧签名分支
+          // 解析为 _dim=题号标题、meta=题干——这正是 sync-content.ts
+          // runtimeQuestionFields 对 NQ 题的既定约定（_dim 锁标题、meta 存题干），
+          // 勿"修正"为 POSTURE，否则 sync 的 expectLock 会直接中止。
           const dim = strVal(elem.arguments[0]) ?? "";
           const text = strVal(elem.arguments[2]) ?? "";
           const meta = strVal(elem.arguments[1]) ?? "";
@@ -126,6 +133,9 @@ function parseTypes(file: string, source: "witch-trial" | "madoka", varName: str
           slogan: strVal(propOf(e, "slogan")) ?? "",
           desc: strVal(propOf(e, "desc")) ?? "",
           keywords: strVal(propOf(e, "keywords")) ?? "",
+          prosecution: strVal(propOf(e, "prosecution")),
+          softlanding: strVal(propOf(e, "softlanding")),
+          tags: strVal(propOf(e, "tags")),
           source,
         });
       }
@@ -204,6 +214,9 @@ const doc = {
     slogan: c.slogan,
     desc: c.desc,
     keywords: c.hasKeywords ? c.keywords : undefined,
+    prosecution: c.prosecution ?? undefined,
+    softlanding: c.softlanding ?? undefined,
+    tags: c.tags ?? undefined,
   })),
   ui: i18n,
 };

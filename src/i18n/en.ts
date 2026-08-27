@@ -10,8 +10,8 @@ const t = {
     },
   },
   meta: {
-    title: "",
-    description: "",
+    title: "Witch Trial — Magical Girl Personality Test",
+    description: "26 scenarios that show who you really are. Which magical girl are you?",
   },
   welcome: {
     badge: "",
@@ -174,8 +174,8 @@ const t = {
     options: ["", ""],
   },
   disclaimer: {
-    footer: "",
-    result: "",
+    footer: "A fan-made test, not affiliated with the original copyright holders · Results are for reference only",
+    result: "Characters belong to their original creators · Results are for reference only",
   },
 };
 
