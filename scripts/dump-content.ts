@@ -75,12 +75,24 @@ function parseQuestions(file: string): QSlot[] {
           const opts: QSlot["options"] = [];
           if (optsArr && ts.isArrayLiteralExpression(optsArr)) {
             optsArr.elements.forEach((o, i) => {
-              let score: number | null = i + 1;
-              if (scoresArr && ts.isArrayLiteralExpression(scoresArr)) {
-                const s = scoresArr.elements[i];
-                if (s && ts.isNumericLiteral(s)) score = Number(s.text);
+              if (ts.isObjectLiteralExpression(o)) {
+                const lbl = strVal(propOf(o, "label")) ?? "";
+                const scoreNode = propOf(o, "score");
+                opts.push({
+                  score: scoreNode && ts.isNumericLiteral(scoreNode) ? Number((scoreNode as ts.NumericLiteral).text) : i + 1,
+                  value: strVal(propOf(o, "value")),
+                  trigger: strVal(propOf(o, "trigger")),
+                  label: lbl,
+                  labelIsCode: lbl.startsWith("weight::"),
+                });
+              } else {
+                let score: number | null = i + 1;
+                if (scoresArr && ts.isArrayLiteralExpression(scoresArr)) {
+                  const s = scoresArr.elements[i];
+                  if (s && ts.isNumericLiteral(s)) score = Number(s.text);
+                }
+                opts.push({ score, value: null, trigger: null, label: strVal(o) ?? "", labelIsCode: false });
               }
-              opts.push({ score, value: null, trigger: null, label: strVal(o) ?? "", labelIsCode: false });
             });
           }
           out.push({ dim, type: "normal", renderType: null, meta, text, options: opts });

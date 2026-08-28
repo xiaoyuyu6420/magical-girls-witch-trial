@@ -8,112 +8,170 @@ _meta:
     - 改完后跑 sync，项目 http://localhost:3010 立即生效
 questions:
   - _index: 1
-    _dim: 🔒 Q1 · 晨光中的许愿
-    _dim_code: 🔒 W2
+    _dim: 🔒 W2
     _type: 🔒 normal
-    meta: ✏️ 清晨的阳光透过窗帘缝隙打在脸上，闹钟还没响。我睁开眼，看着天花板上的微尘在光里起舞。在那一刻，我心里悄悄浮现出对今天的期许——
-    text: ""
-    options: []
+    meta: ✏️ Q1 · 晨光中的虚妄
+    text: 清晨，微尘在阳光里起舞。哪怕明知接下来又是令人作呕的一天，在那一刻，您心底浮现的声音依然是——
+    options:
+      - _score: 🔒 1
+        label: “今天，也许会有好事发生吧。”（还能怀抱这种天真的期待，真是幸福呢。）
+      - _score: 🔒 2
+        label: “不出大乱子，平平无奇地混过去就好。”（安分守己，这也是一种无趣的生存智慧。）
+      - _score: 🔒 3
+        label: “把‘我很精神’的面具死死焊在脸上吧。”（毕竟，没有谁有义务承受您的软弱。）
   - _index: 2
-    _dim: 🔒 Q2 · 小团体的温热
-    _dim_code: 🔒 B1
+    _dim: 🔒 B1
     _type: 🔒 normal
-    meta: ✏️ 放学后的教室，大家围在一起热烈地讨论着周末的聚会。有人忽然转过头，微笑着拉住我的手：“你肯定也会来的，对吧？少了你可不行。”那一刻——
-    text: ""
-    options: []
+    meta: ✏️ Q2 · 塑料的温热
+    text: 群聚的教室里，有人拉着您的手笑着说：“少了您可不行”。面对这种廉价的社交辞令，您——
+    options:
+      - _score: 🔒 3
+        label: 心里一阵回暖。用力点头。（沉醉在“被需要”的错觉里，真好骗啊。）
+      - _score: 🔒 2
+        label: 笑着答应，心底却发虚。（怕自己哪天没了利用价值，这热闹也就没您的份了吧。）
+      - _score: 🔒 1
+        label: 礼貌附和，冷眼旁观。（很清醒嘛。这种塑料般的羁绊，随时都会断裂的。）
   - _index: 3
-    _dim: 🔒 Q3 · 雨夜的伞檐
-    _dim_code: 🔒 B3
+    _dim: 🔒 B3
     _type: 🔒 normal
-    meta: ✏️ 深秋的雨夜，图书馆关门了。我站在门口，旁边是那个平时很少说话、有些孤僻的同班同学。她正窘迫地看着雨幕，手里没有任何雨具。而我手里恰好有一把伞。那一刻——
-    text: ""
-    options: []
+    meta: ✏️ Q3 · 施舍的伞檐
+    text: 雨夜，一个孤僻的同学被困在屋檐下，而您手里恰好有伞。面对这送上门来的“行善机会”，您——
+    options:
+      - _score: 🔒 3
+        label: 毫不犹豫地递过伞。（顺手做点小事，就能换来高高在上的道德满足感呢。）
+      - _score: 🔒 2
+        label: 犹豫了一下还是开口了。（明明怕麻烦，却还是硬撑着当老好人，不累吗？）
+      - _score: 🔒 1
+        label: 递过伞，并把这笔人情记在心里。（现实得很。这把伞，可是要收利息的。）
   - _index: 4
-    _dim: 🔒 Q4 · 被赋予的使命
-    _dim_code: 🔒 S2
+    _dim: 🔒 S2
     _type: 🔒 normal
-    meta: ✏️ 老师或长辈当着众人的面，将一项重要的任务交到了我手里，并拍着我的肩膀说：“你是最让人放心的。”那一刻——
-    text: ""
-    options: []
+    meta: ✏️ Q4 · 沉重的皇冠
+    text: 长辈当众把重任压在您肩上，戴着高帽说“交给您最放心”。那一刻，您的真实想法是——
+    options:
+      - _score: 🔒 3
+        label: 挺直背脊，暗暗较劲。（即使熬夜拼命也绝不搞砸，真是一条听话的好狗。）
+      - _score: 🔒 2
+        label: 肩膀像灌了铅，笑着应下。（被那句“放心”压得快喘不过气了，却连个不字都不敢说。）
+      - _score: 🔒 1
+        label: 客气应承，心里冷笑。（潜台词就是这堆烂摊子全归您了，您倒是看得很透彻。）
   - _index: 5
-    _dim: 🔒 Q5 · 无声的妥协
-    _dim_code: 🔒 W1
+    _dim: 🔒 W1
     _type: 🔒 normal
-    meta: ✏️ 朋友聚餐时，大家都高声赞同去吃某家我不喜欢的餐厅。当有人顺口问起我的意见时——
-    text: ""
-    options: []
+    meta: ✏️ Q5 · 无声的妥协
+    text: 朋友们高声赞同去一家您厌恶至极的餐厅。当有人顺嘴问起您的意见时，您——
+    options:
+      - _score: 🔒 3
+        label: 立刻附和：“我也超想吃那家！”（扫兴多没意思，抹杀自己的喜好对您来说早就是家常便饭了吧。）
+      - _score: 🔒 2
+        label: “我都行啊。”（把“我不想去”硬生生咽回去，随波逐流才是最安全的。）
+      - _score: 🔒 1
+        label: 耸耸肩说“随便吧”。（心底泛起冷意：反正他们也只是装模作样地问问，根本不在意您的死活。）
   - _index: 6
-    _dim: 🔒 Q6 · 镜中的变身
-    _dim_code: 🔒 S2
+    _dim: 🔒 S2
     _type: 🔒 normal
-    meta: ✏️ 深夜，我站在洗手间的镜子前，看着镜子里疲惫又平凡的自己，脑海中忽然闪过小时候关于“魔法少女”的幻想。如果真的能获得某种力量——
-    text: ""
-    options: []
+    meta: ✏️ Q6 · 镜中的妄想
+    text: 深夜看着镜子里疲惫又平凡的自己，如果真能获得某种不讲道理的魔法，您渴望的是——
+    options:
+      - _score: 🔒 1
+        label: 治愈一切，让身边的人都不再流泪。（连自己都顾不好，还想当救世主？真是傲慢。）
+      - _score: 🔒 3
+        label: 变得绝对完美。（把那些让您抬不起头的软弱和不堪，通通抹杀掉。）
+      - _score: 🔒 2
+        label: “透明化”。（累的时候可以随时消失，谁也找不到，谁也别来烦您。逃避可耻但极其有用呢。）
   - _index: 7
-    _dim: 🔒 Q7 · 光芒下的阴影
-    _dim_code: 🔒 F1
+    _dim: 🔒 F1
     _type: 🔒 normal
-    meta: ✏️ 看着舞台中央那个光彩照人、被所有人簇拥的朋友，我站在台下阴暗的角落里默默鼓掌。那一刻——
-    text: ""
-    options: []
+    meta: ✏️ Q7 · 聚光灯外的阴沟
+    text: 看着舞台中央那个光彩照人、夺走所有视线的朋友，站在阴暗角落里默默鼓掌的您，其实在想——
+    options:
+      - _score: 🔒 1
+        label: 手掌拍得发红，真心为她自豪。（甘心一辈子当陪衬的绿叶，您可真是大度。）
+      - _score: 🔒 2
+        label: 用力鼓掌，掌心发凉。（为什么站在光里的那个人，永远都不会是您呢？）
+      - _score: 🔒 3
+        label: 冷冷地看着。（风光吧。毕竟站得越高的人，摔下来的时候才越难看。）
   - _index: 8
-    _dim: 🔒 POSTURE
-    _dim_code: 🔒 B3
+    _dim: 🔒 B3
     _type: 🔒 normal (scale)
     meta: ✏️ Q8 · 守护与自我
-    text: 天平两端，一端是“压下自己的情绪，换大家都好”，另一端是“守住自己的界限，哪怕让身边的人失望”。你把筹码放在——
+    text: 天平两端：一端是“咽下委屈，换取虚伪的体面”，另一端是“死守底线，哪怕让所有人下不来台”。您要把筹码推向哪边？
     options:
       - _score: 🔒 3
         _value: 🔒 SACRIFICE
-        label: 牺牲自我，换取温暖与安宁。【纯洁牺牲倾向】
-      - _score: 🔒 3
+        label: 委屈自己，换取短暂的和平与温暖。【纯洁牺牲倾向】
+      - _score: 🔒 1
         _value: 🔒 OBSESSION
-        label: 守住界限，哪怕承受孤立与冷眼。【极黑独占/自存倾向】
+        label: 死守底线，哪怕被所有人孤立和冷眼。【极黑独占/自存倾向】
   - _index: 9
-    _dim: 🔒 Q9 · 脆弱时的怀抱
-    _dim_code: 🔒 B1
+    _dim: 🔒 B1
     _type: 🔒 normal
-    meta: ✏️ 遇到极度委屈的事情时，蜷缩在房间角落里的我，第一个闪过的念头是——
-    text: ""
-    options: []
-  - _index: 10
-    _dim: 🔒 Q10 · 规训下的顺从
-    _dim_code: 🔒 S1
-    _type: 🔒 normal
-    meta: ✏️ 面对长辈不容置疑的命令和对未来的安排，即使与我内心的渴望背道而驰，我通常会——
-    text: ""
-    options: []
-  - _index: 11
-    _dim: 🔒 Q11 · 完美无瑕的谎言
-    _dim_code: 🔒 W1
-    _type: 🔒 normal
-    meta: ✏️ 当别人关切地问起“你最近还好吗”时，我的第一反应往往是——
-    text: ""
-    options: []
-  - _index: 12
-    _dim: 🔒 Q12 · 理想主义的微霜
-    _dim_code: 🔒 S3
-    _type: 🔒 normal
-    meta: ✏️ 第一次发现自己敬佩的人私下里也会说谎、利己、展现丑陋的一面时，那一刻——
-    text: ""
-    options: []
-  - _index: 13
-    _dim: 🔒 Q13 · 被轻描淡写的付出
-    _dim_code: 🔒 F2
-    _type: 🔒 normal
-    meta: ✏️ 我熬夜几天几夜做出的努力，在会议上被上司或同伴轻飘飘地一笔带过，甚至将功劳归于他人。那一刻，我——
-    text: ""
-    options: []
-  - _index: 14
-    _dim: 🔒 POSTURE
-    _dim_code: 🔒 W3
-    _type: 🔒 normal (weight)
-    meta: ✏️ Q14 · 崩塌时刻的筹码分配
-    text: 误解和压力一件接一件压下来，快撑不住了。把手里仅剩的 3 点心理筹码，分给下面三种应对方式：
+    meta: ✏️ Q9 · 破碎时的摇尾
+    text: 极度委屈、情绪彻底崩溃的时候，蜷缩在角落里的您，脑子里冒出的可笑念头是——
     options:
       - _score: 🔒 3
-        label: 🔒 weight::2|1|0 (编码，勿动)
+        label: 好想被人抱一下。听一句“没事的”。（还在指望别人来救您吗？真是学不乖啊。）
+      - _score: 🔒 2
+        label: 赶紧把眼泪擦干。（以后这破事还是得自己扛，绝不能再把软弱露给别人看。）
+      - _score: 🔒 1
+        label: 指望谁呢？别傻了。（反正不管是以前还是现在，从来都没有人真的在乎过您。）
+  - _index: 10
+    _dim: 🔒 S1
+    _type: 🔒 normal
+    meta: ✏️ Q10 · 提线木偶的顺从
+    text: 面对长辈不容置疑的命令和安排，明明心里有一百个不愿意，可您最终——
+    options:
       - _score: 🔒 3
+        label: 催眠自己“他们是为我好”，按着铺好的路走。（连反抗的勇气都没有，一辈子当个乖乖牌吧。）
+      - _score: 🔒 2
+        label: 明面上乖乖点头，暗地里藏起一点真心。（只敢在阴沟里保留那点可怜的自我。）
+      - _score: 🔒 1
+        label: 在脑子里掀了一万次桌子，第二天还是没骨气地照做了。（所谓的自尊，也不过如此嘛。）
+  - _index: 11
+    _dim: 🔒 W1
+    _type: 🔒 normal
+    meta: ✏️ Q11 · 完美无瑕的谎言
+    text: 当别人貌似关心地问起“您最近过得好吗”时，您脱口而出的是——
+    options:
+      - _score: 🔒 3
+        label: 挂上标准微笑：“挺好的呀！”（毕竟大家那么忙，想听的不就是这句废话吗。）
+      - _score: 🔒 2
+        label: 打个哈哈随便扯开话题。（自己那一滩烂泥般的情绪，还是别拿出来恶心人了。）
+      - _score: 🔒 1
+        label: 淡淡回一句“老样子”。（满肚子的委屈滚到喉咙口，最后又窝囊地咽了回去。）
+  - _index: 12
+    _dim: 🔒 S3
+    _type: 🔒 normal
+    meta: ✏️ Q12 · 偶像的崩塌
+    text: 发现您一直极度敬佩的人，私下里竟然也会撒谎、算计、露出极其丑陋的一面。那一刻——
+    options:
+      - _score: 🔒 3
+        label: 脑子发懵，拼命在心里替他找借口。（连直面现实的勇气都没有，只会沉醉在虚幻的滤镜里。）
+      - _score: 🔒 2
+        label: 像被泼了一盆冷水。（叹口气：算了，原来大家都是俗人。您的信仰还真是廉价呢。）
+      - _score: 🔒 1
+        label: 心里发出一声冷笑。（这世上哪有什么真正干净的人，装得越好，骨子里越烂。）
+  - _index: 13
+    _dim: 🔒 F2
+    _type: 🔒 normal
+    meta: ✏️ Q13 · 廉价的通宵
+    text: 熬了好几个通宵的心血，被别人轻飘飘地一笔带过，甚至功劳都被抢走。面对这种屈辱，您——
+    options:
+      - _score: 🔒 1
+        label: 强行自我开解：事情办成了就行。（活生生把自己洗脑成一台好用的工具，真是了不起。）
+      - _score: 🔒 2
+        label: 指甲深深抠进掌心。（那些熬红眼的夜有多累，这口憋屈气就有多苦，但您除了咽下去还能怎样？）
+      - _score: 🔒 3
+        label: 眼神冷下来。（既然真心不值钱，往后大家就只配看您敷衍应付。谁也别想再占您便宜。）
+  - _index: 14
+    _dim: 🔒 W3
+    _type: 🔒 normal (weight)
+    meta: ✏️ Q14 · 崩塌时刻的筹码
+    text: 委屈像泥石流一样压下来，理智快要断线。把手里仅剩的 3 点筹码，全部分配给您恶劣的发泄方式吧：
+    options:
+      - _score: 🔒 2
+        label: 🔒 weight::2|1|0 (编码，勿动)
+      - _score: 🔒 2
         label: 🔒 weight::2|0|1 (编码，勿动)
       - _score: 🔒 2
         label: 🔒 weight::1|2|0 (编码，勿动)
@@ -126,324 +184,367 @@ questions:
       - _score: 🔒 1
         label: 🔒 weight::1|1|1 (编码，勿动)
   - _index: 15
-    _dim: 🔒 Q15 · 被当作谈资的秘密
-    _dim_code: 🔒 B2
+    _dim: 🔒 B2
     _type: 🔒 normal
-    meta: ✏️ 偶然间，我在那个未曾把我拉入的群聊里，看见最亲近的朋友正用轻佻的字眼，把我藏得最深的伤痛当作谈资呈给众人看。那一刻——
-    text: ""
-    options: []
+    meta: ✏️ Q15 · 谈资与笑料
+    text: 偶然间看到，您最亲近的朋友，正把您掏心掏肺倾诉的伤痛，在另一个群里当成笑料讲给众人听。那一刻——
+    options:
+      - _score: 🔒 1
+        label: 拼命催眠自己：她大概就是嘴快无心。（被人把脸踩在地上摩擦了，还要替人开脱？）
+      - _score: 🔒 2
+        label: 血液抽干。默默把她移出特别关心。（连当面对质的勇气都没有，只能像个失败者一样悄悄退场。）
+      - _score: 🔒 3
+        label: 冷静截图留存，心门彻底锁死。（原来你是这种人。往后对你，我绝不会再露半点真心。）
   - _index: 16
-    _dim: 🔒 Q16 · 无声的冷眼旁观
-    _dim_code: 🔒 S3
+    _dim: 🔒 S3
     _type: 🔒 normal
-    meta: ✏️ 高中那年，那个全班避之不及的同学默不作声地坐在我身旁。朋友拉拉我的袖子：“走了，别沾上晦气。”我看着她抠着桌角起皮漆的双手。那一刻——
-    text: ""
-    options: []
+    meta: ✏️ Q16 · 共犯的沉默
+    text: 那个全班避之不及的同学默不作声地坐在您身旁。朋友拉您走开：“别挨着她，沾上晦气。”您——
+    options:
+      - _score: 🔒 1
+        label: 顺势走开，在心里替自己辩解。（“孤立她的又不是我”——真是完美的伪善者发言呢。）
+      - _score: 🔒 2
+        label: 胃里阵阵痉挛，但还是低头说了句“我先走了”。（那一刻您比谁都清楚，您也是个懦弱的施暴者。）
+      - _score: 🔒 3
+        label: 嫌恶地把椅子挪开。（可怜之人必有可恨之处。她混到这步田地，自己没问题谁信？）
   - _index: 17
-    _dim: 🔒 Q17 · 以爱为名的勒索
-    _dim_code: 🔒 S1
+    _dim: 🔒 S1
     _type: 🔒 normal
-    meta: ✏️ 拿着不理想的成绩/绩效回家，父母长久地叹气：“我们一辈子的心血都白费了，你对得起我们吗？”那一刻——
-    text: ""
-    options: []
+    meta: ✏️ Q17 · 虚荣的倒影
+    text: 拿着糟糕的成绩单，听着父母长长地叹气：“我们这辈子真是白白辛苦了，你对得起我们吗？”您——
+    options:
+      - _score: 🔒 3
+        label: 愧疚感瞬间淹没自己，赶忙道歉。（被这种感情勒索死死拿捏，您真是一辈子的奴隶。）
+      - _score: 🔒 2
+        label: 像木桩一样低头挨骂，心底一片冰凉。（其实他们爱的，只有那张能拿去炫耀的纸，根本不是您。）
+      - _score: 🔒 1
+        label: 心里涌起一种报复的痛快。（行啊，不满意是吧？满脑子只想着自己面子的你们，我就烂给你们看！）
   - _index: 18
     _dim: 🔒 GATE
-    _dim_code: 🔒 GATE
     _type: 🔒 gate
-    meta: ✏️ Q18 · 灵魂的路径抉择
-    text: 伪装一层层剥落，现实的凉意从头浇到脚。站在这道无声的悬崖边，你心里最响的声音是——
+    meta: ✏️ Q18 · 悬崖边的决断
+    text: 伪装被全部撕碎，现实的寒气刺骨。站在这无声的悬崖边，您最后想做的是——
     options:
       - _score: 🔒 4
         _value: 🔒 destroy
-        label: 【毁灭线】这个世界又脏又不公——那就掀翻它，让一切归于灰烬。
+        label: 【毁灭】既然这世界又脏又不公，怎么洗都洗不干净——那就掀翻它，大家一起死吧。
       - _score: 🔒 4
         _value: 🔒 seen
-        label: 【被看见线】哪怕流血、哪怕粉身碎骨，我也要这世界睁开眼，看看我究竟有多痛！
+        label: 【被看见】哪怕头破血流、粉身碎骨，我也要撕开这世界的眼皮，让它看清楚我到底有多痛！
       - _score: 🔒 4
         _value: 🔒 peace
-        label: 【平静线】闭上眼，不再挣扎。接受所有的残缺和遗憾，让自己慢慢沉下去。
+        label: 【平静】太累了，不想再挣扎了。把所有的痛楚都咽下去，就让我一个人安静地沉入水底吧。
       - _score: 🔒 3
         _value: 🔒 undecided
-        label: 【游离线】我不知道……我就悬在风里，找不到落脚的地方，也不知道要去哪。
+        label: 【游离】我不知道……我什么都抓不住。就像一粒灰尘，连该坠落去哪里都不知道。
   - _index: 19
     _dim: 🔒 TRIGGER
-    _dim_code: 🔒 TRIGGER
     _type: 🔒 trigger
-    meta: ✏️ Q19 · 隐藏角色契约
-    text: 迷雾深处，走出一个小声啜泣的小孩——是小时候的你。她怀里抱着一把生锈的钥匙，抬头问你：“你还愿意相信奇迹吗？”
+    meta: ✏️ Q19 · 恶魔的契约
+    text: 迷雾散去，走出一个满脸泪痕的小孩——是过去那个软弱的您。她固执地向您递出一把生锈的钥匙：“就算变成这样，您还愿意相信奇迹吗？”
     options:
       - _score: 🔒 3
         _value: 🔒 true
-        label: 接过那把沾血的钥匙，握紧拳头。（触发：黑化魔女 / 执念神明隐藏分支）
+        _trigger: 🔒 SPECIAL_A
+        label: 一把抢过那把沾血的钥匙，死死攥紧。（奇迹？那种东西，我会用这双手亲手去抢过来！）（触发特殊分支）
       - _score: 🔒 2
         _value: 🔒 false
-        label: 摇摇头，转身走入迷雾之中。（维持：常规审判线）
+        label: 冷酷地俯视着她，转身走入迷雾。（现实可不是过家家，那种天真的东西，早就坏掉了。）
   - _index: 20
-    _dim: 🔒 Q20 · 无法逃离的自卑
-    _dim_code: 🔒 F2
+    _dim: 🔒 F2
     _type: 🔒 normal
-    meta: ✏️ 每当走在热闹的大街上，感觉周围人的目光扫过自己时，我身体最直观的反应是——
-    text: ""
-    options: []
-  - _index: 21
-    _dim: 🔒 Q21 · 控制与互戕的爱情
-    _dim_code: 🔒 W2
-    _type: 🔒 normal
-    meta: ✏️ 伴侣频繁挑剔我的穿着、朋友圈和言行，并表达“我都是为了你好”。那一刻——
-    text: ""
-    options: []
-  - _index: 22
-    _dim: 🔒 POSTURE
-    _dim_code: 🔒 F3
-    _type: 🔒 normal (scale)
-    meta: ✏️ Q22 · 终极代价
-    text: 审判官把你逼到死角，天平两端只能选一个：是“牺牲你自己，换爱过你的人重新幸福”，还是“拉着整个世界陪葬，也要抱紧你唯一的真情”？
+    meta: ✏️ Q20 · 阴沟里的自卑
+    text: 独自走在大街上，总感觉路人的目光有意无意地扫过自己。您那具难堪的身体，下意识的反应是——
     options:
+      - _score: 🔒 1
+        label: 立刻把背挺直，走路带风。（心里再怎么发虚，面子上也得死撑出这副大佬气场，真是滑稽。）
+      - _score: 🔒 2
+        label: 后背发凉，手心出汗。（那种“我好糟糕、穿得很土”的羞耻感，让您简直想立刻找个地缝钻进去。）
       - _score: 🔒 3
+        label: 在心里疯狂挑路人的刺。（靠着在脑子里贬低别人，您那点可悲的自尊心好像就舒服多了呢。）
+  - _index: 21
+    _dim: 🔒 W2
+    _type: 🔒 normal
+    meta: ✏️ Q21 · 窒息的锁链
+    text: 伴侣频繁挑剔您的穿着和社交，并把“我这都是为了你好”挂在嘴边。面对这种恶心的控制欲——
+    options:
+      - _score: 🔒 1
+        label: 感到挫败，但还是笨拙地照改。（“他这么要求，说明是真的在乎我”——您已经连脑子都不要了吗？）
+      - _score: 🔒 3
+        label: 累到极点，冷静地说一句“别管我”。（即便知道这会毁掉一切，您也受够了这副名为爱的枷锁。）
+      - _score: 🔒 2
+        label: 毫不客气地反唇相讥。（挑剔他的发际线和收入。想单方面PUA我？做梦，要互相折磨就来啊。）
+  - _index: 22
+    _dim: 🔒 F3
+    _type: 🔒 normal (scale)
+    meta: ✏️ Q22 · 终极的审判
+    text: 镰刀已经架在脖子上了，您只能选一个：是“献祭您自己，换您在乎的人一生顺遂”，还是“拉着整个世界陪葬，也绝不松开那唯一的羁绊”？
+    options:
+      - _score: 🔒 1
         _value: 🔒 SACRIFICE
-        label: 宁愿献祭自我，换取他人的光明。【纯洁殉道】
-      - _score: 🔒 4
+        label: 把刀尖对准自己。（只要他能活在光里，我下地狱也无所谓。纯粹到令人作呕的牺牲精神呢。）【纯洁殉道】
+      - _score: 🔒 3
         _value: 🔒 OBSESSION
-        label: 宁可毁灭世界，也绝不放手执念。【极黑独占】
+        label: 死死抱住执念。（哪怕全人类都化为乌有，我也绝不放开这只手！这才是您原本的自私面目嘛。）【极黑独占】
   - _index: 23
-    _dim: 🔒 Q23 · 隐秘的恶意与嫉妒
-    _dim_code: 🔒 F1
+    _dim: 🔒 F1
     _type: 🔒 normal
-    meta: ✏️ 听说那个处处压你一头、一直完美的人突然栽了大跟头，我心里第一下闪过的念头是——
-    text: ""
-    options: []
+    meta: ✏️ Q23 · 隐秘的毒汁
+    text: 听说那个处处压您一头、像天鹅一样完美的人，突然栽了个极大的跟头。听到消息的那一秒——
+    options:
+      - _score: 🔒 1
+        label: 痛骂自己幸灾乐祸，赶紧发去得体的安慰。（连直面自己阴暗面的胆量都没有，真是虚伪。）
+      - _score: 🔒 2
+        label: 暗爽了一秒，紧接着被罪恶感淹没。（在“恶毒”和“道德”之间来回撕扯，您活得可真累。）
+      - _score: 🔒 3
+        label: 爽，太爽了，连呼吸都顺畅了。（凭什么好事全让你一个人占尽了？终于轮到你摔进烂泥里了。）
   - _index: 24
-    _dim: 🔒 Q24 · 被榨干后的废弃
-    _dim_code: 🔒 B2
+    _dim: 🔒 B2
     _type: 🔒 normal
-    meta: ✏️ 曾经对你嘘寒问暖的团体或领导，在你失去了利用价值后，迅速将你边缘化。面对这种冷酷——
-    text: ""
-    options: []
+    meta: ✏️ Q24 · 被抛弃的抹布
+    text: 曾经对您称兄道弟的圈子，在发现您失去利用价值后，迅速将您当成了空气。面对这种落差——
+    options:
+      - _score: 🔒 1
+        label: 硬着头皮继续打杂。（在心里欺骗自己“大家只是太忙”。连狗被踢了都知道叫，您却只会摇尾巴。）
+      - _score: 🔒 2
+        label: 一声不吭地收拾东西离开。（被用完就丢的屈辱，就像烙铁一样印在骨头里了吧。）
+      - _score: 🔒 3
+        label: 脸上笑嘻嘻，心里判死刑。（再有求于我？抱歉，我可是很“忙”的。这种反击，还算有点看头。）
   - _index: 25
-    _dim: 🔒 Q25 · 悬崖边的告别
-    _dim_code: 🔒 F3
+    _dim: 🔒 F3
     _type: 🔒 normal
-    meta: ✏️ 如果所有希望都破灭了，站在路的尽头，看着那个一路伤痕累累的自己，我想对她说——
-    text: ""
-    options: []
+    meta: ✏️ Q25 · 悬崖边的安魂曲
+    text: 如果这辈子注定是个烂局了。看着那个一路满身泥泞的自己，您最后的一句遗言是——
+    options:
+      - _score: 🔒 1
+        label: “再咬牙撑一下吧，说不定明天就有太阳了。”（即便您自己说这话时，都觉得荒谬得想笑。）
+      - _score: 🔒 2
+        label: “辛苦了。以后我陪着你，咱们再也不看别人眼色了。”（把心门死死关上，只在自己的世界里舔舐伤口。）
+      - _score: 🔒 3
+        label: “把这些痛全刻在骨头上。以后谁敢伤我们，就加倍咬回来！”（被逼疯了的野兽，终于要露出獠牙了吗？）
   - _index: 26
-    _dim: 🔒 Q26 · 审判终章确认
-    _dim_code: 🔒 W3
+    _dim: 🔒 W3
     _type: 🔒 normal
-    meta: ✏️ 审判的声音在空旷的精神世界回响：“看清了吗？这就是你皮囊底下的真实——懦弱、妥协、阴暗、执拗，一样都不少的你。现在，愿意带着这副真面目，签下这份生存契约吗？”
-    text: ""
-    options: []
+    meta: ✏️ Q26 · 签下这落魄的契约
+    text: “看清楚了吗？懦弱、阴暗、自私、虚荣。这就是剥掉伪装后真实的您。现在，带着这副难看至极的真面目，签下生存契约吧。”
+    options:
+      - _score: 🔒 1
+        label: 闭上眼死死捂住耳朵不敢看。（还在祈求圣光洗刷肮脏？别做梦了，神从来没管过您的死活。）【虚幻祷告】
+      - _score: 🔒 2
+        label: 直视着审判官的眼睛。（“这就是残破不堪的我。就算带着这些丑陋的伤疤，我也要活下去。”）【清醒接纳】
+      - _score: 🔒 3
+        label: 夺过契约撕碎，狂笑出声。（“我不需要谁来审判！我自己的阴暗就是武器，我自己就是我的神！”）【彻底黑化】
 characters:
-  - _code: 🔒 "EMMA"
-    _name: 🔒 "樱羽艾玛"
-    _group: 🔒 "B"
-    _vector: "🔒 LHH-LLM-HHH-LLL"
-    _source: "witch-trial"
-    slogan: "「因为，我不想被讨厌。仅仅是这么简单的理由。」"
-    desc: "你把笑容当成铠甲，因为心底那句“不想被讨厌”，是你一切讨好与笨拙的总根源——宁可故意搞砸，也不敢承认自己做得很好。真正压在心口的，是曾眼看着重要的人慢慢沉下去，而那句“住手”始终没能说出口。可正是这份没能出声的悔，证明你的心从未冷掉。你和樱羽艾玛相似的地方，是背着沉默的亏欠，仍在练习下一次为谁挺身而出。"
-    keywords: "怕被讨厌,旁观之悔,笨拙的勇敢"
-  - _code: 🔒 "SHERRY"
-    _name: 🔒 "橘雪莉"
-    _group: 🔒 "B"
-    _vector: "🔒 MHM-LMH-HHH-LHH"
-    _source: "witch-trial"
-    slogan: "「选边就要选有趣的一边，这就是我的信条！」"
-    desc: "你的感情构造和常人不太一样：别人惊慌的场面，你先注意到的是有趣的细节；别人害怕的真相，你非要看个水落石出。这不是冷血，只是在你世界里，“想弄明白”永远排在“该害怕”前面。正因为不为情绪所动，风暴里你反而是唯一清醒的人，朋友把最重的托付交给你时，你稳稳接住了它。你和橘雪莉相似的地方，是心不受常理摆布，认定的事就贯彻到底。"
-    keywords: "有趣至上,不为所动,贯彻到底"
-  - _code: 🔒 "MIRIA"
-    _name: 🔒 "佐伯米莉亚"
-    _group: 🔒 "B"
-    _vector: "🔒 LMH-LLM-HMH-MML"
-    _source: "witch-trial"
-    slogan: "「大叔我……只是个随处可见的普通学生而已啊……！？」"
-    desc: "你把外表经营得光鲜，内里却安静得像一部老电影：话不多，心事交给旧片子消化。你总说自己“只是个随处可见的普通学生”，觉得拿不出手，于是习惯迎合、追随，把存在感放得很低。可你的温柔没有结痂——真正要紧时，你比谁都敢站出来，用一个沉默的谎言替重要的人挡下一切。你和佐伯米莉亚相似的地方，是被辜负过，仍把最后的温柔留给别人。"
-    keywords: "外潮内静,老电影魂,护人到底"
-  - _code: 🔒 "HIRO"
-    _name: 🔒 "二阶堂希罗"
-    _group: 🔒 "F"
-    _vector: "🔒 HLL-HMH-LHH-HHM"
-    _source: "witch-trial"
-    slogan: "「就让我来消灭这个世界的邪恶。」"
-    desc: "你对“正确”近乎信仰：条理、规矩、应然之事，绝不容许被搅浑，“消灭这个世界的邪恶”仿佛生来就刻在骨子里。这份端正让你永远站在最前面，也让你在标准崩塌那天伤得最重——原来自己的手，也会做出不正确的事。可你连悔恨都不逃避：错了，就从清晨重来一遍，纠正为止。你和二阶堂希罗相似的地方，是把正义扛在肩上，连自己的错误也一并审判。"
-    keywords: "对错分明,知悔敢当,从头再来"
-  - _code: 🔒 "NANOKA"
-    _name: 🔒 "黑部奈叶香"
-    _group: 🔒 "F"
-    _vector: "🔒 HHL-HMH-LLL-LLH"
-    _source: "witch-trial"
-    slogan: "「未知是恐惧之源。只要去了解对方，就不会再感到恐惧。」"
-    desc: "你习惯独自行动，话不多，语气常比本意更冷——那不是天性，是提前穿好的军装。你相信“未知是恐惧之源”，只要去了解对方，恐惧就会退散，所以你执拗地查到底，哪怕要搭上这条命。你能从一件旧物里看见它经过的时光，也因此确信：所有黑幕都有名字，所有真相都有来处。你和黑部奈叶香相似的地方，是把生死看得轻，把要查清的事看得比命重。"
-    keywords: "独行冷冽,洞悉过往,真相至上"
-  - _code: 🔒 "HANNA"
-    _name: 🔒 "远野汉娜"
-    _group: 🔒 "S"
-    _vector: "🔒 MHH-LMM-MHM-HML"
-    _source: "witch-trial"
-    slogan: "「本小姐最讨厌那种一副大人物的样子指指点点的人了。」"
-    desc: "你举手投足自带千金派头，把体面撑得滴水不漏——尽管那份高贵，是你一针一线亲手缝出来的。你坚信自己是故事里的女主角，苦练着并不擅长的魔法，只为成为能救下谁的人；可等你回头，想救的人已经来不及了。所以哪怕被命运逼到墙角，你也只想守住“自己”这最后的东西。你和远野汉娜相似的地方，是用华丽的幻想，接住那颗没能原谅自己的心。"
-    keywords: "千金做派,女主幻想,手巧心软"
-  - _code: 🔒 "MERURU"
-    _name: 🔒 "冰上梅露露"
-    _group: 🔒 "S"
-    _vector: "🔒 HMH-LLH-HLH-HHL"
-    _source: "witch-trial"
-    slogan: "「您永远……都是我重要的家人！」"
-    desc: "你总是先道歉的那一个：声音小小的，眼泪却来得真，连道谢都比人多一分小心。你能修补好伤口、复原坏掉的东西，可自己的心事，你宁愿咽下去也不麻烦人。你习惯把希望寄托在重要的人身上，安静地在旁支援，因为在你心里，“家人”二字比命运更重，哪怕被亏待也舍不得放手。你和冰上梅露露相似的地方，是胆怯了一路，最要紧的事上却从未退缩。"
-    keywords: "爱哭道歉,治愈之手,为家人勇敢"
-  - _code: 🔒 "COCO"
-    _name: 🔒 "泽渡可可"
-    _group: 🔒 "S"
-    _vector: "🔒 HML-LMM-LHL-MMM"
-    _source: "witch-trial"
-    slogan: "「推活正是我的人生！」"
-    desc: "你的毒舌出了名：看谁都不顺眼，懒得对不值得的世界表演热情——推活才是你的人生，除了心里那束光，其余都不值得看。可那份厌世有来处：你曾被迫睁着眼睛，看完了最不忍看的画面，从此明白“看见”有多残忍，也多珍贵。所以你把温柔收得极紧，只肯给屏幕对面那个发光的名字。你和泽渡可可相似的地方，是对世界冷眼旁观，却为仅剩的光毫不设防。"
-    keywords: "毒舌厌世,推活至上,唯一软肋"
-  - _code: 🔒 "NOAH"
-    _name: 🔒 "城崎诺亚"
-    _group: 🔒 "S"
-    _vector: "🔒 LHH-LLL-HLM-LLH"
-    _source: "witch-trial"
-    slogan: "「因为诺亚不画画就活不下去啊。」"
-    desc: "你像一阵路过人间的风，来去自由，因为“不画画就活不下去”不是任性，而是呼吸本身。世界在你眼中是一张可以重来的画布——颜色不对了，就亲手再改；连最沉重的血，你也想画成翩翩的蝴蝶，让恐惧变轻。你的善意近乎无垢，只是不愿被任何框子收编。你和城崎诺亚相似的地方，是把人生当成未完成的作品，谁也别想在颜料干透前替你定稿。"
-    keywords: "自由即我,画布人生,拒绝定稿"
-  - _code: 🔒 "MARGO"
-    _name: 🔒 "宝生玛格"
-    _group: 🔒 "W"
-    _vector: "🔒 MLM-LLM-LLM-MHL"
-    _source: "witch-trial"
-    slogan: "「我这辈子……几乎没有相信过任何人。」"
-    desc: "你看人极准，三句话称出对方的分量，连声音都能学得以假乱真——这门手艺，是没人可爱时你给自己造的铠甲。你这辈子几乎没有相信过任何人：不信好意，也不指望被爱，因为不抱期待，就永远不会失望。可命运偏爱玩笑，嘴上最不信爱的你，恰恰在最后关头为在乎的人挡下所有。你和宝生玛格相似的地方，是把心锁得滴水不漏，却会在紧要处把爱交出去。"
-    keywords: "不相信不指望,千面之声,为爱挡刀"
-  - _code: 🔒 "ANAN"
-    _name: 🔒 "夏目安安"
-    _group: 🔒 "W"
-    _vector: "🔒 MHL-LMH-LHL-MHH"
-    _source: "witch-trial"
-    slogan: "「吾辈是夏目安安。今后，请各位不要找吾辈说话。」"
-    desc: "你在自己的房间筑起一座城堡，门外的世界太吵，文字才是你派出去的使者——开口总要换上“吾辈”的郑重腔调，好把胆怯藏进文体里。你比谁都清楚语言的力量：一句话能让人点头，也能改写整个气氛，所以你从不轻易交出真心。可越是抗拒被看弱，你心里越盼着有人把吾辈当作朋友。你和夏目安安相似的地方，是躲在安静的门后，握着一支最会说话的笔。"
-    keywords: "安居一隅,文豪口癖,渴望友情"
-  - _code: 🔒 "ALISA"
-    _name: 🔒 "紫藤亚里沙"
-    _group: 🔒 "mix"
-    _vector: "🔒 HLM-LLM-MMH-HLM"
-    _source: "witch-trial"
-    slogan: "「我很害怕自己。我无法原谅自己。我啊，最讨厌自己了。」"
-    desc: "你浑身是刺，火气上来谁的面子也不给——可你心里最恨的，其实是自己。从小到大，责骂都是稀缺品：没有人骂你，就像没有人爱你，于是你一次次把自己推到火边，只想换来一句“你错了”。可笑的是，你坦荡得近乎固执：绝不说谎，也绝不做真正越界的事。你和紫藤亚里沙相似的地方，是嘴上讨骂，心里盼的不过是被认真地在乎。"
-    keywords: "自罚成瘾,绝不说谎,渴望在乎"
-  - _code: 🔒 "LEIA"
-    _name: 🔒 "莲见蕾雅"
-    _group: 🔒 "mix"
-    _vector: "🔒 MHM-LMH-MHM-LMH"
-    _source: "witch-trial"
-    slogan: "「因为这样大家不是都看不见我吗！！」"
-    desc: "你天生属于舞台中央：姿态漂亮，台词漂亮，连疲惫都收拾得一丝不苟。可只有你知道，“被看见”对你有多重——曾经最该看你的人从不愿为你抬头，于是你学会把全场目光都召到自己身上，仿佛被注视，才能证明自己存在。你把孤独演成了优雅，渴望藏进漂亮的台词。你和莲见蕾雅相似的地方，是拼命想让全世界看见你，最想要的却只是一个人的注视。"
-    keywords: "渴求视线,舞台中心,优雅的孤独"
-  - _code: 🔒 "UNSET"
-    _name: 🔒 "未定之魂"
-    _group: 🔒 "fallback"
-    _vector: "🔒 MMM-MMM-MMM-MMM"
-    _source: "witch-trial"
-    slogan: "「审判尚未落锤，灵魂仍在途中。」"
-    desc: "你的答案彼此拉扯，没有哪一种声音稳稳压过其余。这不是没有答案，而是灵魂尚未定型——牢笼的名单上还留着你的空位，审判尚未落锤，你仍握着成为任何一种自己的可能。"
-    keywords: "悬而未决,流动,一切皆可能"
-  - _code: 🔒 "YUKI"
-    _name: 🔒 "月代雪"
-    _subtitle: 🔒 "大魔女"
-    _group: 🔒 "special"
-    _vector: "🔒 HHH-LLL-LLL-LLL"
-    _source: "witch-trial"
-    slogan: "「我的复仇之心……已经锈蚀了。」"
-    desc: "你安静得像一句判词，因为在漫长岁月里，恨早已沉淀成底色：同族尽逝于人类之手，活下来的你，把复仇化作了无声的诅咒，散播进人间。可看得越久，你越看见了另一件事——人类会学习、会成长，比停在原地的你们更有未来。于是最后一刻，你亲手收回了布下的黑暗，把明天还给世界。你和月代雪相似的地方，是恨得足够深，也终于有力气亲手放下。"
-    keywords: "千年之恨,见证成长,亲手放下"
-  - _code: 🔒 "MADOKA"
-    _name: 🔒 "鹿目圆"
-    _subtitle: 🔒 "终将成为神"
-    _group: 🔒 "B"
-    _vector: "🔒 LLH-LLH-HLH-LLH"
-    _source: "madoka"
-    slogan: "「我不想让任何人再哭泣，哪怕要我变成不再存在的存在」"
-    desc: "你是天生的信仰者——温柔到近乎天真的善良，让你在看到任何人的痛苦时都无法转身离开。你信任陌生人，宽恕伤害过你的人，甘愿为素不相识的人承担命运。这份善意不是软弱，是你明知世界残酷后依然选择伸出手。当所有人都绝望时，你是那个还会说'一定有办法'的人——哪怕代价是抹消自己存在的痕迹。"
-    keywords: "不灭的善意、为众生成神、天真的信仰"
-  - _code: 🔒 "HOMURA"
-    _name: 🔒 "晓美焰"
-    _subtitle: 🔒 "时间掠夺者"
-    _group: 🔒 "F"
-    _vector: "🔒 HHL-HLH-LHH-HHH"
-    _source: "madoka"
-    slogan: "「哪怕要重启世界一千次，我也要守住她一个人的笑容」"
-    desc: "你是冰与执念的矛盾体——外表冷酷到不近人情，内心却燃烧着比任何人都炽烈的执着。你记着每一个轮回，每一次失败，每一个没能救下她的瞬间。你不信任旁人，因为旁人从未陪你走过那些被重置的时间；你宽恕不了命运，因为命运从未对你手软。你的温柔只对一个人开放，而对那一个人的爱，足够让你与整个世界为敌。"
-    keywords: "轮回千次、冷焰执念、为一人敌世界"
-  - _code: 🔒 "SAYAKA"
-    _name: 🔒 "美树沙耶香"
-    _subtitle: 🔒 "正义的末路"
-    _group: 🔒 "mix"
-    _vector: "🔒 HML-MHH-HHH-LHH"
-    _source: "madoka"
-    slogan: "「我明明是想做一个正确的人，为什么最后变成了怪物」"
-    desc: "你是被自己的正义感烧成灰烬的人——你眼里容不下一点不公，你为受伤的人出头，你许愿治愈心上人却不敢让他知道。可这个世界不奖励纯粹的好人：你信任的人背叛了你的秘密，你救的人忘了你的存在，你信奉的正义在残酷的现实前一寸寸碎裂。你的崩溃不是软弱，是太用力地善良之后被反噬的伤口。魔女化不是堕落，是你的正义找不到出口的悲鸣。"
-    keywords: "正义的崩塌、爱而不得、魔女化悲鸣"
-  - _code: 🔒 "KYOKO"
-    _name: 🔒 "佐仓杏子"
-    _subtitle: 🔒 "末路求生者"
-    _group: 🔒 "mix"
-    _vector: "🔒 MHL-MMH-LMH-MMH"
-    _source: "madoka"
-    slogan: "「别傻了。在这个世界里，只为别人许愿的人活不长」"
-    desc: "你是被现实磨硬了壳的实用主义者——曾经的你也相信为他人牺牲是神圣的，直到那个许愿毁了你的全家。从那以后你学会了先顾自己，学会了冷眼旁观别人的悲剧，学会了用'这不关我事'挡住所有想靠近的人。可你骗不了自己：当真正在乎的人陷入绝境，你还是会冲上去。你的硬是装出来的，你的软才是底色——只是你不敢再轻易把它交出来。"
-    keywords: "实用主义盔甲、家庭创伤、关键时刻的真心"
-  - _code: 🔒 "MAMI"
-    _name: 🔒 "巴麻美"
-    _subtitle: 🔒 "孤独的前辈"
-    _group: 🔒 "B"
-    _vector: "🔒 HMM-LHM-HHL-HHL"
-    _source: "madoka"
-    slogan: "「当魔法少女这么久，我其实……一直都好害怕」"
-    desc: "你是优雅的盔甲下藏着深渊的人——你永远是后辈面前从容不迫的前辈，泡着红茶、系着缎带、用最漂亮的姿态消灭魔女。可没有人知道你独自战斗了多少年，没有人知道你每个夜晚都在害怕下一次会不会就回不来了。你渴望同伴，渴望被需要，渴望有人能让你卸下'可靠前辈'的伪装。当有人终于愿意走近你，你会紧紧抓住——因为你太孤独了，孤独到宁可把脆弱藏在优雅里，也不愿被人看见。"
-    keywords: "优雅的盔甲、深层孤独、渴望被需要"
-  - _code: 🔒 "homura_devil"
-    _name: 🔒 "晓美焰 · 执念的黑化魔女"
-    _group: 🔒 "special"
-    _vector: "🔒 HHL-HHH-LHH-HHH"
-    _source: "madoka"
-    slogan: "重要的人一旦认定，你就很难退开。"
-    desc: "你不是拒绝亲近，只是靠近之前会观察很久。一旦认定一个人重要，你会把对方的事当成自己的事；局面失控时，又会先收紧边界，尽量自己处理。你和焰相似的地方不是什么黑化，而是这份很难收回的认真。"
-    keywords: "谨慎,边界感,行动先于表达"
-    prosecution: "你不是拒绝亲近，只是靠近之前会观察很久。一旦认定一个人重要，你会把对方的事当成自己的事；局面失控时，又会先收紧边界，尽量自己处理。"
-    softlanding: "在意一个人，不等于要替所有变数负责。把担心提前说出来，对方才有机会和你一起处理。"
-    tags: "谨慎,边界感,行动先于表达"
-  - _code: 🔒 "madoka_god"
-    _name: 🔒 "鹿目圆 · 终极救赎的圆环之理"
-    _group: 🔒 "special"
-    _vector: "🔒 LLH-LLL-HHH-LLL"
-    _source: "madoka"
-    slogan: "你常常先注意到别人的需要。"
-    desc: "气氛一不对，你通常会先看谁在难受，然后想自己能做什么。照顾人时你很有行动力，问题是自己的需要常常被排到后面。你和圆相似的地方，是温柔不只是态度，也会真的动手去做。"
-    keywords: "敏感,照顾,行动力"
-    prosecution: "气氛一不对，你通常会先看谁在难受，然后想自己能做什么。照顾人时你很有行动力，问题是自己的需要常常被排到后面。"
-    softlanding: "答应照顾别人之前，先确认自己还有余裕。长期硬撑出来的体贴，最后容易变成委屈。"
-    tags: "敏感,照顾,行动力"
-  - _code: 🔒 "sayaka_siren"
-    _name: 🔒 "美树沙耶香 · 理想主义破灭的痛楚"
-    _group: 🔒 "special"
-    _vector: "🔒 HML-MHH-HHH-LHH"
-    _source: "madoka"
-    slogan: "你对公平和承诺很敏感。"
-    desc: "答应过的事，你会当真；看到敷衍和偏袒，也比一般人更难受。事情没做好时，你容易先检讨自己，再把失望压成愤怒。你和沙耶香相似的地方，是不愿意用“随便啦”处理重要关系。"
-    keywords: "原则感,认真,自我要求"
-    prosecution: "答应过的事，你会当真；看到敷衍和偏袒，也比一般人更难受。事情没做好时，你容易先检讨自己，再把失望压成愤怒。"
-    softlanding: "失望时先分清：哪部分是自己的责任，哪部分是别人的选择。不是每件事都要先归因给自己。"
-    tags: "原则感,认真,自我要求"
-  - _code: 🔒 "kyoko_pragmatist"
-    _name: 🔒 "佐仓杏子 · 利己外衣下的真心"
-    _group: 🔒 "special"
-    _vector: "🔒 MHL-MMH-LMH-MMH"
-    _source: "madoka"
-    slogan: "你的关心，常常包在现实判断里。"
-    desc: "你习惯先算可行性，再决定要不要投入，不喜欢把气氛说得很满。但真正认定一个人后，你会用具体行动帮忙，只是不一定会承认自己在意。你和杏子相似的地方，是嘴上留余地，事上不轻易退。"
-    keywords: "务实,有底线,嘴硬心软"
-    prosecution: "你习惯先算可行性，再决定要不要投入，不喜欢把气氛说得很满。但真正认定一个人后，你会用具体行动帮忙，只是不一定会承认自己在意。"
-    softlanding: "把在意说得更直接一点，关系会少一些猜测；帮忙前讲清界限，也更容易长期相处。"
-    tags: "务实,有底线,嘴硬心软"
+  - _code: 🔒 EMMA
+    _name: 🔒 樱羽艾玛
+    _group: 🔒 B
+    _vector: 🔒 LHH-LLM-HHH-LLL
+    _source: witch-trial
+    slogan: 「仅仅是因为不想被讨厌。多么廉价又真实的借口呢。」
+    desc: 为了不被讨厌而笨拙地讨好？真是可悲的生存方式。您把笑容当成廉价的防弹衣，宁可主动把事情搞砸，也不敢承受他人分毫的期待。那句卡在喉咙里的“住手”，成了您日夜咀嚼的毒药。满脑子只想着保全自己呢——可即便如此，这份至今还在作痛的悔恨，恰恰证明了您那颗心还没有彻底坏掉。您和樱羽艾玛一样，背负着旁观者的罪恶感，却还在滑稽又拼命地练习着，该如何为某个人挺身而出。
+    keywords: 讨好面具,旁观之罪,滑稽的勇敢
+  - _code: 🔒 SHERRY
+    _name: 🔒 橘雪莉
+    _group: 🔒 B
+    _vector: 🔒 MHM-LMH-HHH-LHH
+    _source: witch-trial
+    slogan: 「与其在恐惧中哭泣，不如选个有趣的死法，对吧？」
+    desc: 您的情绪构造，还真是让人毛骨悚然呢。别人在风暴中惊慌失措，您却像个局外人一样，兴致勃勃地寻找着“有趣”的细节。剥离了常理的冷眼旁观，真让人不知道该说您是绝顶清醒，还是个彻头彻尾的疯子。但也正因为您不受那些无聊情绪的摆布，别人抛来的沉重托付，您总能轻描淡写地接下。如同橘雪莉那般，只要觉得“有意思”，即使是地狱的门，您也会毫不犹豫地推开吧。
+    keywords: 狂热好奇,剥离常理,贯彻到底
+  - _code: 🔒 MIRIA
+    _name: 🔒 佐伯米莉亚
+    _group: 🔒 B
+    _vector: 🔒 LMH-LLM-HMH-MML
+    _source: witch-trial
+    slogan: 「一口一个‘普通人’，是想逃避被期待的重压吗？」
+    desc: 把自己贬低成“随处可见的普通人”，不过是您给自己找的退路罢了。害怕被寄予厚望，所以干脆把自己踩进尘埃里，习惯性地迎合别人，把心事像旧电影一样封存在暗处。可到了真正要紧的关头，您那种近乎自我牺牲的温柔，真是傲慢得让人火大。您和佐伯米莉亚一样，明明已经被这个世界辜负得体无完肤，却还是固执地要用谎言去替别人挡刀。何等天真的伪善呢。
+    keywords: 退路伪装,自贬式温柔,护人到底
+  - _code: 🔒 HIRO
+    _name: 🔒 二阶堂希罗
+    _group: 🔒 F
+    _vector: 🔒 HLL-HMH-LHH-HHM
+    _source: witch-trial
+    slogan: 「还要继续玩这种自我感动的正义游戏吗？」
+    desc: 您对“正确”有着一种病态的洁癖呢。规矩、条理、消灭邪恶，把这些漂亮话挂在嘴边，是不是能让您觉得好受些？一旦世界的标准崩塌，您才发现自己这双手也同样肮脏。可笑的是，您连犯错都要一丝不苟地推倒重来。纠正到满意为止，这种执拗的赎罪游戏，您打算玩到什么时候？您和二阶堂希罗一样，把正义当成十字架扛在肩上，连自己的灵魂也要一并送上断头台。
+    keywords: 正义洁癖,执拗赎罪,绝对审判
+  - _code: 🔒 NANOKA
+    _name: 🔒 黑部奈叶香
+    _group: 🔒 F
+    _vector: 🔒 HHL-HMH-LLL-LLH
+    _source: witch-trial
+    slogan: 「把生死看得那么轻，您以为自己很帅气吗？」
+    desc: 话这么少，是怕别人看穿您的软弱吗？您习惯独自咀嚼那些冰冷的信息，偏执地相信“只要查清真相，恐惧就会消失”。为了扒开那些发臭的黑幕，连命都可以随便摆上赌桌。您有一双能看穿旧物时光的眼睛，所以绝不容许任何秘密被掩埋。和黑部奈叶香一样，您是个无药可救的追迹者。把要查清的真相看得比命还重——这种不管不顾的做派，真是让人厌烦。
+    keywords: 冰冷防壁,偏执追迹,真相至上
+  - _code: 🔒 HANNA
+    _name: 🔒 远野汉娜
+    _group: 🔒 S
+    _vector: 🔒 MHH-LMM-MHM-HML
+    _source: witch-trial
+    slogan: 「那一针一线缝补出来的骄傲，轻轻一扯就会碎的。」
+    desc: 还在做着光鲜亮丽的女主角美梦吗？您努力撑起的那副滴水不漏的千金派头，不过是虚张声势的易碎品。苦练着并不擅长的伎俩，妄想着有朝一日能拯救谁，可等您回过神来，重要的人早就从指缝里溜走了。哪怕被命运逼到泥地里，您也死死护着“自我”这块最后的遮羞布，绝不肯低下头。您和远野汉娜一样，只能用华丽的幻想，去兜住那颗支离破碎、无法原谅自己的心。既可悲，又美丽呢。
+    keywords: 易碎骄傲,没落千金,华丽死撑
+  - _code: 🔒 MERURU
+    _name: 🔒 冰上梅露露
+    _group: 🔒 S
+    _vector: 🔒 HMH-LLH-HLH-HHL
+    _source: witch-trial
+    slogan: 「一直道歉的话，就没有人会来责怪您了吧。」
+    desc: 您总是习惯性地先低头认错，眼泪廉价得像不要钱一样。您能耐心地修补好坏掉的物件，却任凭自己的心流着血，连喊一句痛都不敢，生怕给别人添麻烦。您把所有的筹码都押在所谓的“家人”身上，即便被亏待也舍不得放手。这种祈求被爱的方式，真是卑微到了极点。可您和冰上梅露露一样，明明是个胆怯到极点的爱哭鬼，却在守护重要之物时，露出了比谁都坚硬的獠牙。
+    keywords: 卑微祈爱,修补伤痕,含泪咬牙
+  - _code: 🔒 COCO
+    _name: 🔒 泽渡可可
+    _group: 🔒 S
+    _vector: 🔒 HML-LMM-LHL-MMM
+    _source: witch-trial
+    slogan: 「除了那束光，这腐朽的世界根本不值得一看。」
+    desc: 满嘴毒舌，看什么都不顺眼。您早就懒得对这虚伪的现实赔笑脸了，毕竟您见识过世界最恶心的一面。既然“期待”只会带来背叛，不如把所有的狂热都献给屏幕对面那个虚无缥缈的幻影。您把心门焊得死死的，只对唯一的信仰摇尾乞怜。您和泽渡可可一样，对着整个世界竖起中指冷眼旁观，却甘愿在仅剩的那点微光面前，毫无防备地交出自己的咽喉。
+    keywords: 厌世毒舌,单向献祭,唯一软肋
+  - _code: 🔒 NOAH
+    _name: 🔒 城崎诺亚
+    _group: 🔒 S
+    _vector: 🔒 LHH-LLL-HLM-LLH
+    _source: witch-trial
+    slogan: 「不画画就会死？别把逃避现实说得那么清新脱俗。」
+    desc: 像一阵风一样不守规矩，打着“表达自我”的旗号，肆意涂抹着人生。您讨厌被世俗的框框收编，遇到不满意的颜色，就自作主张地盖掉重来。连鲜血都要画成蝴蝶，这种近乎孩童般的无垢，说到底只是一种拒绝长大的残忍吧。城崎诺亚的灵魂在您身上作祟——您把人生当成一块永远未完成的画布，只要颜料还没干，谁也别想对您指手画脚。真是个任性的疯子。
+    keywords: 拒绝定稿,无垢之残忍,狂热涂抹
+  - _code: 🔒 MARGO
+    _name: 🔒 宝生玛格
+    _group: 🔒 W
+    _vector: 🔒 MLM-LLM-LLM-MHL
+    _source: witch-trial
+    slogan: 「只要一开始就不抱期待，就永远不会品尝失望了呢。」
+    desc: 您不仅看人很准，还特别擅长戴上各种面具去迎合不同的人。这门千面伪装的手艺，是您在确认“根本没人爱我”后，给自己打下的铠甲。嘴上挂着“我从来不相信任何人”，用满不在乎来掩饰内心的极度干涸。可命运最喜欢嘲弄您这样的人：最不信爱的您，偏偏会在最后一刻，为了在乎的人连命都不要。您和宝生玛格一样，把心锁得密不透风，却把唯一的钥匙扔给了别人。
+    keywords: 千面伪装,拒绝期待,致命软肋
+  - _code: 🔒 ANAN
+    _name: 🔒 夏目安安
+    _group: 🔒 W
+    _vector: 🔒 MHL-LMH-LHL-MHH
+    _source: witch-trial
+    slogan: 「躲在用文字砌成的堡垒里，就不会受伤了吗？」
+    desc: 嫌门外的世界太吵，就干脆躲在自己的房间里装死。您太清楚语言的杀伤力了，所以总是用奇怪的腔调和厚厚的辞藻把自己包裹起来，仿佛不流露真心，别人就抓不住您的把柄。可越是抗拒靠近，您那颗心跳得就越是大声，简直是在祈求着有谁能强行破门而入。您就像夏目安安，缩在最阴暗的角落里，手里却死死攥着一支最渴望与世界和解的笔。真是别扭得可爱。
+    keywords: 文字堡垒,社恐防壁,别扭的渴望
+  - _code: 🔒 ALISA
+    _name: 🔒 紫藤亚里沙
+    _group: 🔒 mix
+    _vector: 🔒 HLM-LLM-MMH-HLM
+    _source: witch-trial
+    slogan: 「明明最恨的是自己，却非要去刺痛别人，真是难看。」
+    desc: 浑身长满了刺，见谁咬谁。但您心里比谁都清楚，您最想千刀万剐的人，其实是您自己。因为太缺爱了，所以发展出了这种惹人生厌的自毁逻辑：一次次把自己往火坑里推，一次次激怒别人，只想换来一句真切的责骂，好证明自己还是被在乎的。您坦荡得近乎固执，绝不说谎，却用尽了一切办法来恶心自己。您和紫藤亚里沙一样，嘴上讨着骂，心里却在流着血跪地求饶。
+    keywords: 自毁逻辑,真实之刺,病态求证
+  - _code: 🔒 LEIA
+    _name: 🔒 莲见蕾雅
+    _group: 🔒 mix
+    _vector: 🔒 MHM-LMH-MHM-LMH
+    _source: witch-trial
+    slogan: 「没有观众的话，您连怎么呼吸都会忘记吧？」
+    desc: 必须要站上舞台中央，姿态要无懈可击，连崩溃的瞬间都得挑个唯美的角度。对您来说，“被注视”就是救命的氧气。因为曾经最渴望的那道目光从您身上移开了，所以您发了疯似的要抓住全场的视线，仿佛一旦安静下来，自己就会彻底消失。您把这出孤独的独角戏演得华丽至极。莲见蕾雅的影子与您重叠——拼命想要全世界都看着您，其实只是在等那一个永远不会回头的人。
+    keywords: 渴求视线,华丽独角戏,孤独成瘾
+  - _code: 🔒 UNSET
+    _name: 🔒 未定之魂
+    _group: 🔒 fallback
+    _vector: 🔒 MMM-MMM-MMM-MMM
+    _source: witch-trial
+    slogan: 「连自己究竟算个什么东西，都还没搞清楚吗？」
+    desc: 您内心的声音还在互相撕咬，没有任何一种欲望敢于站出来主宰一切。这不是什么“无限的可能”，而是您在残酷的现实面前选择了退缩，拒绝给自己的灵魂定罪。在这个牢笼里，您的名字旁边还是一个滑稽的问号。审判尚未落锤，您就继续在这滩浑水里，悬而未决地挣扎下去吧。
+    keywords: 悬而未决,拒绝定罪,浑水挣扎
+  - _code: 🔒 YUKI
+    _name: 🔒 月代雪
+    _group: 🔒 special
+    _vector: 🔒 HHH-LLL-LLL-LLL
+    _subtitle: 🔒 大魔女
+    _source: witch-trial
+    slogan: 「连复仇的力气都生锈了，您还剩下什么？」
+    desc: 您安静得像一句被遗忘了千年的判词。仇恨曾是支撑您活下去的唯一骨架，您发誓要把所有的痛楚十倍奉还给这个肮脏的世界。可是，时间太长了。您眼睁睁看着那些脆弱的生命在泥泞中挣扎、犯错、然后成长，您突然发现，自己那停滞在原地的仇恨，不知何时已经变得索然无味。最后一刻，您亲手掐灭了黑暗。和月代雪一样，恨到了极致，反而生出了一种疲惫的宽容。
+    keywords: 生锈之恨,疲惫的宽容,亲手终结
+  - _code: 🔒 MADOKA
+    _name: 🔒 鹿目圆
+    _group: 🔒 B
+    _vector: 🔒 LLH-LLH-HLH-LLH
+    _subtitle: 🔒 终将成为神
+    _source: witch-trial
+    slogan: 「企图背负所有人的痛苦，您以为自己是神吗？」
+    desc: 您拥有一种残忍到极点的温柔。一看到别人的痛苦，就完全顾不上自己，甚至甘愿为素不相识的人背负因果。这绝不是软弱，而是您在看清了世界的恶意后，依然傲慢地摊开掌心。当所有人都觉得死局已定时，只有您还在那里流着泪说“一定还有办法”。代价是抹消自己存在的痕迹？这种沉醉在自我牺牲里的温柔，最后只会把您自己逼上绝路罢了。
+    keywords: 傲慢的善良,神之献祭,天真的信徒
+  - _code: 🔒 HOMURA
+    _name: 🔒 晓美焰
+    _group: 🔒 F
+    _vector: 🔒 HHL-HLH-LHH-HHH
+    _subtitle: 🔒 时间掠夺者
+    _source: witch-trial
+    slogan: 「为了一个人把世界踩在脚下。您的执念，沉重得让人反胃。」
+    desc: 外表看着冷酷不近人情，底下却翻滚着比谁都偏执的岩浆。您不信任任何人，因为没人能分担您在轮回里咽下的血泪；您也绝不原谅命运，因为它把您在乎的东西撕得粉碎。您的世界窄得可怜，只装得下那一个人。为了保住那个笑容，您根本不介意踩碎所有的规则，哪怕与全宇宙为敌，哪怕自己化身为魔。这份无可救药的执念，真是疯得彻底。
+    keywords: 轮回狂魔,偏执冷焰,为一人敌世界
+  - _code: 🔒 SAYAKA
+    _name: 🔒 美树沙耶香
+    _group: 🔒 mix
+    _vector: 🔒 HML-MHH-HHH-LHH
+    _subtitle: 🔒 正义的末路
+    _source: witch-trial
+    slogan: 「现实可不是正义必胜的过家家游戏啊，蠢货。」
+    desc: 想做个正确的人？结果却变成了满身泥泞的怪物。您眼里容不下沙子，为了喜欢的人可以连命都不要，还自顾自地觉得“不求回报”很高尚。可现实偏偏最喜欢碾碎您这种纯粹的蠢货。付出被无视，信仰被摔碎，您最后的崩溃根本不是因为堕落，而是您那份太用力的洁癖，在肮脏的世界里找不到出口，最终只能发出凄厉的悲鸣。满盘皆输，满意了吗？
+    keywords: 正义洁癖,信仰崩塌,悲鸣的怪物
+  - _code: 🔒 KYOKO
+    _name: 🔒 佐仓杏子
+    _group: 🔒 mix
+    _vector: 🔒 MHL-MMH-LMH-MMH
+    _subtitle: 🔒 末路求生者
+    _source: witch-trial
+    slogan: 「披着利己主义的皮，内里却软弱得一塌糊涂呢。」
+    desc: 您给自己裹上了一层厚厚的“实用主义”铠甲。曾经也信奉过无私奉献，直到现实狠狠扇了您一耳光。从那以后，您把“关我屁事”挂在嘴边，学会了冷眼旁观。可您终究骗不了自己，一旦真正在乎的人陷入死局，您那层硬壳瞬间就会碎成渣，哪怕陪着对方粉身碎骨也做不到见死不救。装什么冷酷无情？心软才是您永远治不好的绝症。
+    keywords: 实用主义伪装,刺猬外壳,心软绝症
+  - _code: 🔒 MAMI
+    _name: 🔒 巴麻美
+    _group: 🔒 B
+    _vector: 🔒 HMM-LHM-HHL-HHL
+    _subtitle: 🔒 孤独的前辈
+    _source: witch-trial
+    slogan: 「用优雅掩饰恐惧，您其实害怕得快要哭出来了吧？」
+    desc: 习惯了做那个永远游刃有余的“可靠前辈”。哪怕天塌下来，也要泡好红茶、理好衣摆，用最优雅的姿态去解决问题。可谁知道您无数个深夜里其实害怕得发抖？您太渴望陪伴了，太害怕被抛弃了，以至于只要有人稍微向您伸出手，您就会像抓住救命稻草一样，高兴得忘记所有防备。您的强大，全都是用那种不敢诉说的、令人窒息的孤独换来的。
+    keywords: 优雅死撑,窒息的孤独,渴求依赖
+  - _code: 🔒 homura_devil
+    _name: 🔒 晓美焰 · 执念的黑化魔女
+    _group: 🔒 special
+    _vector: 🔒 HHL-HHH-LHH-HHH
+    _source: witch-trial
+    slogan: 「一旦把谁划进圈子，您那占有欲简直让人喘不过气。」
+    desc: 在交出真心前，您的审查期比谁都长。可一旦认定了某个人，对方的劫难就成了您的劫难。局面失控时，您的第一反应是筑起高墙，试图靠一己之力强行扭转乾坤，把对方死死锁在安全区。所谓的“黑化”，不过是您无法收回的、极其傲慢的认真。
+    keywords: 漫长审查,绝对占有,孤立高墙
+    prosecution: 考察期极长，可一旦认定，就会把对方的事全揽在自己身上。局面失控时，总是傲慢地筑起高墙，试图靠一己之力强行扭转。
+    softlanding: 满脑子只想着自己承受，也是一种傲慢哦。试着把那份害怕失去的恐慌说出口，也许比强行干预更像个人类。
+    tags: 漫长审查,绝对占有,孤立高墙
+  - _code: 🔒 madoka_god
+    _name: 🔒 鹿目圆 · 终极救赎的圆环之理
+    _group: 🔒 special
+    _vector: 🔒 LLH-LLL-HHH-LLL
+    _source: witch-trial
+    slogan: 「闻着别人身上绝望的气味去托底，您真是个无可救药的圣人。」
+    desc: 只要空气稍微有点不对，您那过剩的同理心就会立刻发作。总能第一时间发现谁在难过，然后下意识地去当那个割肉喂鹰的托底者。您在照顾别人时果断得像个战士，却唯独把“自己”当成可以随时丢弃的消耗品。这种毫无底线的温柔，真是看得人火大。
+    keywords: 过剩共情,圣人症候群,割肉托底
+    prosecution: 情绪雷达敏锐得过头，总是下意识地去给别人托底。唯独把自己的需求，当成可以随时丢弃的废品。
+    softlanding: 答应做那个撑伞的人之前，先看看自己是不是已经快被淹死了。靠燃烧自己换来的光，是照不长久的。
+    tags: 过剩共情,圣人症候群,割肉托底
+  - _code: 🔒 sayaka_siren
+    _name: 🔒 美树沙耶香 · 理想主义破灭的痛楚
+    _group: 🔒 special
+    _vector: 🔒 HML-MHH-HHH-LHH
+    _source: witch-trial
+    slogan: 「对承诺有着致命的洁癖，难怪会被现实弄得遍体鳞伤。」
+    desc: 答应过的事，您就敢拿命去填。所以当看到背叛或敷衍时，那种生理性的恶心会让您直接失控。事情脱轨时，您会先近乎自虐地反思自己，等憋到极限，再把所有的失望化作毁灭性的愤怒。完全不允许自己有半点妥协，真是一场华丽的自我毁灭呢。
+    keywords: 承诺洁癖,道德自虐,零度妥协
+    prosecution: 眼里容不下沙子，看到背叛就会产生生理性厌恶。事情一旦脱轨，会先自虐般地反思，最后把失望憋成毁灭性的愤怒。
+    softlanding: 并不是世界上的每一点脏，都要算作您的错。偶尔学会说一句“那是别人的问题”，放过自己吧。
+    tags: 承诺洁癖,道德自虐,零度妥协
+  - _code: 🔒 kyoko_pragmatist
+    _name: 🔒 佐仓杏子 · 利己外衣下的真心
+    _group: 🔒 special
+    _vector: 🔒 MHL-MMH-LMH-MMH
+    _source: witch-trial
+    slogan: 「嘴上说着现实的冷酷账本，手却还是很诚实地伸出去了呢。」
+    desc: 遇到事情总喜欢在脑子里算计“投入产出比”，最烦情绪泛滥的场面。您看上去精明又无情，可如果真的在乎谁，哪怕嘴上骂得再难听，也会把对方需要的东西直接砸过去。把真心藏在硬邦邦的外壳底下，只是为了在退无可退时，显得没那么狼狈罢了。
+    keywords: 现实账本,行动派,掩耳盗铃
+    prosecution: 习惯先算投入产出比，极度厌恶情绪泛滥。可如果在乎谁，哪怕嘴上骂着，也会把对方需要的东西直接砸过去。
+    softlanding: 既然手都已经伸出去了，嘴上承认一句“我在意你”有那么难吗？脱下那层多余的盔甲，别人才敢真正靠近。
+    tags: 现实账本,行动派,掩耳盗铃
 ui:
   zh-CN:
     works:
@@ -597,6 +698,11 @@ ui:
         desc: ""
         keywords: ""
       YUKI:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
+      ETL:
         name: ""
         slogan: ""
         desc: ""
@@ -861,6 +967,11 @@ ui:
         slogan: ""
         desc: ""
         keywords: ""
+      ETL:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
       MADOKA:
         name: ""
         subtitle: ""
@@ -923,45 +1034,45 @@ ui:
         keywords: ""
     questions: |-
       [
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", "", "", "", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "Q1 · A Wish in the Morning Light", text: "Sunlight slips through the gap in the curtains before the alarm has even gone off. You open your eyes and watch dust motes drifting in the light. In that moment, a quiet hope for today rises in your chest —", options: ["Something good is bound to happen today. I'll smile at everyone I meet.", "If the day passes by quiet and uneventful, that's already more than enough.", "I'm a little tired. Still, I pull on the \u201C\u2018I'm fine\u2019\u201D mask and face the day."] },
+          { meta: "Q2 · The Warmth of the Circle", text: "After class, the room hums with excited talk about the weekend gathering. Someone turns and takes your hand with a smile: \u201CYou're coming too, right? We can't do it without you.\u201D In that moment —", options: ["A warmth spreads through my chest, and I nod hard. Being wanted like this... it feels good.", "I smile and agree, but something tightens inside—afraid that one day I won't be good enough, and the warmth will scatter.", "I nod along politely. I know better than to trust this kind of warmth; it fades as fast as it comes."] },
+          { meta: "Q3 · An Umbrella in the Rain", text: "A late-autumn night, rain pouring. The library is closing, and you stand at the door beside a quiet, withdrawn classmate. She stares helplessly at the downpour, no umbrella in hand. You happen to have one. In that moment —", options: ["I hand her my umbrella with a smile: \u201CLet's walk together.\u201D A small act, but it settles something in me.", "I hesitate before asking. We're not close, but it's on the way, so... I do it anyway.", "I pass her the umbrella, quietly keeping count of the favor. Next group project, she owes me one."] },
+          { meta: "Q4 · A Mission Entrusted", text: "In front of everyone, a teacher or elder places an important task in your hands, patting your shoulder: \u201CYou're the most reliable one.\u201D In that moment —", options: ["I straighten my back. To be trusted like this—I silently vow: I will not fail.", "My shoulders suddenly feel heavy. I smile and accept, but the expectation presses down until I can hardly breathe.", "I take it politely. I know the drill: sweet words first, and from now on this burden is all mine."] },
+          { meta: "Q5 · The Silent Compromise", text: "At dinner with friends, everyone cheers for a restaurant you don't like. Someone casually turns to ask your opinion —", options: ["I say at once: \u201CI've been dying to try that place!\u201D Them being happy matters more than what I want to eat.", "I smile and say \u201Canything's fine,\u201D swallowing the words I really wanted to say.", "I shrug and say \u201Cwhatever.\u201D A little cold, maybe—but no one was really asking me anyway."] },
+          { meta: "Q6 · The Mirror's Transformation", text: "Late at night, you stand before the bathroom mirror, looking at the tired, ordinary face reflected back. A childhood fantasy about \u201Cmagical girls\u201D flickers through your mind. If you really could gain some kind of power —", options: ["I'd want the magic to protect everyone—to make every tear disappear.", "I'd want to become perfect, so I'd never have to bow my head again because of my weaknesses.", "I'd want the power to turn invisible—so that when I vanish, no one can find me."] },
+          { meta: "Q7 · Shadow Under the Spotlight", text: "Your friend stands center stage, radiant, surrounded by adoring people. You clap quietly from the dark corner of the audience. In that moment —", options: ["I'm genuinely happy for her. She shines so bright—it reflects well on me too, as her friend.", "I clap hard, but my palms have gone cold: why is it never me standing in that light?", "I watch from the shadows, unmoved. Glory is fleeting anyway—the higher you climb, the harder you fall."] },
+          { meta: "Q8 · Protection and Self", text: "On one end of the scale: \u201Csuppress your own feelings, so everyone can be okay.\u201D On the other: \u201Chold your boundaries, even if it disappoints those close to you.\u201D Where do you place the weight —", options: ["Sacrifice myself, in exchange for warmth and peace. [Pure sacrifice]", "Hold my boundaries, even if it means loneliness and cold stares. [Absolute self-preservation]"] },
+          { meta: "Q9 · A Wound's Shelter", text: "When something unbearably unfair happens, you curl up in the corner of your room. The first thought that crosses your mind is —", options: ["I want someone to hold me and say, \u201CIt's okay. This will pass.\u201D", "I want to harden up, fast. From now on, I'll carry my own weight—I don't need anyone's approval.", "I stop hoping. No one has ever really come for me anyway."] },
+          { meta: "Q10 · Obedience Under Discipline", text: "When an elder gives you a command that brooks no argument, and lays out a future for you that clashes with what you truly want, you usually —", options: ["Trust that they mean well, and walk the road they've paved.", "Appear obedient on the surface, while secretly keeping a corner of my own.", "Lie awake all night, seething with resistance—then do as I'm told the next morning anyway."] },
+          { meta: "Q11 · The Perfect, Flawless Lie", text: "When someone asks with concern, \u201CSo... how have you been?\u201D your first reaction is usually —", options: ["To smile faster than anyone: \u201CI'm great!\u201D It's what they want to hear, anyway.", "To deflect with a joke. My bad moods aren't anyone else's burden.", "To answer flatly, \u201CFine.\u201D The words on the tip of my tongue go back down."] },
+          { meta: "Q12 · The Frost on Idealism", text: "The first time you discover that someone you admire also lies, acts selfishly, and shows an ugly side in private, in that moment —", options: ["I'm shocked and hurt, but I can't stop making excuses for them.", "I'm a little disillusioned. I guess everyone's the same. I'll have to accept it.", "A cold laugh rises in me. See? There was never anyone truly clean."] },
+          { meta: "Q13 · Effort, Dismissed", text: "The work you poured sleepless nights into gets brushed aside in a meeting, the credit going to someone else. In that moment, you —", options: ["Take a deep breath and tell myself: it's fine, the work got done, I'll try harder next time.", "My nails dig into my palm. I know how many all-nighters this cost me, and I know this anger has nowhere to go.", "A cold laugh. Fine. If sincerity means nothing here, from now on I'll just go through the motions."] },
+          { meta: "Q14 · Dividing the Last Chips", text: "Misunderstandings and pressure pile on one after another, and you're about to break. Divide the last 3 points of mental chips among the three ways of coping below:", options: ["weight::2|1|0", "weight::2|0|1", "weight::1|2|0", "weight::0|2|1", "weight::1|0|2", "weight::0|1|2", "weight::1|1|1"] },
+          { meta: "Q15 · A Secret Made a Joke", text: "By chance, in a group chat you were never added to, you see your closest friend casually use the wound you hide deepest as entertainment for everyone. In that moment —", options: ["I close the screen quietly and tell myself: everyone talks behind backs, she didn't mean it, we're still friends.", "My hands grow cold. I press \u201Cleave group.\u201D This friendship... it ends here.", "I take a screenshot. Some door inside me closes—from now on, I keep my distance too."] },
+          { meta: "Q16 · The Silent Onlooker", text: "In high school, the classmate everyone avoided silently sits down beside you. Your friend tugs your sleeve: \u201CCome on, don't get mixed up in that.\u201D You look at her hands picking at the peeling paint on the desk. In that moment —", options: ["I get up and walk away, telling myself a reason: I just need water. I'm not the one who started this.", "My stomach clenches, but I murmur, \u201CI'll head off first.\u201D I know—I'm part of it too.", "I edge my chair away. People get what they deserve. She brought this on herself."] },
+          { meta: "Q17 · Blackmail in the Name of Love", text: "You come home with grades that disappoint. Your parents sigh, long and heavy: \u201CAll our life's effort, wasted. Are you even sorry?\u201D In that moment —", options: ["I apologize at once and promise to do better. They worry about me—they're exhausted too.", "I stand there, head down, silent. I know what they want isn't me—it's the report card.", "Looking at their graying hair, something in me feels almost pleased: fine then. I'll be the disappointment you think I am."] },
+          { meta: "Q20 · The Inescapable Self-Doubt", text: "Walking down a crowded street, feeling eyes sweep over you, your body's most immediate reaction is —", options: ["To straighten my back at once, stride long and steady—even if it's all an act, I'll act confident.", "A chill runs down my spine, my palms sweat. That \u201CI'm not good enough\u201D feeling follows me everywhere.", "To start picking at others: that person's hair, that person's outfit... the more I pick, the better I feel about myself."] },
+          { meta: "Q21 · Love as Control", text: "Your partner constantly criticizes your clothes, your posts, your every word, always insisting: \u201CI'm only doing this for your own good.\u201D In that moment —", options: ["I clumsily change to fit their demands. If they're this particular, they must really care, right?", "I'm exhausted, but I still say \u201Cno.\u201D I know once these words leave my mouth, this relationship might be over.", "I turn it back on them—their body, their income. They take a jab, I jab back. No one gets the upper hand."] },
+          { meta: "Q22 · The Ultimate Price", text: "The judge backs you into a corner. The scale offers only two choices: \u201Csacrifice yourself so the ones you love can be happy again,\u201D or \u201Cdrag the whole world down with you, so long as you keep holding the only true feeling you have\u201D? ", options: ["Rather sacrifice myself, in exchange for others' light. [Pure martyrdom]", "Rather destroy the world than let go of my obsession. [Absolute obsession]"] },
+          { meta: "Q23 · Hidden Malice and Envy", text: "You hear that the person who always outshone you, always perfect, has suddenly taken a hard fall. The very first thought that flashes through your mind is —", options: ["I hurry to suppress it and scold myself: \u201CHow could you think that?\u201D Then I send the usual polite greeting.", "I admit it—for one second, it felt good. Immediately followed by guilt: what kind of person am I?", "Good. Really good. I've been waiting for this—why did they get to have everything?"] },
+          { meta: "Q24 · Discarded After Being Drained", text: "The group or leader that once fussed over you quickly pushes you to the margins once you've lost your usefulness. Facing this coldness —", options: ["I keep helping with the chores, making excuses for them: everyone's just busy. They're not deliberately ignoring me.", "I quietly pack my things and leave. Being used up and thrown away—I'll remember this.", "I stay calm on the surface, but inside I've blacklisted them all. Need my help again? Sorry, I'm so \u201Cbusy.\u201D"] },
+          { meta: "Q25 · Farewell at the Cliff's Edge", text: "If every hope has died, and you stand at the end of the road, looking at the self that has been wounded all the way here, you want to say to her —", options: ["\u201CIt's okay. Hold on a little longer—tomorrow the sun will come out.\u201D (Even if you don't quite believe it yourself)", "\u201CYou've worked so hard. It hurt all the way here, but I'm with you. We won't run anymore.\u201D", "\u201CI remember every single pain. Whoever hurts us from now on—we'll give it right back.\u201D"] },
+          { meta: "Q26 · The Final Verdict", text: "The judge's voice echoes through the empty world of the mind: \u201CSee it now? This is what's under your skin—cowardice, compromise, darkness, stubbornness. All of it, every last piece of you. Now, are you willing to take this true face and sign the contract of survival?\u201D", options: ["I close my eyes, unable to look, still praying that a holy light will wash away all my filth. [Vain prayer]", "I open my eyes and meet the judge's gaze: \u201CThis is me, broken as I am. I'll keep living with these scars and this ugliness.\u201D [Sober acceptance]", "I snatch the contract and tear it apart: \u201CI don't need your judgment! My darkness is my weapon—I will become my own god!\u201D [Complete corruption]"] },
         ]
     gate:
       meta: ""
       text: ""
       options: |-
         [
-              "",
-              "",
-              "",
-              "",
+              "[Destruction] This world is filthy and unjust—then tear it down, and let everything turn to ash.",
+              "[Be Seen] Even if I bleed, even if I shatter, I will make this world open its eyes and see how much I hurt!",
+              "[Stillness] Close my eyes. Stop fighting. Accept every crack and regret, and let myself sink slowly.",
+              "[Drifting] I don't know... I just hang in the wind, no place to land, no idea where I'm going.",
             ]
     trigger:
       meta: ""
       text: ""
-      options: '["", ""]'
+      options: '["Take the bloodstained key and clench your fist. (Triggers: the hidden path of the fallen witch / the obsessed god)", "Shake your head and turn back into the mist. (Stays on: the ordinary trial path)"]'
     disclaimer:
       footer: A fan-made test, not affiliated with the original copyright holders · Results are for reference only
       result: Characters belong to their original creators · Results are for reference only
@@ -1121,6 +1232,11 @@ ui:
         slogan: ""
         desc: ""
         keywords: ""
+      ETL:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
       MADOKA:
         name: ""
         subtitle: ""
@@ -1183,45 +1299,45 @@ ui:
         keywords: ""
     questions: |-
       [
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", "", "", "", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "Q1 · 朝の光に込めた願い", text: "目覚ましが鳴る前に、カーテンの隙間から朝の光が差し込んでくる。目を開けると、天井の埃が光の中で舞っている。その瞬間、今日へのささやかな期待が心に浮かぶ——", options: ["きっといいことがあるはず。会った人みんなに笑顔で挨拶しよう。", "いつも通り、平穏に一日が終われば、それで十分だ。", "ちょっと疲れてる。でも気合を入れて、「大丈夫」の顔を着込む。"] },
+          { meta: "Q2 · 小さな輪のぬくもり", text: "放課後の教室で、みんなが週末の集まりの話で盛り上がっている。誰かが振り返り、微笑みながら私の手を握る：「あなたも来るよね？あなたがいなきゃダメだよ。」その瞬間——", options: ["胸が温かくなる。力強く頷く。こんなに求められるのは、嬉しい。", "笑顔で頷いたけれど、心のどこかが締め付けられる——いつか自分が足りなくなって、この賑やかさが散ってしまわないかと。", "愛想よく合わせておく。こんな熱は、散るのも一瞬だって分かっている。"] },
+          { meta: "Q3 · 雨夜の傘", text: "深秋の雨の夜。図書館が閉まり、私は入口に立つ。隣には、普段あまり話さず少し孤立気味の同級生がいる。彼女は雨を見つめて困り果てている。傘は持っていない。私の手には、ちょうど傘が一本。その瞬間——", options: ["傘を差し出して笑う：「一緒に行こう。」小さなことだけど、心が落ち着く。", "少し迷ってから声をかける。親友になることはないだろう。でも道の途中だから、やるだけやってみる。", "傘を渡す。心の中で借りを数えておく：次のグループ課題、彼女も手伝ってくれるだろう。"] },
+          { meta: "Q4 · 託された使命", text: "先生や目上の人が皆の前で、大事な任務を私の手に預け、肩を叩いて言う：「あなたが一番頼りになる。」その瞬間——", options: ["背筋を伸ばす。こんなに信頼されるなら——絶対に失敗できない、と心に決める。", "肩が急に重くなる。笑顔で引き受けたけれど、その期待に息が詰まる。", "愛想よく受け取る。分かってる：うまい言葉は前だけ、これからは全部こっちの仕事だ。"] },
+          { meta: "Q5 · 無言の妥協", text: "友人との食事。みんなが、私の好きでもない店に大賛成している。誰かが何気なく私の意見を聞いてくる——", options: ["即座に言う：「その店、すごく行きたかったんだ！」みんなが楽しいなら、私が何を食べたいかより大事。", "笑って「どこでもいいよ」と言い、言いたかった言葉を飲み込む。", "肩をすくめて「適当で」。少し冷たいかもしれない。でも、本当に私の意見を聞きたがっている人はいないようだ。"] },
+          { meta: "Q6 · 鏡の中の変身", text: "深夜、洗面所の鏡の前に立つ。疲れて平凡な自分を見つめていると、子どもの頃の「魔法少女」への憧れがふと頭をよぎる。もし本当に何かの力が手に入るとしたら——", options: ["みんなを守る魔法が欲しい。誰の涙も消せるように。", "完璧になりたい。弱さや不完全さで、もう誰の前でも俯きたくない。", "透明になる力が欲しい。消えたとき、誰にも見つけられないように。"] },
+          { meta: "Q7 · スポットライトの影", text: "ステージの中心で、すべての人に囲まれ、輝く友人。私は薄暗い客席の隅で、静かに拍手を送る。その瞬間——", options: ["心から嬉しい。彼女がこんなに輝いているなら、友達の私にも、その輝きが届く。", "力を込めて拍手する。掌が冷たい：なぜ光の中に立っているのは、永遠に私じゃないの？", "冷めた目で見ている。栄光なんて一時のもの——高く登るほど、落ちるのも深い。"] },
+          { meta: "Q8 · 守りと自分", text: "天秤の一端は「自分の感情を押し殺して、みんなの幸せと引き換えに」。もう一端は「大切な人をがっかりさせても、自分の境界線を守り抜く」。あなたはどこに重りを置く——", options: ["自分を犠牲にしても、温もりと安らぎと引き換えにする。【純潔の犠牲】", "孤独と冷たい視線を被っても、境界線を守る。【漆黒の独占・自存】"] },
+          { meta: "Q9 · 傷ついた時の居場所", text: "理不尽に傷ついた時、部屋の隅に丸まっている私。最初に頭をよぎるのは——", options: ["誰かに抱きしめてほしい。「大丈夫、きっと乗り越えられる」と聞かせてほしい。", "早く強くなりたい。これからは自分のことは自分で。誰の顔色もうかがわない。", "もう期待しない。元々、誰も本当に来てくれたことはないから。"] },
+          { meta: "Q10 · 服従という名の規範", text: "目上の人が、反論を許さない命令と未来の設計図を示す。それが自分の内なる願いと反対の方向でも、私はたいてい——", options: ["善意だと信じて、敷かれたレールの上を歩く。", "表面上は素直に従い、こっそり自分だけの場所を取っておく。", "一晩中抵抗して眠れない。それでも次の朝には、素直に従ってしまう。"] },
+          { meta: "Q11 · 完璧な嘘", text: "「最近どう？」と気遣われた時、私の最初の反応はたいてい——", options: ["誰よりも早く笑う：「私は元気だよ。」みんなが聞きたいのも、それだから。", "冗談でごまかす。自分の暗い気持ちを、誰かに迷惑をかけたくない。", "淡々と「まあまあ」と返す。喉まで出かかった言葉を、また飲み込む。"] },
+          { meta: "Q12 · 理想主義の霜", text: "尊敬していた人が、実は裏でも嘘をつき、自分勝手で、見にくい面を見せる。最初に気づいた時の、その瞬間——", options: ["ショックで悲しい。それなのに、つい言い訳を探してしまう。", "少し幻滅した。やっぱりみんな同じなんだ。受け入れるしかない。", "心の中で冷笑する：ほら、本当に綺麗な人なんて、どこにもいない。"] },
+          { meta: "Q13 · 軽く流された努力", text: "何日も徹夜して作り上げたものを、会議で上司や仲間に軽く流され、手柄さえ他人に取られる。その瞬間、私は——", options: ["深呼吸して自分を慰める：大丈夫、ちゃんと仕事はできた。次はもっと頑張ろう。", "爪が掌に食い込む。何夜徹夜したかは分かってる。この悔しさが行き場のないことも。", "心の中で冷笑する：なら、本気の想いが値しないなら、これからは形だけこなしてやる。"] },
+          { meta: "Q14 · 崩壊の瞬間、残されたチップの配分", text: "誤解とプレッシャーが次々と押し寄せ、もう限界だ。手元に残ったたった 3 点の心のチップを、以下の三つの対処法に分けてください：", options: ["weight::2|1|0", "weight::2|0|1", "weight::1|2|0", "weight::0|2|1", "weight::1|0|2", "weight::0|1|2", "weight::1|1|1"] },
+          { meta: "Q15 · 笑い話にされた秘密", text: "偶然、自分が入れていないグループチャットで、一番親しい友人が、私が一番深く隠している傷を軽い言葉で皆のネタにしているのを見てしまう。その瞬間——", options: ["静かに画面を閉じ、自分に言い聞かせる：裏で言うのは誰にでもある。悪気はない。私たちはまだ友達だ。", "手のひらが冷たくなっていく。私は「グループを退出」を押した。この関係は、ここまでだ。", "スクリーンショットを保存する。心の中で何かの扉が閉じた——これからは、彼女にも一線を引く。"] },
+          { meta: "Q16 · 無言の傍観", text: "高校の時、クラスの皆が避けていた同級生が、黙って私の隣に座った。友達が袖を引いて言う：「行こう、面倒に巻き込まれないで。」私は、彼女が机の角の剥げたペンキをいじる手を見る。その瞬間——", options: ["立ち上がって離れる。理由は自分に課した：水を買いに行くだけ。この風は私が起こしたんじゃない。", "胃がきゅっと締まる。それでも小声で「先に行くね」と言った。分かってる——私も同罪だ。", "椅子を少しずらす。かわいそうな人には必ず理由がある。彼女の身にも、彼女自身の所為がある。"] },
+          { meta: "Q17 · 愛という名の脅迫", text: "思わしくない成績を持って帰ると、両親が長いため息をつく：「私たちの一生の心血がすべて無駄になった。私たちに申し訳ないと思わないのか？」その瞬間——", options: ["すぐに謝り、次は絶対に良い点を取ると約束する。心配してくれているんだ。疲れているんだ。", "うつむいて黙ったまま。分かっている——彼らが欲しいのは私じゃない。成績表だ。", "白髪交じりの彼らを見て、なぜか胸がすっとする：いいよ、君たちが思うところのダメな奴、見せてやる。"] },
+          { meta: "Q20 · 逃れられない劣等感", text: "賑やかな大通りを歩いていると、周囲の視線が自分をかすめていく。その時、体の一番正直な反応は——", options: ["背筋をぴんと伸ばし、大きく安定した歩幅で歩く——作った自信でも、とにかく演じる。", "背中が冷え、手のひらに汗が滲む。「自分は足りない」という感覚が、どこに行ってもついてくる。", "他人の粗探しを始める：あの人の髪型、あの人の服装……探しているうち、自分が少し良くなった気がする。"] },
+          { meta: "Q21 · 支配と共依存の愛", text: "パートナーが、服装も投稿も言動も頻繁に批判し、「これもあなたのためなんだよ」と言う。その瞬間——", options: ["ぎこちなく、言われた通りに直す。こんなに細かいのは、きっと本気で大事に思ってるからだろう。", "もう疲れた。それでも「嫌だ」と言う。この一言で、この関係が終わるかもしれないと分かっていても。", "逆に相手の体型や収入を攻撃する。一突きされたら、一突きで返す。どちらも譲らない。"] },
+          { meta: "Q22 · 究極の代償", text: "審判官があなたを隅まで追い詰める。天秤に乗せられた選択肢は二つだけ：「自分を犠牲にし、愛した人たちの幸せを取り戻す」か、「唯一の本物の想いを抱きしめたまま、世界ごと道連れにする」か——", options: ["自分を捧げ、他人の光と引き換えにする。【純潔の殉教】", "執念を手放すくらいなら、世界を滅ぼす。【漆黒の独占】"] },
+          { meta: "Q23 · 秘めた悪意と嫉妬", text: "いつも自分を押さえつけてきた、完璧な人が、突然大失敗をしたと聞く。真っ先に頭をよぎる思いは——", options: ["慌ててその思いを押し殺し、自分を責める：「どうしてそんなことを考えるんだ」。そして、いつも通りに挨拶の一言を送る。", "認める——一瞬だけ、すっとした。すぐに罪悪感が来る：私はどういう人間なんだ。", "気持ちいい。本当に気持ちいい。この日をずっと待っていた——なぜいい思いを全部お前が持っていくんだ。"] },
+          { meta: "Q24 · 搾り取られた後の廃棄", text: "かつては親身に気にかけてくれた集団や上司が、あなたに利用価値がなくなると、あっさりと隅に追いやる。そんな冷酷さに直面して——", options: ["いつも通り雑用を手伝い、彼らのために考えを巡らせる：皆ただ忙しいだけ。わざと無視しているんじゃない。", "黙って荷物をまとめて去る。使い切って捨てられた——このことは、忘れない。", "表面は穏やかにしているが、心の中では全員をブラックリストに入れた。また助けてほしいって？ごめん、私「忙しい」のよ。"] },
+          { meta: "Q25 · 崖っぷちでの別れ", text: "もしすべての希望が消え去ったとして、道の終わりに立ち、ここまで傷だらけで歩いてきた自分を見つめて、あなたは彼女に何を言いたい——", options: ["「大丈夫。もう少しだけ頑張って。明日はきっと陽が差すから。」（自分でも本気で信じていなくても）", "「お疲れさま。ここまでずっと痛かったね。でも私がいる。もう逃げないよ。」", "「この痛みは全部覚えてる。これから誰かに傷つけられたら、倍にして返してやる。」"] },
+          { meta: "Q26 · 審判の最終確認", text: "審判の声が、虚ろな精神世界に響き渡る：「分かったか？これがお前の皮の下に隠れた真実だ——臆病、妥協、暗さ、頑固さ。一つ残らず、お前そのものだ。さあ、この素顔を携えて、生存の契約に署名する覚悟はあるか？」", options: ["直視できずに目を閉じ、それでも自分を洗い清めてくれる聖なる光を願い続ける。【虚ろな祈り】", "目を開け、審判官をまっすぐに見つめて：「これが壊れた私です。この傷と醜さを連れたまま、生き続けます。」【清醒な受容】", "契約書を奪い取って破り捨てる：「あなたの審判なんて必要ない！私の闇は私の武器——私は自分自身の神になる！」【完全な黒化】"] },
         ]
     gate:
       meta: ""
       text: ""
       options: |-
         [
-              "",
-              "",
-              "",
-              "",
+              "【破壊線】この世界は汚くて不公平——ならば叩き壊して、すべてを灰に還してやる。",
+              "【見てほしい線】血を流しても、粉々になっても、この世界に目を見開かせてやる——私がどれほど痛いかを！",
+              "【静寂線】目を閉じて、もう抗わない。欠けた部分も後悔もすべて受け入れて、ゆっくり沈んでいく。",
+              "【漂流線】分からない……風の中に浮かんだまま、降りる場所も、向かう先も見つからない。",
             ]
     trigger:
       meta: ""
       text: ""
-      options: '["", ""]'
+      options: '["血の付いた鍵を受け取り、拳を握りしめる。（発動：黒化魔女 / 執念の神の隠し分岐）", "首を振り、振り返らずに霧の中へ。（維持：通常の審判ルート）"]'
     disclaimer:
       footer: 本テストは二次創作であり、原作の権利者とは関係ありません · 診断結果は参考程度にお楽しみください
       result: キャラクターの権利は原作側に帰属します · 診断結果は参考程度に
@@ -1381,6 +1497,11 @@ ui:
         slogan: ""
         desc: ""
         keywords: ""
+      ETL:
+        name: ""
+        slogan: ""
+        desc: ""
+        keywords: ""
       MADOKA:
         name: ""
         subtitle: ""
@@ -1443,45 +1564,45 @@ ui:
         keywords: ""
     questions: |-
       [
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", "", "", "", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
-          { meta: "", text: "", options: ["", "", ""] },
+          { meta: "Q1 · 晨光中的許願", text: "清晨的陽光透過窗簾縫隙打在臉上，鬧鐘還沒響。我睜開眼，看著天花板上的微塵在光裡起舞。那一刻，我心裏悄悄浮現出對今天的期許——", options: ["今天一定會有好事發生吧。見到誰，都笑著打個招呼。", "像平常一樣平平靜靜地過完，就已經很好了。", "其實有點累。還是打起精神，把那副「沒問題」的樣子穿好。"] },
+          { meta: "Q2 · 小團體的溫熱", text: "放學後的教室，大家圍在一起熱烈地討論著週末的聚會。有人忽然轉過頭，微笑著拉住我的手：「你肯定也會來的，對吧？少了你可不行。」那一刻——", options: ["心裡一暖，我用力點頭。被這樣需要著，真好。", "我笑著答應了，心裡有點發緊——怕哪天自己不夠好，這份熱鬧就散了。", "我禮貌地應和著。心裡清楚，這樣的熱鬧，散起來也快。"] },
+          { meta: "Q3 · 雨夜的傘簷", text: "深秋的雨夜，圖書館關門了。我站在門口，旁邊是那個平時很少說話、有些孤僻的同班同學。她正窘迫地看著雨幕，手裡沒有任何雨具。而我手裡恰好有一把傘。那一刻——", options: ["我把傘遞過去，笑著說「一起走吧」。做了件小事，心裡挺踏實的。", "我猶豫了一下才開口邀請。做朋友的可能不大，但順路的事，做了就做了。", "我遞過傘，心裡記下了這份人情：下次小組作業，她也該幫我一回。"] },
+          { meta: "Q4 · 被賦予的使命", text: "老師或長輩當著眾人的面，將一項重要的任務交到了我手裡，並拍著我的肩膀說：「你是最讓人放心的。」那一刻——", options: ["我挺直了背。被人這麼信任著，心裡暗暗較勁：絕不能搞砸。", "肩膀好像一下子沉了。我笑著應下來，可這份期待壓得人喘不過氣。", "我客氣地接下。心裡明白，好聽話說在前頭，往後這攤事就都是我的了。"] },
+          { meta: "Q5 · 無聲的妥協", text: "朋友聚餐時，大家都高聲贊同去吃某家我不喜歡的餐廳。當有人順口問起我的意見時——", options: ["我立刻說「那家我也超想去」。大家吃得開心，比我想吃什麼重要。", "我笑著說「都行」，把想說的那句話嚥了回去。", "我聳聳肩說「隨便」。有點涼——好像也沒人真的想問我。"] },
+          { meta: "Q6 · 鏡中的變身", text: "深夜，我站在洗手間的鏡子前，看著鏡子裡疲憊又平凡的自己，腦海中忽然閃過小時候關於「魔法少女」的幻想。如果真的能獲得某種力量——", options: ["我想擁有守護大家的魔法，讓所有人的眼淚都能消失。", "我想變得完美，不再因為那些軟弱和不完美，在人前抬不起頭。", "我想擁有隱身的能力——至少消失的時候，誰也找不到我。"] },
+          { meta: "Q7 · 光芒下的陰影", text: "看著舞台中央那個光彩照人、被所有人簇擁的朋友，我站在台下陰暗的角落裡默默鼓掌。那一刻——", options: ["我是真心為她高興。她這麼耀眼，我這當朋友的，臉上也有光。", "我使勁鼓掌，掌心有點發涼：為什麼站在光裡的，永遠不是我？", "我在台下冷冷看著。風光嘛，都是暫時的——站得越高，摔得越狠。"] },
+          { meta: "Q8 · 守護與自我", text: "天平兩端，一端是「壓下自己的情緒，換大家都好」，另一端是「守住自己的界限，哪怕讓身邊的人失望」。你把籌碼放在——", options: ["犧牲自我，換取溫暖與安寧。【純潔犧牲傾向】", "守住界限，哪怕承受孤立與冷眼。【極黑獨占／自存傾向】"] },
+          { meta: "Q9 · 脆弱時的懷抱", text: "遇到極度委屈的事情時，蜷縮在房間角落裡的我，第一個閃過的念頭是——", options: ["想被誰抱一下，聽一句「沒事的，都會過去」。", "想快點硬氣起來。往後的事自己扛，不用再看誰的臉色。", "不再指望了。反正從來沒有人真的來過。"] },
+          { meta: "Q10 · 規訓下的順從", text: "面對長輩不容置疑的命令和對未來的安排，即使與我內心的渴望背道而馳，我通常會——", options: ["相信他們是為我好，順著鋪好的路往下走。", "表面乖乖配合，私下偷偷留一塊只屬於自己的地方。", "心裡抗拒得整宿睡不著，可第二天還是乖乖照做了。"] },
+          { meta: "Q11 · 完美無瑕的謊言", text: "當別人關切地問起「你最近還好嗎」時，我的第一反應往往是——", options: ["笑得比誰都快：「我挺好的。」反正大家想聽的也是這句。", "開個玩笑岔過去。自己的壞情緒，不想拿去麻煩別人。", "淡淡回一句「還行」，湧到嘴邊的話又嚥了回去。"] },
+          { meta: "Q12 · 理想主義的微霜", text: "第一次發現自己敬佩的人私下裡也會說謊、利己、展現醜陋的一面時，那一刻——", options: ["我又震驚又難過，但還是忍不住替他找理由開脫。", "有點幻滅。原來誰都一樣，只能慢慢接受。", "心裡冷笑了一下：看吧，根本沒有真正乾淨的人。"] },
+          { meta: "Q13 · 被輕描淡寫的付出", text: "我熬夜幾天幾夜做出的努力，在會議上被上司或同伴輕飄飄地一筆帶過，甚至將功勞歸於他人。那一刻，我——", options: ["深吸一口氣，安慰自己：沒關係，事情做好就行，下次再努力。", "指甲掐進掌心。我清楚自己熬了幾個通宵，也清楚這口氣只能自己嚥。", "心裡冷笑：行。既然真心不值錢，往後我也只是應付差事。"] },
+          { meta: "Q14 · 崩塌時刻的籌碼分配", text: "誤解和壓力一件接一件壓下來，快撐不住了。把手裡僅剩的 3 點心理籌碼，分給下面三種應對方式：", options: ["weight::2|1|0", "weight::2|0|1", "weight::1|2|0", "weight::0|2|1", "weight::1|0|2", "weight::0|1|2", "weight::1|1|1"] },
+          { meta: "Q15 · 被當作談資的秘密", text: "偶然間，我在那個未曾把我拉入的群聊裡，看見最親近的朋友正用輕佻的字眼，把我藏得最深的傷痛當作談資呈給眾人看。那一刻——", options: ["我默默關掉介面，勸自己：誰人背後不說人，她只是無心，我們還是朋友。", "手心一點點涼下去，我按下了「退出群聊」。這段關係到這兒吧，回不去了。", "我保存了截圖。心裡某扇門關上了——往後對她，我也留一手。"] },
+          { meta: "Q16 · 無聲的冷眼旁觀", text: "高中那年，那個全班避之不及的同學默不作聲地坐在我身旁。朋友拉拉我的袖子：「走了，別沾上晦氣。」我看著她摳著桌角起皮漆的雙手。那一刻——", options: ["我起身走開，替自己找好了理由：不過是去買個水，這風又不是我揚的。", "胃裡一陣發緊，我還是低聲說了句「我先走了」。我知道，我也算其中一個。", "我把椅子往外挪了挪：可憐之人必有可恨之處，她那樣，她自己也有份。"] },
+          { meta: "Q17 · 以愛為名的勒索", text: "拿著不理想的成績／績效回家，父母長久地嘆氣：「我們一輩子的心血都白費了，你對得起我們嗎？」那一刻——", options: ["我趕忙道歉，保證下次一定考好。他們也是為我操心，累壞了。", "我低頭站著不吭聲。心裡清楚，他們要的是那張成績單，不是我。", "看著他們斑白的頭髮，我心裡竟然有點痛快：行啊，我爛給你們看。"] },
+          { meta: "Q20 · 無法逃離的自卑", text: "每當走在熱鬧的大街上，感覺周圍人的目光掃過自己時，我身體最直觀的反應是——", options: ["立刻挺直腰板，步子邁得又穩又大——裝也要裝出自信的樣子。", "後背發涼，手心出汗。那種「我不夠好」的感覺，走到哪都甩不掉。", "心裡開始挑別人的刺：那人的髮型、那人的穿搭……挑著挑著，自己好像真的好受了點。"] },
+          { meta: "Q21 · 控制與互戕的愛情", text: "伴侶頻繁挑剔我的穿著、朋友圈和言行，並表達「我都是為了你好」。那一刻——", options: ["我笨拙地照他說的改。他這麼挑剔，大概是真的在乎我吧。", "我很累，但還是說了「不」。我知道這句話一出口，這段感情可能就到頭了。", "我反過來挑剔他的身材和收入。他挑我一句，我頂回去一句，誰也別想佔上風。"] },
+          { meta: "Q22 · 終極代價", text: "審判官把你逼到死角，天平兩端只能選一個：是「犧牲你自己，換愛過你的人重新幸福」，還是「拉著整個世界陪葬，也要抱緊你唯一的真情」？", options: ["寧願獻祭自我，換取他人的光明。【純潔殉道】", "寧可毀滅世界，也絕不放手執念。【極黑獨占】"] },
+          { meta: "Q23 · 隱秘的惡意與嫉妒", text: "聽說那個處處壓你一頭、一直完美的人突然栽了大跟頭，我心裡第一下閃過的念頭是——", options: ["我慌忙把那點念頭壓下去，罵自己「怎麼能這麼想」，然後照常發去一句問候。", "我承認那一秒有點暗爽。緊接著就是愧疚：我怎麼是這樣的人。", "爽，是真的爽。等這一天很久了——憑什麼好事全讓你佔了。"] },
+          { meta: "Q24 · 被榨乾後的廢棄", text: "曾經對你噓寒問暖的團體或領導，在你失去了利用價值後，迅速將你邊緣化。面對這種冷酷——", options: ["我照舊幫著做雜事，替他們想：大家只是太忙，不是故意晾著我。", "我默默收拾好東西離開。被用完就丟，這事兒我記下了。", "面上不吵不鬧，心裡已經把他們拉黑。再找我幫忙？抱歉，我可「忙」著呢。"] },
+          { meta: "Q25 · 懸崖邊的告別", text: "如果所有希望都破滅了，站在路的盡頭，看著那個一路傷痕累累的自己，我想對她說——", options: ["「沒關係的，再堅持一下，明天陽光一定會照進來的。」（哪怕你自己都不太信）", "「辛苦你了。這一路很痛，但我陪著你，我們不逃了。」", "「這些痛我都記著。往後誰再傷我們，我們就還回去。」"] },
+          { meta: "Q26 · 審判終章確認", text: "審判的聲音在空曠的精神世界迴響：「看清了嗎？這就是你皮囊底下的真實——懦弱、妥協、陰暗、執拗，一樣都不少的你。現在，願意帶著這副真面目，簽下這份生存契約嗎？」", options: ["我閉上眼不敢直視，依然祈求能有一道聖光洗淨我所有的髒污。【虛幻禱告】", "我睜開眼，直視著審判官：「這就是殘破的我，我帶著這些傷痕與醜陋繼續活著。」【清醒接納】", "我奪過契約撕碎：「我不需要你的審判！我的陰暗就是我的武器，我自會成為自己的神！」【徹底黑化】"] },
         ]
     gate:
       meta: ""
       text: ""
       options: |-
         [
-              "",
-              "",
-              "",
-              "",
+              "【毀滅線】這個世界又髒又不公——那就掀翻它，讓一切歸於灰燼。",
+              "【被看見線】哪怕流血、哪怕粉身碎骨，我也要這世界睜開眼，看看我究竟有多痛！",
+              "【平靜線】閉上眼，不再掙扎。接受所有的殘缺和遺憾，讓自己慢慢沉下去。",
+              "【遊離線】我不知道……我就懸在風裡，找不到落腳的地方，也不知道要去哪。",
             ]
     trigger:
       meta: ""
       text: ""
-      options: '["", ""]'
+      options: '["接過那把沾血的鑰匙，握緊拳頭。（觸發：黑化魔女／執念神明隱藏分支）", "搖搖頭，轉身走入迷霧之中。（維持：常規審判線）"]'
     disclaimer:
       footer: 本測試為同人二創作品，與原作版權方無隸屬關係 · 測試結果僅供參考
       result: 角色版權歸原作方所有 · 測試結果僅供參考

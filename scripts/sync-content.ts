@@ -99,11 +99,16 @@ function updateTsFile(file: string, varName: string, kind: "questions" | "types"
       const optsArr = args[3];
       if (optsArr && ts.isArrayLiteralExpression(optsArr)) {
         optsArr.elements.forEach((o, i) => {
-          if (ts.isStringLiteral(o) && expected.options[i]) {
+          if (expected.options[i]) {
             const opt = expected.options[i];
             // weight:: 编码 label 不动（yaml 里标 🔒）
             if (opt.label.startsWith("🔒") || opt.label.includes("weight::")) return;
-            targets.push({ start: o.getStart(sf), end: o.getEnd(), newVal: JSON.stringify(opt.label) });
+            if (ts.isStringLiteral(o)) {
+              targets.push({ start: o.getStart(sf), end: o.getEnd(), newVal: JSON.stringify(opt.label) });
+            } else if (ts.isObjectLiteralExpression(o)) {
+              const lblNode = propOf(o, "label");
+              if (lblNode && ts.isStringLiteral(lblNode)) targets.push({ start: lblNode.getStart(sf), end: lblNode.getEnd(), newVal: JSON.stringify(opt.label) });
+            }
           }
         });
       }
