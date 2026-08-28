@@ -55,26 +55,16 @@ export async function POST(req: NextRequest) {
     include: { question: { select: { id: true, dim: true, type: true, renderType: true } } },
   });
 
-  const processed = processAnswers(answers, options);
+  const { dimScores, gateValue, triggerFired, validAnswers } = processAnswers(answers, options);
 
-  if (processed.validAnswers.length !== answers.length) {
+  if (validAnswers.length !== answers.length) {
     return NextResponse.json(
       { error: "Invalid answers" },
       { status: 400 }
     );
   }
 
-  const result = match(
-    {
-      postureA: processed.postureA,
-      postureB: processed.postureB,
-      postureC: processed.postureC,
-      path: processed.path,
-      keyUnlocked: processed.keyUnlocked,
-      tendency: processed.tendency,
-    },
-    await db.personalityType.findMany(),
-  );
+  const result = match({ dimScores, gateValue, triggerFired }, await db.personalityType.findMany());
 
   const record = await db.testRecord.create({
     data: {
@@ -84,8 +74,8 @@ export async function POST(req: NextRequest) {
       userVector: result.userVector,
       top3: JSON.stringify(result.top3),
       borderType: result.borderType,
-      gateValue: processed.gateValue ?? null,
-      triggerFired: processed.keyUnlocked ? "KEY_UNLOCKED" : null,
+      gateValue: gateValue ?? null,
+      triggerFired: triggerFired ?? null,
       userAgent: userAgent ?? null,
       ipAddress: getClientIp(req),
       screenRes: screenRes ?? null,
@@ -95,7 +85,7 @@ export async function POST(req: NextRequest) {
       completedAt: completedAt ? new Date(completedAt) : null,
       duration: duration ?? null,
       answers: {
-        create: processed.validAnswers.map((a) => ({
+        create: validAnswers.map((a) => ({
           questionId: a.questionId,
           optionId: a.optionId,
         })),

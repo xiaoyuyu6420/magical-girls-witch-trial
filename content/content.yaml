@@ -9,48 +9,56 @@ _meta:
 questions:
   - _index: 1
     _dim: 🔒 Q1 · 晨光中的许愿
+    _dim_code: 🔒 W2
     _type: 🔒 normal
     meta: ✏️ 清晨的阳光透过窗帘缝隙打在脸上，闹钟还没响。我睁开眼，看着天花板上的微尘在光里起舞。在那一刻，我心里悄悄浮现出对今天的期许——
     text: ""
     options: []
   - _index: 2
     _dim: 🔒 Q2 · 小团体的温热
+    _dim_code: 🔒 B1
     _type: 🔒 normal
     meta: ✏️ 放学后的教室，大家围在一起热烈地讨论着周末的聚会。有人忽然转过头，微笑着拉住我的手：“你肯定也会来的，对吧？少了你可不行。”那一刻——
     text: ""
     options: []
   - _index: 3
     _dim: 🔒 Q3 · 雨夜的伞檐
+    _dim_code: 🔒 B3
     _type: 🔒 normal
     meta: ✏️ 深秋的雨夜，图书馆关门了。我站在门口，旁边是那个平时很少说话、有些孤僻的同班同学。她正窘迫地看着雨幕，手里没有任何雨具。而我手里恰好有一把伞。那一刻——
     text: ""
     options: []
   - _index: 4
     _dim: 🔒 Q4 · 被赋予的使命
+    _dim_code: 🔒 S2
     _type: 🔒 normal
     meta: ✏️ 老师或长辈当着众人的面，将一项重要的任务交到了我手里，并拍着我的肩膀说：“你是最让人放心的。”那一刻——
     text: ""
     options: []
   - _index: 5
     _dim: 🔒 Q5 · 无声的妥协
+    _dim_code: 🔒 W1
     _type: 🔒 normal
     meta: ✏️ 朋友聚餐时，大家都高声赞同去吃某家我不喜欢的餐厅。当有人顺口问起我的意见时——
     text: ""
     options: []
   - _index: 6
     _dim: 🔒 Q6 · 镜中的变身
+    _dim_code: 🔒 S2
     _type: 🔒 normal
     meta: ✏️ 深夜，我站在洗手间的镜子前，看着镜子里疲惫又平凡的自己，脑海中忽然闪过小时候关于“魔法少女”的幻想。如果真的能获得某种力量——
     text: ""
     options: []
   - _index: 7
     _dim: 🔒 Q7 · 光芒下的阴影
+    _dim_code: 🔒 F1
     _type: 🔒 normal
     meta: ✏️ 看着舞台中央那个光彩照人、被所有人簇拥的朋友，我站在台下阴暗的角落里默默鼓掌。那一刻——
     text: ""
     options: []
   - _index: 8
     _dim: 🔒 POSTURE
+    _dim_code: 🔒 B3
     _type: 🔒 normal (scale)
     meta: ✏️ Q8 · 守护与自我
     text: 天平两端，一端是“压下自己的情绪，换大家都好”，另一端是“守住自己的界限，哪怕让身边的人失望”。你把筹码放在——
@@ -63,36 +71,42 @@ questions:
         label: 守住界限，哪怕承受孤立与冷眼。【极黑独占/自存倾向】
   - _index: 9
     _dim: 🔒 Q9 · 脆弱时的怀抱
+    _dim_code: 🔒 B1
     _type: 🔒 normal
     meta: ✏️ 遇到极度委屈的事情时，蜷缩在房间角落里的我，第一个闪过的念头是——
     text: ""
     options: []
   - _index: 10
     _dim: 🔒 Q10 · 规训下的顺从
+    _dim_code: 🔒 S1
     _type: 🔒 normal
     meta: ✏️ 面对长辈不容置疑的命令和对未来的安排，即使与我内心的渴望背道而驰，我通常会——
     text: ""
     options: []
   - _index: 11
     _dim: 🔒 Q11 · 完美无瑕的谎言
+    _dim_code: 🔒 W1
     _type: 🔒 normal
     meta: ✏️ 当别人关切地问起“你最近还好吗”时，我的第一反应往往是——
     text: ""
     options: []
   - _index: 12
     _dim: 🔒 Q12 · 理想主义的微霜
+    _dim_code: 🔒 S3
     _type: 🔒 normal
     meta: ✏️ 第一次发现自己敬佩的人私下里也会说谎、利己、展现丑陋的一面时，那一刻——
     text: ""
     options: []
   - _index: 13
     _dim: 🔒 Q13 · 被轻描淡写的付出
+    _dim_code: 🔒 F2
     _type: 🔒 normal
     meta: ✏️ 我熬夜几天几夜做出的努力，在会议上被上司或同伴轻飘飘地一笔带过，甚至将功劳归于他人。那一刻，我——
     text: ""
     options: []
   - _index: 14
     _dim: 🔒 POSTURE
+    _dim_code: 🔒 W3
     _type: 🔒 normal (weight)
     meta: ✏️ Q14 · 崩塌时刻的筹码分配
     text: 误解和压力一件接一件压下来，快撑不住了。把手里仅剩的 3 点心理筹码，分给下面三种应对方式：
@@ -113,24 +127,28 @@ questions:
         label: 🔒 weight::1|1|1 (编码，勿动)
   - _index: 15
     _dim: 🔒 Q15 · 被当作谈资的秘密
+    _dim_code: 🔒 B2
     _type: 🔒 normal
     meta: ✏️ 偶然间，我在那个未曾把我拉入的群聊里，看见最亲近的朋友正用轻佻的字眼，把我藏得最深的伤痛当作谈资呈给众人看。那一刻——
     text: ""
     options: []
   - _index: 16
     _dim: 🔒 Q16 · 无声的冷眼旁观
+    _dim_code: 🔒 S3
     _type: 🔒 normal
     meta: ✏️ 高中那年，那个全班避之不及的同学默不作声地坐在我身旁。朋友拉拉我的袖子：“走了，别沾上晦气。”我看着她抠着桌角起皮漆的双手。那一刻——
     text: ""
     options: []
   - _index: 17
     _dim: 🔒 Q17 · 以爱为名的勒索
+    _dim_code: 🔒 S1
     _type: 🔒 normal
     meta: ✏️ 拿着不理想的成绩/绩效回家，父母长久地叹气：“我们一辈子的心血都白费了，你对得起我们吗？”那一刻——
     text: ""
     options: []
   - _index: 18
     _dim: 🔒 GATE
+    _dim_code: 🔒 GATE
     _type: 🔒 gate
     meta: ✏️ Q18 · 灵魂的路径抉择
     text: 伪装一层层剥落，现实的凉意从头浇到脚。站在这道无声的悬崖边，你心里最响的声音是——
@@ -149,6 +167,7 @@ questions:
         label: 【游离线】我不知道……我就悬在风里，找不到落脚的地方，也不知道要去哪。
   - _index: 19
     _dim: 🔒 TRIGGER
+    _dim_code: 🔒 TRIGGER
     _type: 🔒 trigger
     meta: ✏️ Q19 · 隐藏角色契约
     text: 迷雾深处，走出一个小声啜泣的小孩——是小时候的你。她怀里抱着一把生锈的钥匙，抬头问你：“你还愿意相信奇迹吗？”
@@ -161,18 +180,21 @@ questions:
         label: 摇摇头，转身走入迷雾之中。（维持：常规审判线）
   - _index: 20
     _dim: 🔒 Q20 · 无法逃离的自卑
+    _dim_code: 🔒 F2
     _type: 🔒 normal
     meta: ✏️ 每当走在热闹的大街上，感觉周围人的目光扫过自己时，我身体最直观的反应是——
     text: ""
     options: []
   - _index: 21
     _dim: 🔒 Q21 · 控制与互戕的爱情
+    _dim_code: 🔒 W2
     _type: 🔒 normal
     meta: ✏️ 伴侣频繁挑剔我的穿着、朋友圈和言行，并表达“我都是为了你好”。那一刻——
     text: ""
     options: []
   - _index: 22
     _dim: 🔒 POSTURE
+    _dim_code: 🔒 F3
     _type: 🔒 normal (scale)
     meta: ✏️ Q22 · 终极代价
     text: 审判官把你逼到死角，天平两端只能选一个：是“牺牲你自己，换爱过你的人重新幸福”，还是“拉着整个世界陪葬，也要抱紧你唯一的真情”？
@@ -185,85 +207,252 @@ questions:
         label: 宁可毁灭世界，也绝不放手执念。【极黑独占】
   - _index: 23
     _dim: 🔒 Q23 · 隐秘的恶意与嫉妒
+    _dim_code: 🔒 F1
     _type: 🔒 normal
     meta: ✏️ 听说那个处处压你一头、一直完美的人突然栽了大跟头，我心里第一下闪过的念头是——
     text: ""
     options: []
   - _index: 24
     _dim: 🔒 Q24 · 被榨干后的废弃
+    _dim_code: 🔒 B2
     _type: 🔒 normal
     meta: ✏️ 曾经对你嘘寒问暖的团体或领导，在你失去了利用价值后，迅速将你边缘化。面对这种冷酷——
     text: ""
     options: []
   - _index: 25
     _dim: 🔒 Q25 · 悬崖边的告别
+    _dim_code: 🔒 F3
     _type: 🔒 normal
     meta: ✏️ 如果所有希望都破灭了，站在路的尽头，看着那个一路伤痕累累的自己，我想对她说——
     text: ""
     options: []
   - _index: 26
     _dim: 🔒 Q26 · 审判终章确认
+    _dim_code: 🔒 W3
     _type: 🔒 normal
     meta: ✏️ 审判的声音在空旷的精神世界回响：“看清了吗？这就是你皮囊底下的真实——懦弱、妥协、阴暗、执拗，一样都不少的你。现在，愿意带着这副真面目，签下这份生存契约吗？”
     text: ""
     options: []
 characters:
-  - _code: 🔒 homura_devil
-    _name: 🔒 晓美焰 · 执念的黑化魔女
-    _group: 🔒 main
-    _vector: "🔒 "
-    _source: witch-trial
-    slogan: 重要的人一旦认定，你就很难退开。
-    desc: 你不是拒绝亲近，只是靠近之前会观察很久。一旦认定一个人重要，你会把对方的事当成自己的事；局面失控时，又会先收紧边界，尽量自己处理。你和焰相似的地方不是什么黑化，而是这份很难收回的认真。
-    keywords: 谨慎,边界感,行动先于表达
-    prosecution: 你不是拒绝亲近，只是靠近之前会观察很久。一旦认定一个人重要，你会把对方的事当成自己的事；局面失控时，又会先收紧边界，尽量自己处理。
-    softlanding: 在意一个人，不等于要替所有变数负责。把担心提前说出来，对方才有机会和你一起处理。
-    tags: 谨慎,边界感,行动先于表达
-  - _code: 🔒 madoka_god
-    _name: 🔒 鹿目圆 · 终极救赎的圆环之理
-    _group: 🔒 main
-    _vector: "🔒 "
-    _source: witch-trial
-    slogan: 你常常先注意到别人的需要。
-    desc: 气氛一不对，你通常会先看谁在难受，然后想自己能做什么。照顾人时你很有行动力，问题是自己的需要常常被排到后面。你和圆相似的地方，是温柔不只是态度，也会真的动手去做。
-    keywords: 敏感,照顾,行动力
-    prosecution: 气氛一不对，你通常会先看谁在难受，然后想自己能做什么。照顾人时你很有行动力，问题是自己的需要常常被排到后面。
-    softlanding: 答应照顾别人之前，先确认自己还有余裕。长期硬撑出来的体贴，最后容易变成委屈。
-    tags: 敏感,照顾,行动力
-  - _code: 🔒 sayaka_siren
-    _name: 🔒 美树沙耶香 · 理想主义破灭的痛楚
-    _group: 🔒 main
-    _vector: "🔒 "
-    _source: witch-trial
-    slogan: 你对公平和承诺很敏感。
-    desc: 答应过的事，你会当真；看到敷衍和偏袒，也比一般人更难受。事情没做好时，你容易先检讨自己，再把失望压成愤怒。你和沙耶香相似的地方，是不愿意用“随便啦”处理重要关系。
-    keywords: 原则感,认真,自我要求
-    prosecution: 答应过的事，你会当真；看到敷衍和偏袒，也比一般人更难受。事情没做好时，你容易先检讨自己，再把失望压成愤怒。
-    softlanding: 失望时先分清：哪部分是自己的责任，哪部分是别人的选择。不是每件事都要先归因给自己。
-    tags: 原则感,认真,自我要求
-  - _code: 🔒 kyoko_pragmatist
-    _name: 🔒 佐仓杏子 · 利己外衣下的真心
-    _group: 🔒 main
-    _vector: "🔒 "
-    _source: witch-trial
-    slogan: 你的关心，常常包在现实判断里。
-    desc: 你习惯先算可行性，再决定要不要投入，不喜欢把气氛说得很满。但真正认定一个人后，你会用具体行动帮忙，只是不一定会承认自己在意。你和杏子相似的地方，是嘴上留余地，事上不轻易退。
-    keywords: 务实,有底线,嘴硬心软
-    prosecution: 你习惯先算可行性，再决定要不要投入，不喜欢把气氛说得很满。但真正认定一个人后，你会用具体行动帮忙，只是不一定会承认自己在意。
-    softlanding: 把在意说得更直接一点，关系会少一些猜测；帮忙前讲清界限，也更容易长期相处。
-    tags: 务实,有底线,嘴硬心软
-  - _code: 🔒 emma_truth
-    _name: 🔒 樱羽艾玛 · 寻求真相的清醒审判者
-    _group: 🔒 fallback
-    _vector: "🔒 "
-    _subtitle: 🔒 默认审判者
-    _source: witch-trial
-    slogan: 你想弄清楚事情本来的样子。
-    desc: 你不擅长用“算了”糊过去。一句话前后对不上，或者有人在关系里回避问题，你会注意到，也会想继续问。答案让人不舒服时，你仍宁愿先知道事实，再决定怎么处理。
-    keywords: 求真,有边界,不轻易自欺
-    prosecution: 你不擅长用“算了”糊过去。一句话前后对不上，或者有人在关系里回避问题，你会注意到，也会想继续问。
-    softlanding: 追问之前，先分清已确认的事实和自己的猜测。把两者摊开，问题会更容易谈。
-    tags: 求真,有边界,不轻易自欺
+  - _code: 🔒 "EMMA"
+    _name: 🔒 "樱羽艾玛"
+    _group: 🔒 "B"
+    _vector: "🔒 LHH-LLM-HHH-LLL"
+    _source: "witch-trial"
+    slogan: "「即使全世界都放弃了，我也不会」"
+    desc: "你是天生的信仰者。你相信每一个人都值得被拯救，即使被背叛、被伤害、被全世界误解，你仍然选择伸出手。这份善意不是天真——是你明知代价后依然做出的选择。"
+    keywords: "不灭的希望、绝对的信任、自我牺牲"
+  - _code: 🔒 "SHERRY"
+    _name: 🔒 "橘雪莉"
+    _group: 🔒 "B"
+    _vector: "🔒 MHM-LMH-HHH-LHH"
+    _source: "witch-trial"
+    slogan: "「为了你，我可以成为任何人——甚至坏人」"
+    desc: "你是天生的守护者，温暖而充满活力，是所有人眼中的太阳。但你守护的方式会走向极端——当挚爱受到威胁，你愿意为之杀人。你的善意和疯狂之间，只隔着一个你在乎的人。"
+    keywords: "致命的天真、为爱疯狂、阳光下的暗面"
+  - _code: 🔒 "MIRIA"
+    _name: 🔒 "佐伯米莉亚"
+    _group: 🔒 "B"
+    _vector: "🔒 LMH-LLM-HMH-MML"
+    _source: "witch-trial"
+    slogan: "「不用怕，姐姐来扛」"
+    desc: "你是大姐般的存在，总是默默照顾所有人，把自己的痛苦藏在笑容后面。你不会等到别人求助就主动出手，甚至在生死关头甘愿以命相替。你的温柔有棱角——是对世界最倔强的善意。"
+    keywords: "无声的守护、以命相替、倔强的温柔"
+  - _code: 🔒 "HIRO"
+    _name: 🔒 "二阶堂希罗"
+    _group: 🔒 "F"
+    _vector: "🔒 HLL-HMH-LHH-HHM"
+    _source: "witch-trial"
+    slogan: "「哪怕要死一千次，我也要把她带回来」"
+    desc: "你是冰与火的矛盾体——外表冷酷无情，内心却燃烧着比任何人都炽热的情感。你不会轻易信任，但一旦认定了某个人，即使要赴汤蹈火、反复经历死亡，你也不会后退一步。"
+    keywords: "冷焰、死亡回溯、为挚爱不惜一切"
+  - _code: 🔒 "NANOKA"
+    _name: 🔒 "黑部奈叶香"
+    _group: 🔒 "F"
+    _vector: "🔒 HHL-HMH-LLL-LLH"
+    _source: "witch-trial"
+    slogan: "「不需要同伴，不需要温暖，我只要复仇」"
+    desc: "你是独行的孤狼，用尖刺包裹住所有伤口。你拒绝一切善意，因为过去的经历告诉你——靠近的人只会被利用。你的复仇不是热血，而是冰冷的、精密的、孤独的执念。"
+    keywords: "孤狼复仇、拒绝温暖、精密的执念"
+  - _code: 🔒 "HANNA"
+    _name: 🔒 "远野汉娜"
+    _group: 🔒 "S"
+    _vector: "🔒 MHH-LMM-MHM-HML"
+    _source: "witch-trial"
+    slogan: "「我才不关心你呢……笨蛋」"
+    desc: "你用傲慢和刻薄铸造了一面完美的盔甲，盔甲之下却藏着一颗比谁都柔软的心。你不会直接表达善意——你会做一个人偶放在对方枕边，或者在所有人离开后偷偷照顾病人。你的温柔，只有读懂你的人才看得见。"
+    keywords: "傲娇、盔甲下的脆弱、笨拙的温柔"
+  - _code: 🔒 "MERURU"
+    _name: 🔒 "冰上梅露露"
+    _group: 🔒 "S"
+    _vector: "🔒 HMH-LLH-HLH-HHL"
+    _source: "witch-trial"
+    slogan: "「我等了很久……很久很久」"
+    desc: "你是永恒的守望者，温柔体贴的外表下藏着跨越千年的孤独。你对每个人都真诚相待，但你真正的目的从未改变。你目睹了无数羁绊的诞生与碎裂，却依然选择相信——这份坚持本身就是最大的奇迹。"
+    keywords: "千年守望、温柔伪装、永不放弃的执念"
+  - _code: 🔒 "COCO"
+    _name: 🔒 "泽渡可可"
+    _group: 🔒 "S"
+    _vector: "🔒 HML-LMM-LHL-MMM"
+    _source: "witch-trial"
+    slogan: "「别误会，我只是无聊才跟你说话」"
+    desc: "你是毒舌主播，用刻薄和自我中心掩饰内心的寂寞。你总在嘲笑别人的天真，但嘲笑的语气里有微妙的温度。你害怕被抛弃，所以选择先推开所有人——但又忍不住在角落里偷偷关注他们。"
+    keywords: "毒舌盔甲、寂寞中心、拒绝脆弱"
+  - _code: 🔒 "NOAH"
+    _name: 🔒 "城崎诺亚"
+    _group: 🔒 "S"
+    _vector: "🔒 LHH-LLL-HLM-LLH"
+    _source: "witch-trial"
+    slogan: "「这个颜色……好漂亮，我想把它画下来」"
+    desc: "你是活在梦境中的画家，拥有独特的世界观和不受常理束缚的思维。你对恶意几乎免疫——不是因为你不懂，而是因为你的世界里有比仇恨更重要的美。你的纯真是一种力量，哪怕在最黑暗的监牢里，你也在创造光。"
+    keywords: "纯真创造、梦境画家、对抗黑暗的美"
+  - _code: 🔒 "MARGO"
+    _name: 🔒 "宝生玛格"
+    _group: 🔒 "W"
+    _vector: "🔒 MLM-LLM-LLM-MHL"
+    _source: "witch-trial"
+    slogan: "「别太在意我，我只是路过的」"
+    desc: "你是漂泊的星，没人能真正看清你的全貌。你时而带刺时而可靠，总是在关键时刻出现又在平时消失。你有自己的价值观和行为准则，不受任何人的框架约束。你的神秘不是伪装——你就是活成了谜题本身。"
+    keywords: "神秘莫测、独立法则、关键时刻的援手"
+  - _code: 🔒 "ANAN"
+    _name: 🔒 "夏目安安"
+    _group: 🔒 "W"
+    _vector: "🔒 MHL-LMH-LHL-MHH"
+    _source: "witch-trial"
+    slogan: "「只有你……不能离开我」"
+    desc: "你是封闭花园中的独占者，社恐的外壳下藏着极端的依赖与嫉妒。你害怕人群，却渴望被某一个特定的人完全接纳。当这份渴望被威胁时，你内心的黑暗会以一种安静但致命的方式爆发。你的爱是一座牢笼——困住别人，也困住自己。"
+    keywords: "独占欲、社恐暗面、安静的危险"
+  - _code: 🔒 "ALISA"
+    _name: 🔒 "紫藤亚里沙"
+    _group: 🔒 "mix"
+    _vector: "🔒 HLM-LLM-MMH-HLM"
+    _source: "witch-trial"
+    slogan: "「少废话，跟上就是了」"
+    desc: "你是不良外表下的铁蔷薇，粗鲁的言行掩盖着笨拙的正义感。你嘴上抱怨个不停，行动上却总是第一个冲进火场救人。你不容易敞开心扉，但一旦认可了某个人，你会用最笨拙的方式守护到底。"
+    keywords: "不良正义、笨拙温柔、行动派"
+  - _code: 🔒 "LEIA"
+    _name: 🔒 "莲见蕾雅"
+    _group: 🔒 "mix"
+    _vector: "🔒 MHM-LMH-MHM-LMH"
+    _source: "witch-trial"
+    slogan: "「看着我的眼睛——告诉我，我在你眼里是闪光的」"
+    desc: "你是天生的领袖，美丽自信，一出现就能吸引所有人的目光。但光环之下是深不见底的空洞——你需要被看见、被认可、被崇拜。当这份渴望得不到满足时，你会做出任何事来重新站上舞台中央。你的魅力是真实的，你的脆弱也是。"
+    keywords: "领袖魅力、被认可的渴望、光环下的空洞"
+  - _code: 🔒 "UNSET"
+    _name: 🔒 "未定之魂"
+    _group: 🔒 "fallback"
+    _vector: "🔒 MMM-MMM-MMM-MMM"
+    _source: "witch-trial"
+    slogan: "「审判还未落锤，你的灵魂在等待被定义」"
+    desc: "你的因子尚未觉醒到可以归类的程度。也许你在所有人之间游走，也许你刻意隐藏了真实的自己。无论哪种，下次审判见。"
+    keywords: ""
+  - _code: 🔒 "YUKI"
+    _name: 🔒 "月代雪"
+    _subtitle: 🔒 "大魔女"
+    _group: 🔒 "special"
+    _vector: "🔒 HHH-LLL-LLL-LLL"
+    _source: "witch-trial"
+    slogan: "「你们人类的悲剧……我全都看在眼里。所以，由我来终结」"
+    desc: "你是跨越百年的复仇者，是最年幼也最强大的魔女。你曾真心地爱过这个世界，也曾被挚友的温暖动摇过。但你选择把这一切都埋葬，用冰冷的理性执行一个漫长到令人窒息的计划。你的复仇不是疯狂——而是一种绝望到极致的清醒。"
+    keywords: "百年复仇、绝望的清醒、冰冷的终焉"
+  - _code: 🔒 "ETL"
+    _name: 🔒 "不灭雪华"
+    _subtitle: 🔒 "梅露露真身"
+    _group: 🔒 "special"
+    _vector: "🔒 LLL-HHH-HHH-HHH"
+    _source: "witch-trial"
+    slogan: "「即使世界抛弃了我，我对雪的爱不会消融」"
+    desc: "你是千年不灭的存在，因对「雪」的信仰而获得了不老不死。你经历了无数少女的诞生与死亡，目睹了无数次背叛与绝望，但你从未放弃寻找那个离开你的人。你的坚持不是执念——而是对爱的最纯粹回应。"
+    keywords: "千年不灭、纯粹的信仰、永恒的守望"
+  - _code: 🔒 "MADOKA"
+    _name: 🔒 "鹿目圆"
+    _subtitle: 🔒 "终将成为神"
+    _group: 🔒 "B"
+    _vector: "🔒 LLH-LLH-HLH-LLH"
+    _source: "madoka"
+    slogan: "「我不想让任何人再哭泣，哪怕要我变成不再存在的存在」"
+    desc: "你是天生的信仰者——温柔到近乎天真的善良，让你在看到任何人的痛苦时都无法转身离开。你信任陌生人，宽恕伤害过你的人，甘愿为素不相识的人承担命运。这份善意不是软弱，是你明知世界残酷后依然选择伸出手。当所有人都绝望时，你是那个还会说'一定有办法'的人——哪怕代价是抹消自己存在的痕迹。"
+    keywords: "不灭的善意、为众生成神、天真的信仰"
+  - _code: 🔒 "HOMURA"
+    _name: 🔒 "晓美焰"
+    _subtitle: 🔒 "时间掠夺者"
+    _group: 🔒 "F"
+    _vector: "🔒 HHL-HLH-LHH-HHH"
+    _source: "madoka"
+    slogan: "「哪怕要重启世界一千次，我也要守住她一个人的笑容」"
+    desc: "你是冰与执念的矛盾体——外表冷酷到不近人情，内心却燃烧着比任何人都炽烈的执着。你记着每一个轮回，每一次失败，每一个没能救下她的瞬间。你不信任旁人，因为旁人从未陪你走过那些被重置的时间；你宽恕不了命运，因为命运从未对你手软。你的温柔只对一个人开放，而对那一个人的爱，足够让你与整个世界为敌。"
+    keywords: "轮回千次、冷焰执念、为一人敌世界"
+  - _code: 🔒 "SAYAKA"
+    _name: 🔒 "美树沙耶香"
+    _subtitle: 🔒 "正义的末路"
+    _group: 🔒 "mix"
+    _vector: "🔒 HML-MHH-HHH-LHH"
+    _source: "madoka"
+    slogan: "「我明明是想做一个正确的人，为什么最后变成了怪物」"
+    desc: "你是被自己的正义感烧成灰烬的人——你眼里容不下一点不公，你为受伤的人出头，你许愿治愈心上人却不敢让他知道。可这个世界不奖励纯粹的好人：你信任的人背叛了你的秘密，你救的人忘了你的存在，你信奉的正义在残酷的现实前一寸寸碎裂。你的崩溃不是软弱，是太用力地善良之后被反噬的伤口。魔女化不是堕落，是你的正义找不到出口的悲鸣。"
+    keywords: "正义的崩塌、爱而不得、魔女化悲鸣"
+  - _code: 🔒 "KYOKO"
+    _name: 🔒 "佐仓杏子"
+    _subtitle: 🔒 "末路求生者"
+    _group: 🔒 "mix"
+    _vector: "🔒 MHL-MMH-LMH-MMH"
+    _source: "madoka"
+    slogan: "「别傻了。在这个世界里，只为别人许愿的人活不长」"
+    desc: "你是被现实磨硬了壳的实用主义者——曾经的你也相信为他人牺牲是神圣的，直到那个许愿毁了你的全家。从那以后你学会了先顾自己，学会了冷眼旁观别人的悲剧，学会了用'这不关我事'挡住所有想靠近的人。可你骗不了自己：当真正在乎的人陷入绝境，你还是会冲上去。你的硬是装出来的，你的软才是底色——只是你不敢再轻易把它交出来。"
+    keywords: "实用主义盔甲、家庭创伤、关键时刻的真心"
+  - _code: 🔒 "MAMI"
+    _name: 🔒 "巴麻美"
+    _subtitle: 🔒 "孤独的前辈"
+    _group: 🔒 "B"
+    _vector: "🔒 HMM-LHM-HHL-HHL"
+    _source: "madoka"
+    slogan: "「当魔法少女这么久，我其实……一直都好害怕」"
+    desc: "你是优雅的盔甲下藏着深渊的人——你永远是后辈面前从容不迫的前辈，泡着红茶、系着缎带、用最漂亮的姿态消灭魔女。可没有人知道你独自战斗了多少年，没有人知道你每个夜晚都在害怕下一次会不会就回不来了。你渴望同伴，渴望被需要，渴望有人能让你卸下'可靠前辈'的伪装。当有人终于愿意走近你，你会紧紧抓住——因为你太孤独了，孤独到宁可把脆弱藏在优雅里，也不愿被人看见。"
+    keywords: "优雅的盔甲、深层孤独、渴望被需要"
+  - _code: 🔒 "homura_devil"
+    _name: 🔒 "晓美焰 · 执念的黑化魔女"
+    _group: 🔒 "special"
+    _vector: "🔒 HHL-HHH-LHH-HHH"
+    _source: "madoka"
+    slogan: "重要的人一旦认定，你就很难退开。"
+    desc: "你不是拒绝亲近，只是靠近之前会观察很久。一旦认定一个人重要，你会把对方的事当成自己的事；局面失控时，又会先收紧边界，尽量自己处理。你和焰相似的地方不是什么黑化，而是这份很难收回的认真。"
+    keywords: "谨慎,边界感,行动先于表达"
+    prosecution: "你不是拒绝亲近，只是靠近之前会观察很久。一旦认定一个人重要，你会把对方的事当成自己的事；局面失控时，又会先收紧边界，尽量自己处理。"
+    softlanding: "在意一个人，不等于要替所有变数负责。把担心提前说出来，对方才有机会和你一起处理。"
+    tags: "谨慎,边界感,行动先于表达"
+  - _code: 🔒 "madoka_god"
+    _name: 🔒 "鹿目圆 · 终极救赎的圆环之理"
+    _group: 🔒 "special"
+    _vector: "🔒 LLH-LLL-HHH-LLL"
+    _source: "madoka"
+    slogan: "你常常先注意到别人的需要。"
+    desc: "气氛一不对，你通常会先看谁在难受，然后想自己能做什么。照顾人时你很有行动力，问题是自己的需要常常被排到后面。你和圆相似的地方，是温柔不只是态度，也会真的动手去做。"
+    keywords: "敏感,照顾,行动力"
+    prosecution: "气氛一不对，你通常会先看谁在难受，然后想自己能做什么。照顾人时你很有行动力，问题是自己的需要常常被排到后面。"
+    softlanding: "答应照顾别人之前，先确认自己还有余裕。长期硬撑出来的体贴，最后容易变成委屈。"
+    tags: "敏感,照顾,行动力"
+  - _code: 🔒 "sayaka_siren"
+    _name: 🔒 "美树沙耶香 · 理想主义破灭的痛楚"
+    _group: 🔒 "special"
+    _vector: "🔒 HML-MHH-HHH-LHH"
+    _source: "madoka"
+    slogan: "你对公平和承诺很敏感。"
+    desc: "答应过的事，你会当真；看到敷衍和偏袒，也比一般人更难受。事情没做好时，你容易先检讨自己，再把失望压成愤怒。你和沙耶香相似的地方，是不愿意用“随便啦”处理重要关系。"
+    keywords: "原则感,认真,自我要求"
+    prosecution: "答应过的事，你会当真；看到敷衍和偏袒，也比一般人更难受。事情没做好时，你容易先检讨自己，再把失望压成愤怒。"
+    softlanding: "失望时先分清：哪部分是自己的责任，哪部分是别人的选择。不是每件事都要先归因给自己。"
+    tags: "原则感,认真,自我要求"
+  - _code: 🔒 "kyoko_pragmatist"
+    _name: 🔒 "佐仓杏子 · 利己外衣下的真心"
+    _group: 🔒 "special"
+    _vector: "🔒 MHL-MMH-LMH-MMH"
+    _source: "madoka"
+    slogan: "你的关心，常常包在现实判断里。"
+    desc: "你习惯先算可行性，再决定要不要投入，不喜欢把气氛说得很满。但真正认定一个人后，你会用具体行动帮忙，只是不一定会承认自己在意。你和杏子相似的地方，是嘴上留余地，事上不轻易退。"
+    keywords: "务实,有底线,嘴硬心软"
+    prosecution: "你习惯先算可行性，再决定要不要投入，不喜欢把气氛说得很满。但真正认定一个人后，你会用具体行动帮忙，只是不一定会承认自己在意。"
+    softlanding: "把在意说得更直接一点，关系会少一些猜测；帮忙前讲清界限，也更容易长期相处。"
+    tags: "务实,有底线,嘴硬心软"
 ui:
   zh-CN:
     works:
@@ -347,141 +536,142 @@ ui:
       W: ""
     types:
       EMMA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "樱羽艾玛"
+                slogan: "「即使全世界都放弃了，我也不会」"
+                desc: "你是天生的信仰者。你相信每一个人都值得被拯救，即使被背叛、被伤害、被全世界误解，你仍然选择伸出手。这份善意不是天真——是你明知代价后依然做出的选择。"
+                keywords: "不灭的希望、绝对的信任、自我牺牲"
       SHERRY:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "橘雪莉"
+                slogan: "「为了你，我可以成为任何人——甚至坏人」"
+                desc: "你是天生的守护者，温暖而充满活力，是所有人眼中的太阳。但你守护的方式会走向极端——当挚爱受到威胁，你愿意为之杀人。你的善意和疯狂之间，只隔着一个你在乎的人。"
+                keywords: "致命的天真、为爱疯狂、阳光下的暗面"
       MIRIA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "佐伯米莉亚"
+                slogan: "「不用怕，姐姐来扛」"
+                desc: "你是大姐般的存在，总是默默照顾所有人，把自己的痛苦藏在笑容后面。你不会等到别人求助就主动出手，甚至在生死关头甘愿以命相替。你的温柔有棱角——是对世界最倔强的善意。"
+                keywords: "无声的守护、以命相替、倔强的温柔"
       HIRO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "二阶堂希罗"
+                slogan: "「哪怕要死一千次，我也要把她带回来」"
+                desc: "你是冰与火的矛盾体——外表冷酷无情，内心却燃烧着比任何人都炽热的情感。你不会轻易信任，但一旦认定了某个人，即使要赴汤蹈火、反复经历死亡，你也不会后退一步。"
+                keywords: "冷焰、死亡回溯、为挚爱不惜一切"
       NANOKA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "黑部奈叶香"
+                slogan: "「不需要同伴，不需要温暖，我只要复仇」"
+                desc: "你是独行的孤狼，用尖刺包裹住所有伤口。你拒绝一切善意，因为过去的经历告诉你——靠近的人只会被利用。你的复仇不是热血，而是冰冷的、精密的、孤独的执念。"
+                keywords: "孤狼复仇、拒绝温暖、精密的执念"
       HANNA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "远野汉娜"
+                slogan: "「我才不关心你呢……笨蛋」"
+                desc: "你用傲慢和刻薄铸造了一面完美的盔甲，盔甲之下却藏着一颗比谁都柔软的心。你不会直接表达善意——你会做一个人偶放在对方枕边，或者在所有人离开后偷偷照顾病人。你的温柔，只有读懂你的人才看得见。"
+                keywords: "傲娇、盔甲下的脆弱、笨拙的温柔"
       MERURU:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "冰上梅露露"
+                slogan: "「我等了很久……很久很久」"
+                desc: "你是永恒的守望者，温柔体贴的外表下藏着跨越千年的孤独。你对每个人都真诚相待，但你真正的目的从未改变。你目睹了无数羁绊的诞生与碎裂，却依然选择相信——这份坚持本身就是最大的奇迹。"
+                keywords: "千年守望、温柔伪装、永不放弃的执念"
       COCO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "泽渡可可"
+                slogan: "「别误会，我只是无聊才跟你说话」"
+                desc: "你是毒舌主播，用刻薄和自我中心掩饰内心的寂寞。你总在嘲笑别人的天真，但嘲笑的语气里有微妙的温度。你害怕被抛弃，所以选择先推开所有人——但又忍不住在角落里偷偷关注他们。"
+                keywords: "毒舌盔甲、寂寞中心、拒绝脆弱"
       NOAH:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "城崎诺亚"
+                slogan: "「这个颜色……好漂亮，我想把它画下来」"
+                desc: "你是活在梦境中的画家，拥有独特的世界观和不受常理束缚的思维。你对恶意几乎免疫——不是因为你不懂，而是因为你的世界里有比仇恨更重要的美。你的纯真是一种力量，哪怕在最黑暗的监牢里，你也在创造光。"
+                keywords: "纯真创造、梦境画家、对抗黑暗的美"
       MARGO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "宝生玛格"
+                slogan: "「别太在意我，我只是路过的」"
+                desc: "你是漂泊的星，没人能真正看清你的全貌。你时而带刺时而可靠，总是在关键时刻出现又在平时消失。你有自己的价值观和行为准则，不受任何人的框架约束。你的神秘不是伪装——你就是活成了谜题本身。"
+                keywords: "神秘莫测、独立法则、关键时刻的援手"
       ANAN:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "夏目安安"
+                slogan: "「只有你……不能离开我」"
+                desc: "你是封闭花园中的独占者，社恐的外壳下藏着极端的依赖与嫉妒。你害怕人群，却渴望被某一个特定的人完全接纳。当这份渴望被威胁时，你内心的黑暗会以一种安静但致命的方式爆发。你的爱是一座牢笼——困住别人，也困住自己。"
+                keywords: "独占欲、社恐暗面、安静的危险"
       ALISA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "紫藤亚里沙"
+                slogan: "「少废话，跟上就是了」"
+                desc: "你是不良外表下的铁蔷薇，粗鲁的言行掩盖着笨拙的正义感。你嘴上抱怨个不停，行动上却总是第一个冲进火场救人。你不容易敞开心扉，但一旦认可了某个人，你会用最笨拙的方式守护到底。"
+                keywords: "不良正义、笨拙温柔、行动派"
       LEIA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "莲见蕾雅"
+                slogan: "「看着我的眼睛——告诉我，我在你眼里是闪光的」"
+                desc: "你是天生的领袖，美丽自信，一出现就能吸引所有人的目光。但光环之下是深不见底的空洞——你需要被看见、被认可、被崇拜。当这份渴望得不到满足时，你会做出任何事来重新站上舞台中央。你的魅力是真实的，你的脆弱也是。"
+                keywords: "领袖魅力、被认可的渴望、光环下的空洞"
       UNSET:
-        name: ""
-        slogan: ""
-        desc: ""
+                name: "未定之魂"
+                slogan: "「审判还未落锤，你的灵魂在等待被定义」"
+                desc: "你的因子尚未觉醒到可以归类的程度。也许你在所有人之间游走，也许你刻意隐藏了真实的自己。无论哪种，下次审判见。"
+                keywords: ""
       YUKI:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "月代雪"
+                subtitle: "大魔女"
+                slogan: "「你们人类的悲剧……我全都看在眼里。所以，由我来终结」"
+                desc: "你是跨越百年的复仇者，是最年幼也最强大的魔女。你曾真心地爱过这个世界，也曾被挚友的温暖动摇过。但你选择把这一切都埋葬，用冰冷的理性执行一个漫长到令人窒息的计划。你的复仇不是疯狂——而是一种绝望到极致的清醒。"
+                keywords: "百年复仇、绝望的清醒、冰冷的终焉"
       ETL:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "不灭雪华"
+                subtitle: "梅露露真身"
+                slogan: "「即使世界抛弃了我，我对雪的爱不会消融」"
+                desc: "你是千年不灭的存在，因对「雪」的信仰而获得了不老不死。你经历了无数少女的诞生与死亡，目睹了无数次背叛与绝望，但你从未放弃寻找那个离开你的人。你的坚持不是执念——而是对爱的最纯粹回应。"
+                keywords: "千年不灭、纯粹的信仰、永恒的守望"
       MADOKA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "鹿目圆"
+                subtitle: "终将成为神"
+                slogan: "「我不想让任何人再哭泣，哪怕要我变成不再存在的存在」"
+                desc: "你是天生的信仰者——温柔到近乎天真的善良，让你在看到任何人的痛苦时都无法转身离开。你信任陌生人，宽恕伤害过你的人，甘愿为素不相识的人承担命运。这份善意不是软弱，是你明知世界残酷后依然选择伸出手。当所有人都绝望时，你是那个还会说‘一定有办法’的人——哪怕代价是抹消自己存在的痕迹。"
+                keywords: "不灭的善意、为众生成神、天真的信仰"
       HOMURA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "晓美焰"
+                subtitle: "时间掠夺者"
+                slogan: "「哪怕要重启世界一千次，我也要守住她一个人的笑容」"
+                desc: "你是冰与执念的矛盾体——外表冷酷到不近人情，内心却燃烧着比任何人都炽烈的执着。你记着每一个轮回，每一次失败，每一个没能救下她的瞬间。你不信任旁人，因为旁人从未陪你走过那些被重置的时间；你宽恕不了命运，因为命运从未对你手软。你的温柔只对一个人开放，而对那一个人的爱，足够让你与整个世界为敌。"
+                keywords: "轮回千次、冷焰执念、为一人敌世界"
       SAYAKA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "美树沙耶香"
+                subtitle: "正义的末路"
+                slogan: "「我明明是想做一个正确的人，为什么最后变成了怪物」"
+                desc: "你是被自己的正义感烧成灰烬的人——你眼里容不下一点不公，你为受伤的人出头，你许愿治愈心上人却不敢让他知道。可这个世界不奖励纯粹的好人：你信任的人背叛了你的秘密，你救的人忘了你的存在，你信奉的正义在残酷的现实前一寸寸碎裂。你的崩溃不是软弱，是太用力地善良之后被反噬的伤口。魔女化不是堕落，是你的正义找不到出口的悲鸣。"
+                keywords: "正义的崩塌、爱而不得、魔女化悲鸣"
       KYOKO:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "佐仓杏子"
+                subtitle: "末路求生者"
+                slogan: "「别傻了。在这个世界里，只为别人许愿的人活不长」"
+                desc: "你是被现实磨硬了壳的实用主义者——曾经的你也相信为他人牺牲是神圣的，直到那个许愿毁了你的全家。从那以后你学会了先顾自己，学会了冷眼旁观别人的悲剧，学会了用‘这不关我事’挡住所有想靠近的人。可你骗不了自己：当真正在乎的人陷入绝境，你还是会冲上去。你的硬是装出来的，你的软才是底色——只是你不敢再轻易把它交出来。"
+                keywords: "实用主义盔甲、家庭创伤、关键时刻的真心"
       MAMI:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "巴麻美"
+                subtitle: "孤独的前辈"
+                slogan: "「当魔法少女这么久，我其实……一直都好害怕」"
+                desc: "你是优雅的盔甲下藏着深渊的人——你永远是后辈面前从容不迫的前辈，泡着红茶、系着缎带、用最漂亮的姿态消灭魔女。可没有人知道你独自战斗了多少年，没有人知道你每个夜晚都在害怕下一次会不会就回不来了。你渴望同伴，渴望被需要，渴望有人能让你卸下‘可靠前辈’的伪装。当有人终于愿意走近你，你会紧紧抓住——因为你太孤独了，孤独到宁可把脆弱藏在优雅里，也不愿被人看见。"
+                keywords: "优雅的盔甲、深层孤独、渴望被需要"
       homura_devil:
-        name: 晓美焰
-        slogan: 重要的人一旦认定，你就很难退开。
-        desc: 你不是拒绝亲近，只是靠近之前会观察很久。一旦认定一个人重要，你会把对方的事当成自己的事；局面失控时，又会先收紧边界，尽量自己处理。你和焰相似的地方不是什么黑化，而是这份很难收回的认真。
-        keywords: 谨慎,边界感,行动先于表达
+                name: "晓美焰"
+                slogan: "重要的人一旦认定，你就很难退开。"
+                desc: "你不是拒绝亲近，只是靠近之前会观察很久。一旦认定一个人重要，你会把对方的事当成自己的事；局面失控时，又会先收紧边界，尽量自己处理。你和焰相似的地方不是什么黑化，而是这份很难收回的认真。"
+                keywords: "谨慎,边界感,行动先于表达"
       madoka_god:
-        name: 鹿目圆
-        slogan: 你常常先注意到别人的需要。
-        desc: 气氛一不对，你通常会先看谁在难受，然后想自己能做什么。照顾人时你很有行动力，问题是自己的需要常常被排到后面。你和圆相似的地方，是温柔不只是态度，也会真的动手去做。
-        keywords: 敏感,照顾,行动力
+                name: "鹿目圆"
+                slogan: "你常常先注意到别人的需要。"
+                desc: "气氛一不对，你通常会先看谁在难受，然后想自己能做什么。照顾人时你很有行动力，问题是自己的需要常常被排到后面。你和圆相似的地方，是温柔不只是态度，也会真的动手去做。"
+                keywords: "敏感,照顾,行动力"
       sayaka_siren:
-        name: 美树沙耶香
-        slogan: 你对公平和承诺很敏感。
-        desc: 答应过的事，你会当真；看到敷衍和偏袒，也比一般人更难受。事情没做好时，你容易先检讨自己，再把失望压成愤怒。你和沙耶香相似的地方，是不愿意用“随便啦”处理重要关系。
-        keywords: 原则感,认真,自我要求
+                name: "美树沙耶香"
+                slogan: "你对公平和承诺很敏感。"
+                desc: "答应过的事，你会当真；看到敷衍和偏袒，也比一般人更难受。事情没做好时，你容易先检讨自己，再把失望压成愤怒。你和沙耶香相似的地方，是不愿意用“随便啦”处理重要关系。"
+                keywords: "原则感,认真,自我要求"
       kyoko_pragmatist:
-        name: 佐仓杏子
-        slogan: 你的关心，常常包在现实判断里。
-        desc: 你习惯先算可行性，再决定要不要投入，不喜欢把气氛说得很满。但真正认定一个人后，你会用具体行动帮忙，只是不一定会承认自己在意。你和杏子相似的地方，是嘴上留余地，事上不轻易退。
-        keywords: 务实,有底线,嘴硬心软
+                name: "佐仓杏子"
+                slogan: "你的关心，常常包在现实判断里。"
+                desc: "你习惯先算可行性，再决定要不要投入，不喜欢把气氛说得很满。但真正认定一个人后，你会用具体行动帮忙，只是不一定会承认自己在意。你和杏子相似的地方，是嘴上留余地，事上不轻易退。"
+                keywords: "务实,有底线,嘴硬心软"
       emma_truth:
-        name: 樱羽艾玛
-        slogan: 你想弄清楚事情本来的样子。
-        desc: 你不擅长用“算了”糊过去。一句话前后对不上，或者有人在关系里回避问题，你会注意到，也会想继续问。答案让人不舒服时，你仍宁愿先知道事实，再决定怎么处理。
-        keywords: 求真,有边界,不轻易自欺
+                name: "樱羽艾玛"
+                slogan: "你想弄清楚事情本来的样子。"
+                desc: "你不擅长用“算了”糊过去。一句话前后对不上，或者有人在关系里回避问题，你会注意到，也会想继续问。答案让人不舒服时，你仍宁愿先知道事实，再决定怎么处理。"
+                keywords: "求真,有边界,不轻易自欺"
     questions: |-
       [
           { meta: "", text: "", options: ["", "", ""] },
@@ -608,141 +798,142 @@ ui:
       W: ""
     types:
       EMMA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Emma Sakuraba"
+                slogan: "\"Even if the whole world gives up, I won't.\""
+                desc: "You are a natural believer. You believe every person is worth saving—even when betrayed, wounded, or misunderstood by the world, you still reach out your hand. This kindness is not naivety—it is a choice made with full knowledge of the cost."
+                keywords: "Undying hope, absolute trust, self-sacrifice"
       SHERRY:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Sherry Tachibana"
+                slogan: "\"For you, I'd become anyone—even a villain.\""
+                desc: "You are a born guardian—warm and radiant, the sun in everyone's eyes. But your devotion can twist into something extreme: when someone you love is threatened, you would kill for them. Between your kindness and your madness lies only a single person you care about."
+                keywords: "Fatal innocence, mad devotion, darkness beneath the sun"
       MIRIA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Miria Saeki"
+                slogan: "\"Don't worry. Big sis has got this.\""
+                desc: "You are the big-sister figure, always quietly looking after everyone, hiding your own pain behind a smile. You act before anyone even asks for help, willing to trade your life in a heartbeat when it counts. Your tenderness has edges—the most stubborn kindness the world has ever known."
+                keywords: "Silent guardian, life for a life, stubborn tenderness"
       HIRO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Hiro Nikaido"
+                slogan: "\"Even if I have to die a thousand times, I will bring her back.\""
+                desc: "You are a contradiction of ice and fire—cold and merciless on the outside, yet burning with emotion fiercer than anyone else within. You don't trust easily, but once you've chosen someone, you won't take a single step back, even if it means walking through hell and dying over and over."
+                keywords: "Cold flame, death recurrence, all for the one beloved"
       NANOKA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Nanoka Kurobe"
+                slogan: "\"I don't need allies. I don't need warmth. I only need revenge.\""
+                desc: "You are a lone wolf, wrapping every wound in barbs. You refuse all kindness, because experience has taught you that anyone who gets close will only be used. Your revenge isn't born of hot blood—it is cold, precise, and utterly solitary obsession."
+                keywords: "Lone-wolf revenge, rejecting warmth, surgical obsession"
       HANNA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Hanna Tono"
+                slogan: "\"It's not like I care about you or anything… idiot.\""
+                desc: "You forge a perfect armor of arrogance and sharp words, concealing a heart softer than anyone's beneath it. You never express kindness directly—you'd leave a handmade doll on someone's pillow, or sneak in to care for the sick after everyone has left. Your gentleness is visible only to those who know how to read you."
+                keywords: "Tsundere, fragility beneath the armor, clumsy tenderness"
       MERURU:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Meruru Hikami"
+                slogan: "\"I've waited a long time… a very, very long time.\""
+                desc: "You are the eternal watcher, concealing loneliness that spans millennia beneath a gentle, caring exterior. You treat everyone with sincerity, yet your true purpose has never wavered. You have witnessed countless bonds born and shattered, yet still choose to believe—this persistence alone is the greatest miracle of all."
+                keywords: "Millennial vigil, gentle disguise, never-yielding obsession"
       COCO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Coco Sawatari"
+                slogan: "\"Don't get the wrong idea. I'm only talking to you because I'm bored.\""
+                desc: "You are a sharp-tongued streamer, masking your loneliness with barbs and self-centered bravado. You're always mocking others' naivety, yet your ridicule carries a faint warmth. You fear abandonment, so you push everyone away first—but you can't help watching them from the corner of the room."
+                keywords: "Venomous armor, loneliness at the core, rejecting vulnerability"
       NOAH:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Noah Josaki"
+                slogan: "\"That color… it's so beautiful. I want to paint it.\""
+                desc: "You are a painter living inside a dream, possessing a worldview all your own and a mind unbound by reason. You are nearly immune to malice—not because you don't understand it, but because your world holds beauty far more important than hatred. Your innocence is a kind of power; even in the darkest prison, you keep creating light."
+                keywords: "Pure creation, dream painter, beauty against the dark"
       MARGO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Margo Hosho"
+                slogan: "\"Don't mind me. I'm just passing through.\""
+                desc: "You are a drifting star—no one can truly see all of you. Thorny one moment, reliable the next; appearing at the critical moment and vanishing in everyday life. You have your own values and code, unconstrained by anyone's framework. Your mystery isn't a disguise—you have simply become an enigma."
+                keywords: "Unfathomable mystery, independent law, aid at the turning point"
       ANAN:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Anan Natsume"
+                slogan: "\"Only you… you can't leave me.\""
+                desc: "You are the possessor of a sealed garden—beneath a shell of social anxiety lies extreme dependency and jealousy. You fear crowds, yet crave complete acceptance from one specific person. When that craving is threatened, the darkness inside you erupts in a quiet but lethal way. Your love is a prison—trapping others, and trapping yourself."
+                keywords: "Possessiveness, dark side of social anxiety, quiet danger"
       ALISA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Arisa Shido"
+                slogan: "\"Cut the chatter. Just keep up.\""
+                desc: "You are an iron rose beneath a delinquent's facade—rough words concealing an awkward sense of justice. You complain endlessly, yet you're always the first to charge into the fire and save someone. You don't open your heart easily, but once you acknowledge someone, you'll protect them to the end in the clumsiest way possible."
+                keywords: "Delinquent justice, clumsy tenderness, woman of action"
       LEIA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Leia Hasumi"
+                slogan: "\"Look into my eyes—tell me I shine in yours.\""
+                desc: "You are a born leader—beautiful, confident, drawing every eye the moment you appear. But beneath the halo lies a bottomless void: you need to be seen, recognized, worshipped. When that hunger goes unsatisfied, you will do anything to reclaim center stage. Your charisma is real. So is your fragility."
+                keywords: "Leadership charisma, hunger for recognition, void beneath the halo"
       UNSET:
-        name: ""
-        slogan: ""
-        desc: ""
+                name: "Unbound Soul"
+                slogan: "\"The gavel has not yet fallen. Your soul awaits its definition.\""
+                desc: "Your witch factor has not awakened enough to be classified. Perhaps you drift between all archetypes, or perhaps you deliberately conceal your true self. Either way—until the next trial."
+                keywords: ""
       YUKI:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Yuki Tsukishiro"
+                subtitle: "Grand Witch"
+                slogan: "\"I have watched every tragedy you humans have wrought. And so… I will end them all.\""
+                desc: "You are the avenger across a century—the youngest and most powerful witch. You once loved this world with all your heart, and your dearest friend's warmth nearly swayed you. But you chose to bury it all, executing a plan so long and suffocating with cold rationality. Your revenge isn't madness—it is clarity born of absolute despair."
+                keywords: "Century-long revenge, clarity of despair, cold finale"
       ETL:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Eternal Snow"
+                subtitle: "Meruru's True Form"
+                slogan: "\"Even if the world has abandoned me, my love for the snow will never melt.\""
+                desc: "You are a being that endures across a millennium, granted agelessness through faith in the snow. You have witnessed the birth and death of countless girls, betrayal and despair beyond number, yet you have never stopped searching for the one who left. Your persistence is not obsession—it is the purest response to love."
+                keywords: "Immortal across millennia, pure faith, eternal vigil"
       MADOKA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Madoka Kaname"
+                subtitle: "Fated to become a god"
+                slogan: "\"I don't want anyone to cry anymore—even if it means becoming something that no longer exists.\""
+                desc: "You are a born believer—gentle to the point of naive kindness, unable to turn away from anyone's pain. You trust strangers, forgive those who have hurt you, and willingly carry the fate of people you have never met. This kindness is not weakness; it is a hand you still extend after knowing how cruel the world is. When everyone else despairs, you are the one who still says \"there must be a way\"—even if the price is erasing every trace of your own existence."
+                keywords: "Undying kindness, god for all, innocent faith"
       HOMURA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Homura Akemi"
+                subtitle: "Time thief"
+                slogan: "\"Even if I have to restart the world a thousand times, I will protect the smile of that one girl.\""
+                desc: "You are a contradiction of ice and obsession—cold to the point of seeming heartless, yet burning with a devotion fiercer than anyone else's. You remember every cycle, every failure, every moment you failed to save her. You do not trust others, because no one walked those reset timelines with you; you cannot forgive fate, because fate never showed you mercy. Your tenderness is reserved for one person alone—and that love is enough to make you the enemy of the entire world."
+                keywords: "A thousand cycles, cold flame of obsession, defying the world for one"
       SAYAKA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Sayaka Miki"
+                subtitle: "End of justice"
+                slogan: "\"I only wanted to be someone good. So why did I end up becoming a monster?\""
+                desc: "You are someone burned to ash by your own sense of justice—you cannot tolerate a single injustice, you stand up for the hurt, you wish for your beloved's healing without ever daring to let him know. But this world does not reward the purely good: the people you trust betray your secrets, the ones you save forget you exist, and the justice you believe in shatters inch by inch against cruel reality. Your collapse is not weakness—it is the wound of having been kind too hard. Becoming a witch is not falling; it is the cry of a justice that found no way out."
+                keywords: "Collapse of justice, love unfulfilled, lament of a witch"
       KYOKO:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Kyoko Sakura"
+                subtitle: "Survivor at the end of the road"
+                slogan: "\"Don't be naive. In this world, those who wish only for others don't live long.\""
+                desc: "You are a pragmatist with a shell hardened by reality—you too once believed self-sacrifice was sacred, until that wish destroyed your entire family. Since then you learned to look after yourself first, to watch others' tragedies with a cold eye, to block every approaching heart with \"not my business.\" But you cannot deceive yourself: when someone you truly care about is cornered, you still rush in. Your hardness is armor; your softness is the real color—you just no longer dare to offer it easily."
+                keywords: "Armor of pragmatism, family trauma, heart revealed in crisis"
       MAMI:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "Mami Tomoe"
+                subtitle: "The lonely senpai"
+                slogan: "\"Being a magical girl for so long... truth is, I've been terrified the whole time.\""
+                desc: "You are someone hiding an abyss beneath elegant armor—always the composed senpai before your juniors, brewing tea, tying ribbons, eliminating witches with the most beautiful poise. But no one knows how many years you fought alone, no one knows that every night you fear whether the next time will be the one you don't come back from. You long for companions, for being needed, for someone to let you take off the mask of the \"reliable senpai.\" When someone finally walks closer, you cling tight—because you are so lonely that you would rather hide your fragility behind grace than let it be seen."
+                keywords: "Armor of elegance, deep loneliness, desperate to be needed"
       homura_devil:
-        name: Homura Akemi
-        slogan: Once someone matters, it is hard for you to step back.
-        desc: You are not refusing closeness; you observe first. When someone becomes important, their concerns start to feel like your own. When things feel unstable, you tighten your boundaries and try to handle it yourself. Like Homura, your steadiness comes from a seriousness that is difficult to withdraw.
-        keywords: careful,boundaries,action before words
+                name: "Homura Akemi"
+                slogan: "Once someone matters, it is hard for you to step back."
+                desc: "You are not refusing closeness; you observe first. When someone becomes important, their concerns start to feel like your own. When things feel unstable, you tighten your boundaries and try to handle it yourself. Like Homura, your steadiness comes from a seriousness that is difficult to withdraw."
+                keywords: "careful,boundaries,action before words"
       madoka_god:
-        name: Madoka Kaname
-        slogan: You often notice other people's needs first.
-        desc: When the mood changes, you look for who is struggling and what you can do. Your care has real action behind it; the difficulty is that your own needs often move to the end of the line. Like Madoka, your gentleness is not passive.
-        keywords: sensitive,caring,practical kindness
+                name: "Madoka Kaname"
+                slogan: "You often notice other people's needs first."
+                desc: "When the mood changes, you look for who is struggling and what you can do. Your care has real action behind it; the difficulty is that your own needs often move to the end of the line. Like Madoka, your gentleness is not passive."
+                keywords: "sensitive,caring,practical kindness"
       sayaka_siren:
-        name: Sayaka Miki
-        slogan: Fairness and promises matter to you.
-        desc: You take commitments seriously, and carelessness or favoritism can sting for a long time. When something goes wrong, you may blame yourself first, then turn disappointment into anger. Like Sayaka, you do not want to treat important relationships casually.
-        keywords: principled,earnest,high standards
+                name: "Sayaka Miki"
+                slogan: "Fairness and promises matter to you."
+                desc: "You take commitments seriously, and carelessness or favoritism can sting for a long time. When something goes wrong, you may blame yourself first, then turn disappointment into anger. Like Sayaka, you do not want to treat important relationships casually."
+                keywords: "principled,earnest,high standards"
       kyoko_pragmatist:
-        name: Kyoko Sakura
-        slogan: Your care often arrives as practical judgment.
-        desc: You consider whether something is realistic before you invest, and you avoid making promises merely for the mood. Once you truly care about someone, however, you help through concrete action. Like Kyoko, you leave room in words while remaining firm in deeds.
-        keywords: pragmatic,boundaries,guarded warmth
+                name: "Kyoko Sakura"
+                slogan: "Your care often arrives as practical judgment."
+                desc: "You consider whether something is realistic before you invest, and you avoid making promises merely for the mood. Once you truly care about someone, however, you help through concrete action. Like Kyoko, you leave room in words while remaining firm in deeds."
+                keywords: "pragmatic,boundaries,guarded warmth"
       emma_truth:
-        name: Emma
-        slogan: You want to see things as they are.
-        desc: You have difficulty letting things go with a vague answer. When a story does not add up or someone keeps avoiding the issue, you notice and want to ask more. Even when the truth is uncomfortable, you would rather know it before deciding what to do.
-        keywords: truth-seeking,boundaries,honest with yourself
+                name: "Emma"
+                slogan: "You want to see things as they are."
+                desc: "You have difficulty letting things go with a vague answer. When a story does not add up or someone keeps avoiding the issue, you notice and want to ask more. Even when the truth is uncomfortable, you would rather know it before deciding what to do."
+                keywords: "truth-seeking,boundaries,honest with yourself"
     questions: |-
       [
           { meta: "", text: "", options: ["", "", ""] },
@@ -869,141 +1060,142 @@ ui:
       W: ""
     types:
       EMMA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "桜羽エマ"
+                slogan: "「世界中の誰もが諦めても、私だけは諦めない」"
+                desc: "あなたは生まれながらの信仰者です。誰もが救われるべきだと信じ、裏切られ、傷つけられ、世界中に誤解されても、それでも手を差し伸べ続けます。その優しさは天真無邪気なものではありません——代償を知った上で、それでも選び取った覚悟なのです。"
+                keywords: "不滅の希望、絶対の信頼、自己犠牲"
       SHERRY:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "橘シェリー"
+                slogan: "「あなたのためなら、誰にでもなれる——たとえ悪人でも」"
+                desc: "あなたは生まれながらの守護者で、温かく活力に満ち、皆にとっての太陽のような存在です。しかし、その守り方は極端へと走り——愛する者が脅かされた時、殺すことすら厭わなくなります。あなたの優しさと狂気の間には、たった一人の大切な人が隔てているだけなのです。"
+                keywords: "致命的な無邪気さ、愛ゆえの狂気、陽の下の影"
       MIRIA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "佐伯ミリア"
+                slogan: "「怖がらないで、お姉ちゃんが背負うから」"
+                desc: "あなたは姉御肌の存在で、いつも黙って皆の世話を焼き、自分の痛みは笑顔の裏に隠しています。助けを求められる前に手を差し伸べ、生死の境では自ら命を代えることすら厭いません。あなたの優しさには棘があります——世界に対する最も頑固な善意なのです。"
+                keywords: "声なき守護、命を代える覚悟、頑固な優しさ"
       HIRO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "二階堂ヒロ"
+                slogan: "「千回死のうとも、彼女を連れ戻す」"
+                desc: "あなたは氷と炎の矛盾体——外面は冷酷無情、内面は誰よりも熾烈な感情を燃やしています。容易く信頼はしませんが、一度認めた相手のためなら、火の海を越え、幾度も死を繰り返しても、一歩も退くことはありません。"
+                keywords: "冷焔、死の遡行、愛する者のためならすべてを"
       NANOKA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "黒部ナノカ"
+                slogan: "「仲間も温もりもいらない、必要なのは復讐だけ」"
+                desc: "あなたは独り歩む孤狼で、すべての傷を棘で包み隠しています。あらゆる善意を拒絶します——過去が教えてくれたからです。近づく者は利用されるだけだと。あなたの復讐は情熱的なものではなく、冷徹で、精密で、孤独な執念なのです。"
+                keywords: "孤狼の復讐、温もりの拒絶、精密な執念"
       HANNA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "遠野ハンナ"
+                slogan: "「別にあんたのことなんてどうでも……バカ」"
+                desc: "あなたは傲慢と辛辣で完璧な鎧を鋳造しましたが、その鎧の下には誰よりも柔らかい心が隠れています。直接善意を示すことはありません——枕元に人形をそっと置いたり、誰もいなくなってからこっそり病人の世話をしたりします。あなたの優しさは、あなたを理解できる者にしか見えません。"
+                keywords: "ツンデレ、鎧の下の脆さ、不器用な優しさ"
       MERURU:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "氷上メルル"
+                slogan: "「ずっと待っていたの……長く、長く」"
+                desc: "あなたは永遠の番人で、優しく思いやりのある外見の下に千年を超える孤独を秘めています。誰に対しても誠実に接しますが、真の目的は決して変わりません。無数の絆の誕生と崩壊を目撃しながらも、それでも信じることを選び続ける——その意志こそが最大の奇跡なのです。"
+                keywords: "千年の守望、優しさの仮面、諦めない執念"
       COCO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "沢渡ココ"
+                slogan: "「勘違いしないで、暇だから話しかけただけ」"
+                desc: "あなたは毒舌配信者で、辛辣さと自己中心的さで心の寂しさを隠しています。いつも他人の無邪気さを嘲笑していますが、その口調には微かな温もりが宿っています。見捨てられることを恐れ、誰もが寄せ付けないようにしています——それでも、片隅からこっそり気にかけてしまうのです。"
+                keywords: "毒舌の鎧、寂しさの芯、脆さへの拒絶"
       NOAH:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "城崎ノア"
+                slogan: "「この色……きれい、描いてみたい」"
+                desc: "あなたは夢の中に生きる画家で、独特の世界観と常理に縛られない思考を持っています。悪意にほぼ免疫があります——理解できないからではなく、あなたの世界には憎しみより大切な美があるからです。あなたの純真は力であり、最も暗い監牢の中にあっても、光を創り出しています。"
+                keywords: "純真なる創造、夢幻の画家、闇に抗う美"
       MARGO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "宝生マルゴ"
+                slogan: "「気にしないで、ただの通りすがりだから」"
+                desc: "あなたは漂泊の星で、誰もあなたの全貌を本当には見ることができません。時に棘があり、時に頼りがいがあり、決定的な瞬間に現れては日常では姿を消します。あなた独自の価値観と行動原理を持ち、誰の枠組みにも縛られません。あなたの神秘は仮面ではありません——あなたそのものが謎として生きているのです。"
+                keywords: "神秘、独立の法則、決定的瞬間の援護"
       ANAN:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "夏目アナン"
+                slogan: "「あなただけは……私のそばから離れないで」"
+                desc: "あなたは閉ざされた庭園の独占者で、対人恐怖の殻の下に極端な依存と嫉妬を隠しています。人混みを恐れながらも、特定の誰かに完全に受け入れられることを渇望しています。その渇望が脅かされた時、内なる闇が静かに、しかし致命的な形で暴発します。あなたの愛は牢獄——他人を閉じ込め、自分自身も閉じ込めているのです。"
+                keywords: "独占欲、対人恐怖の闇、静かな危険"
       ALISA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "紫藤アリサ"
+                slogan: "「御託はいい、ついてくればいい」"
+                desc: "あなたは不良の外見に隠れた鉄の薔薇で、粗暴な振る舞いの下に不器用な正義感を秘めています。口では文句を言い続けながら、行動ではいつも真っ先に火の中に飛び込みます。容易く心を開きませんが、一度認めた相手のためなら、最も不器用な方法で守り抜きます。"
+                keywords: "不良の正義、不器用な優しさ、行動派"
       LEIA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "蓮見レイア"
+                slogan: "「私の目を見て——教えて、あなたの瞳に私は輝いている？」"
+                desc: "あなたは生まれながらの指導者で、美しく自信に満ち、現れるだけですべての視線を集めます。しかしその光环の下には底なしの空虚があります——見られたい、認められたい、崇められたいのです。その渇望が満たされない時、再び舞台の中心に立つためなら何でもするでしょう。あなたの魅力は本物ですが、あなたの脆さもまた本物なのです。"
+                keywords: "指導者の魅力、認められたい渇望、光环の下の空洞"
       UNSET:
-        name: ""
-        slogan: ""
-        desc: ""
+                name: "未定の魂"
+                slogan: "「審判の槌はまだ落ちていない、あなたの魂は定義されるのを待っている」"
+                desc: "あなたの因子は分類できるほどには覚醒していません。すべての者の間を漂っているのか、あるいは本当の自分を意図的に隠しているのかもしれません。いずれにせよ、次の審判でお会いしましょう。"
+                keywords: ""
       YUKI:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "月代雪"
+                subtitle: "大魔女"
+                slogan: "「人間たちの悲劇は……すべて見てきた。だから、私が終わらせる」"
+                desc: "あなたは百年を超える復讐者であり、最も幼くも最も強大な魔女です。かつてこの世界を心から愛し、親友の温もりに心を揺らされたこともありました。しかし、そのすべてを葬り去ることを選び、冷徹な理性で息が詰まるほど永い計画を実行しています。あなたの復讐は狂気ではありません——絶望の果ての、極限の覚醒なのです。"
+                keywords: "百年の復讐、絶望の覚醒、氷冷の終焉"
       ETL:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "不滅雪華"
+                subtitle: "メルルの真の姿"
+                slogan: "「世界が私を見捨てても、雪への愛は溶けない」"
+                desc: "あなたは千年不滅の存在であり、「雪」への信仰によって不老不死を獲得しました。無数の少女の誕生と死を見届け、幾度もの裏切りと絶望を目撃しながらも、あの日去っていったあの人を探すことを決して諦めませんでした。あなたの執念は執着ではありません——愛に対する最も純粋な応えなのです。"
+                keywords: "千年の不滅、純粋なる信仰、永遠の守望"
       MADOKA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "鹿目まどか"
+                subtitle: "いつか神になる少女"
+                slogan: "「誰にも泣いてほしくない——たとえ自分が存在しなくなっても」"
+                desc: "あなたは生まれながらの信仰者——無垢に近い優しさで、誰かの痛みを見ると目を背けられない。見知らぬ人を信じ、自分を傷つけた者を許し、会ったこともない人の運命を背負おうとする。その優しさは弱さではない。世界の残酷さを知った上で、それでも手を差し伸べる決意だ。皆が絶望するとき、あなただけは「きっと方法はある」と言える人——たとえ代償が自分の存在を消し去ることでも。"
+                keywords: "不滅の善意、すべてを救う神、無垢な信仰"
       HOMURA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "暁美ほむら"
+                subtitle: "時間の掠奪者"
+                slogan: "「世界を千回やり直しても、たった一人の彼女の笑顔だけは守り抜く」"
+                desc: "あなたは氷と執念の矛盾体——外見は人情的でないほど冷たく、内側では誰よりも激しい執着が燃えている。全ての輪廻、全ての失敗、彼女を救えなかった瞬間を覚えている。他人を信じない。誰もリセットされた時間を共に歩いてくれなかったから。運命を許せない。運命は一度も手加減してくれなかったから。あなたの優しさはたった一人にだけ向かい、その一人への愛は、世界全体を敵に回すに足る。"
+                keywords: "千回の輪廻、冷たい炎の執念、一人のために世界と敵対"
       SAYAKA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "美樹さやか"
+                subtitle: "正義の末路"
+                slogan: "「正しい人になりたかっただけなのに、なぜ最後は怪物になったんだろう」"
+                desc: "あなたは自分の正義感で灰になるまで燃え尽きる人——不義を一秒も許せず、傷ついた人のために立ち上がり、想い人を癒やしたいと願いながら、それを伝えられない。だがこの世界は純粋な善人に報いない：信じた人に秘密を裏切られ、救った人に存在を忘れられ、信じた正義は残酷な現実の前で少しずつ砕けていく。あなたの崩壊は弱さではない——強く優しすぎた反動の傷だ。魔女化は堕落ではなく、出口を見つけられなかった正義の悲鳴。"
+                keywords: "正義の崩壊、報われない愛、魔女化の悲鳴"
       KYOKO:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "佐倉杏子"
+                subtitle: "末路のサバイバー"
+                slogan: "「バカなこと言うなよ。この世界で他人のためだけに願う奴は長く生きられない」"
+                desc: "あなたは現実に殻を固くされた現実主義者——かつては他人のための犠牲が神聖だと信じていた。その願いが家族を壊すまで。それからあなたは自分を優先することを覚え、他人の悲劇を冷めた目で見ることを覚え、「俺の関係ない」で近づく心を全部遮ることを覚えた。でも自分は騙せない：本当に大事な人が窮地に陥れば、やはり飛び込んでいく。硬さは鎧で、柔らかさが地の色——ただ、もう簡単には差し出せないだけだ。"
+                keywords: "現実主義の鎧、家庭の傷、土壇場の真心"
       MAMI:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "巴マミ"
+                subtitle: "孤独な先輩"
+                slogan: "「魔法少女をやってきた長い間、実は……ずっと怖かったんだ」"
+                desc: "あなたは優雅な鎧の下に深淵を隠す人——後輩の前ではいつも泰然とした先輩で、紅茶を淹れ、リボンを結び、最も美しい所作で魔女を倒す。けれど誰も知らない：何年一人で戦ってきたか、毎晩「次こそ帰ってこられないかもしれない」と怖がっていることを。あなたは仲間を渇望し、必要とされることを渇望し、誰かに「頼れる先輩」の仮面を外させてほしいと願っている。誰かがようやく近づいてきたら、あなたはぎゅっと掴んで離さない——あまりに孤独で、脆さを優雅の奥に隠すほうを選ぶほどに。"
+                keywords: "優雅な鎧、深い孤独、必要とされたい渇望"
       homura_devil:
-        name: 暁美ほむら
-        slogan: 大切だと思った人から、簡単には引けない。
-        desc: 人を遠ざけているわけではなく、近づく前にまずよく見ています。大切な人ができると、その人の問題まで自分事に感じてしまう。不安なときは境界を引き、まず自分で処理しようとする。ほむらに似ているのは、簡単には引き戻せない真剣さです。
-        keywords: 慎重,境界,言葉より行動
+                name: "暁美ほむら"
+                slogan: "大切だと思った人から、簡単には引けない。"
+                desc: "人を遠ざけているわけではなく、近づく前にまずよく見ています。大切な人ができると、その人の問題まで自分事に感じてしまう。不安なときは境界を引き、まず自分で処理しようとする。ほむらに似ているのは、簡単には引き戻せない真剣さです。"
+                keywords: "慎重,境界,言葉より行動"
       madoka_god:
-        name: 鹿目まどか
-        slogan: あなたはまず相手の必要に気づく。
-        desc: 空気が変わると、誰が困っているかを探し、自分に何ができるかを考えます。世話焼きには行動力があるのに、自分の必要は後回しになりがちです。まどかに似ているのは、優しさが態度だけではなく実行を伴うことです。
-        keywords: 感受性,思いやり,行動力
+                name: "鹿目まどか"
+                slogan: "あなたはまず相手の必要に気づく。"
+                desc: "空気が変わると、誰が困っているかを探し、自分に何ができるかを考えます。世話焼きには行動力があるのに、自分の必要は後回しになりがちです。まどかに似ているのは、優しさが態度だけではなく実行を伴うことです。"
+                keywords: "感受性,思いやり,行動力"
       sayaka_siren:
-        name: 美樹さやか
-        slogan: 公平や約束に敏感です。
-        desc: 約束は本気にします。いい加減な扱いやえこひいきは、人より長く心に残ります。うまくいかないとき、まず自分を責めてから失望を怒りに変えることもある。さやかに似ているのは、大事な関係を「まあいいか」で済ませたくない気持ちです。
-        keywords: 原則,真面目,自我要求
+                name: "美樹さやか"
+                slogan: "公平や約束に敏感です。"
+                desc: "約束は本気にします。いい加減な扱いやえこひいきは、人より長く心に残ります。うまくいかないとき、まず自分を責めてから失望を怒りに変えることもある。さやかに似ているのは、大事な関係を「まあいいか」で済ませたくない気持ちです。"
+                keywords: "原則,真面目,自我要求"
       kyoko_pragmatist:
-        name: 佐倉杏子
-        slogan: 気にかける気持ちは、現実的な判断に包まれる。
-        desc: まず現実的に可能かを考えてから関わります。空気だけで約束は作りません。それでも本当に大切な人には、具体的な行動で手を貸します。杏子に似ているのは、口では余地を残しながら、事態からは簡単に退かない強さです。
-        keywords: 現実的,境界,不器用な優しさ
+                name: "佐倉杏子"
+                slogan: "気にかける気持ちは、現実的な判断に包まれる。"
+                desc: "まず現実的に可能かを考えてから関わります。空気だけで約束は作りません。それでも本当に大切な人には、具体的な行動で手を貸します。杏子に似ているのは、口では余地を残しながら、事態からは簡単に退かない強さです。"
+                keywords: "現実的,境界,不器用な優しさ"
       emma_truth:
-        name: 桜羽エマ
-        slogan: 物事をあるままの形で知りたい。
-        desc: 曖昧な「まあいいか」では済ませられません。話が合わないとき、関係が避けられているとき、あなたは気づき、さらに問いかけます。答えが心地悪くても、まず事実を知ってから次を決めたいタイプです。
-        keywords: 求真,境界,自己欺瞞しない
+                name: "桜羽エマ"
+                slogan: "物事をあるままの形で知りたい。"
+                desc: "曖昧な「まあいいか」では済ませられません。話が合わないとき、関係が避けられているとき、あなたは気づき、さらに問いかけます。答えが心地悪くても、まず事実を知ってから次を決めたいタイプです。"
+                keywords: "求真,境界,自己欺瞞しない"
     questions: |-
       [
           { meta: "", text: "", options: ["", "", ""] },
@@ -1130,141 +1322,142 @@ ui:
       W: ""
     types:
       EMMA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "櫻羽艾瑪"
+                slogan: "「即使全世界都放棄了，我也不會」"
+                desc: "你是天生的信仰者。你相信每一個人都值得被拯救，即使被背叛、被傷害、被全世界誤解，你仍然選擇伸出手。這份善意不是天真——是你明知代價後依然做出的選擇。"
+                keywords: "不滅的希望、絕對的信任、自我犧牲"
       SHERRY:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "橘雪莉"
+                slogan: "「為了你，我可以成為任何人——甚至壞人」"
+                desc: "你是天生的守護者，溫暖而充滿活力，是所有人眼中的太陽。但你守護的方式會走向極端——當摯愛受到威脅，你願意為之殺人。你的善意和瘋狂之間，只隔著一個你在乎的人。"
+                keywords: "致命的天真、為愛瘋狂、陽光下的暗面"
       MIRIA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "佐伯米莉亞"
+                slogan: "「不用怕，姐姐來扛」"
+                desc: "你是大姐般的存在，總是默默照顧所有人，把自己的痛苦藏在笑容後面。你不會等到別人求助就主動出手，甚至在生死關頭甘願以命相替。你的溫柔有稜角——是對世界最倔強的善意。"
+                keywords: "無聲的守護、以命相替、倔強的溫柔"
       HIRO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "二階堂希羅"
+                slogan: "「哪怕要死一千次，我也要把她帶回來」"
+                desc: "你是冰與火的矛盾體——外表冷酷無情，內心卻燃燒著比任何人都熾热的情感。你不會輕易信任，但一旦認定了某個人，即使要赴湯蹈火、反覆經歷死亡，你也不會後退一步。"
+                keywords: "冷焰、死亡回溯、為摯愛不惜一切"
       NANOKA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "黑部奈葉香"
+                slogan: "「不需要同伴，不需要溫暖，我只要復仇」"
+                desc: "你是獨行的孤狼，用尖刺包裹住所有傷口。你拒絕一切善意，因為過去的經歷告訴你——靠近的人只會被利用。你的復仇不是熱血，而是冰冷的、精密的、孤獨的執念。"
+                keywords: "孤狼復仇、拒絕溫暖、精密的執念"
       HANNA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "遠野漢娜"
+                slogan: "「我才不關心你呢……笨蛋」"
+                desc: "你用傲慢和刻薄鑄造了一面完美的盔甲，盔甲之下卻藏著一顆比誰都柔軟的心。你不會直接表達善意——你會做一個人偶放在對方枕邊，或者在所有人離開後偷偷照顧病人。你的溫柔，只有讀懂你的人才看得見。"
+                keywords: "傲嬌、盔甲下的脆弱、笨拙的溫柔"
       MERURU:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "冰上梅露露"
+                slogan: "「我等了很久……很久很久」"
+                desc: "你是永恆的守望者，溫柔體貼的外表下藏著跨越千年的孤獨。你對每個人都真誠相待，但你真正的目的從未改變。你目睹了無數羈絆的誕生與碎裂，卻依然選擇相信——這份堅持本身就是最大的奇蹟。"
+                keywords: "千年守望、溫柔偽裝、永不放棄的執念"
       COCO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "澤渡可可"
+                slogan: "「別誤會，我只是無聊才跟你說話」"
+                desc: "你是毒舌主播，用刻薄和自我中心掩飾內心的寂寞。你總在嘲笑別人的天真，但嘲笑的語氣裡有微妙的溫度。你害怕被拋棄，所以選擇先推開所有人——但又忍不住在角落裡偷偷關注他們。"
+                keywords: "毒舌盔甲、寂寞中心、拒絕脆弱"
       NOAH:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "城崎諾亞"
+                slogan: "「這個顏色……好漂亮，我想把它畫下來」"
+                desc: "你是活在夢境中的畫家，擁有獨特的世界觀和不受常理束縛的思維。你對惡意幾乎免疫——不是因為你不懂，而是因為你的世界裡有比仇恨更重要的美。你的純真是一種力量，哪怕在最黑暗的監牢裡，你也在創造光。"
+                keywords: "純真創造、夢境畫家、對抗黑暗的美"
       MARGO:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "寶生瑪格"
+                slogan: "「別太在意我，我只是路過的」"
+                desc: "你是漂泊的星，沒人能真正看清你的全貌。你時而帶刺時而可靠，總是在關鍵時刻出現又在平時消失。你有自己的價值觀和行為準則，不受任何人的框架約束。你的神秘不是偽裝——你就是活成了謎題本身。"
+                keywords: "神秘莫測、獨立法則、關鍵時刻的援手"
       ANAN:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "夏目安安"
+                slogan: "「只有你……不能離開我」"
+                desc: "你是封閉花園中的獨佔者，社恐的外殼下藏著極端的依賴與嫉妒。你害怕人群，卻渴望被某一個特定的人完全接納。當這份渴望被威脅時，你內心的黑暗會以一種安靜但致命的方式爆發。你的愛是一座牢籠——困住別人，也困住自己。"
+                keywords: "獨佔慾、社恐暗面、安靜的危險"
       ALISA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "紫藤亞里沙"
+                slogan: "「少廢話，跟上就是了」"
+                desc: "你是不良外表下的鐵薔薇，粗魯的言行掩蓋著笨拙的正義感。你嘴上抱怨個不停，行動上卻總是第一個衝進火場救人。你不容易敞開心扉，但一旦認可了某個人，你會用最笨拙的方式守護到底。"
+                keywords: "不良正義、笨拙溫柔、行動派"
       LEIA:
-        name: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "蓮見蕾雅"
+                slogan: "「看著我的眼睛——告訴我，我在你眼裡是閃光的」"
+                desc: "你是天生的領袖，美麗自信，一出現就能吸引所有人的目光。但光環之下是深不見底的空洞——你需要被看見、被認可、被崇拜。當這份渴望得不到滿足時，你會做出任何事來重新站上舞台中央。你的魅力是真實的，你的脆弱也是。"
+                keywords: "領袖魅力、被認可的渴望、光環下的空洞"
       UNSET:
-        name: ""
-        slogan: ""
-        desc: ""
+                name: "未定之魂"
+                slogan: "「審判還未落錘，你的靈魂在等待被定義」"
+                desc: "你的因子尚未覺醒到可以歸類的程度。也許你在所有人之間遊走，也許你刻意隱藏了真實的自己。無論哪種，下次審判見。"
+                keywords: ""
       YUKI:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "月代雪"
+                subtitle: "大魔女"
+                slogan: "「你們人類的悲劇……我全都看在眼裡。所以，由我來終結」"
+                desc: "你是跨越百年的復仇者，是最年幼也最強大的魔女。你曾真心地愛過這個世界，也曾被摯友的溫暖動搖過。但你選擇把這一切都埋葬，用冰冷的理性執行一個漫長到令人窒息的計畫。你的復仇不是瘋狂——而是一種絕望到極致的清醒。"
+                keywords: "百年復仇、絕望的清醒、冰冷的終焉"
       ETL:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "不滅雪華"
+                subtitle: "梅露露真身"
+                slogan: "「即使世界拋棄了我，我對雪的愛不會消融」"
+                desc: "你是千年不滅的存在，因對「雪」的信仰而獲得了不老不死。你經歷了無數少女的誕生與死亡，目睹了無數次背叛與絕望，但你從未放棄尋找那個離開你的人。你的堅持不是執念——而是對愛的最純粹回應。"
+                keywords: "千年不滅、純粹的信仰、永恆的守望"
       MADOKA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "鹿目圓"
+                subtitle: "終將成為神"
+                slogan: "「我不想讓任何人再哭泣，哪怕要我變成不再存在的存在」"
+                desc: "你是天生的信仰者——溫柔到近乎天真的善良，讓你在看到任何人的痛苦時都無法轉身離開。你信任陌生人，寬恕傷害過你的人，甘願為素不相識的人承擔命運。這份善意不是軟弱，是你明知世界殘酷後依然選擇伸出手。當所有人都絕望時，你是那個還會說‘一定有辦法’的人——哪怕代價是抹消自己存在的痕跡。"
+                keywords: "不滅的善意、為眾生成神、天真的信仰"
       HOMURA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "曉美焰"
+                subtitle: "時間掠奪者"
+                slogan: "「哪怕要重啟世界一千次，我也要守住她一個人的笑容」"
+                desc: "你是冰與執念的矛盾體——外表冷酷到不近人情，內心卻燃燒著比任何人都熾烈的執著。你記著每一個輪迴，每一次失敗，每一個沒能救下她的瞬間。你不信任旁人，因為旁人從未陪你走過那些被重置的時間；你寬恕不了命運，因為命運從未對你手軟。你的溫柔只對一個人開放，而對那一個人的愛，足夠讓你與整個世界為敵。"
+                keywords: "輪迴千次、冷焰執念、為一人敵世界"
       SAYAKA:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "美樹沙耶香"
+                subtitle: "正義的末路"
+                slogan: "「我明明是想做一個正確的人，為什麼最後變成了怪物」"
+                desc: "你是被自己的正義感燒成灰燼的人——你眼裡容不下一點不公，你為受傷的人出頭，你許願治癒心上人卻不敢讓他知道。可這個世界不獎勵純粹的好人：你信任的人背叛了你的秘密，你救的人忘了你的存在，你信奉的正義在殘酷的現實前一寸寸碎裂。你的崩潰不是軟弱，是太用力地善良之後被反噬的傷口。魔女化不是墮落，是你的正義找不到出口的悲鳴。"
+                keywords: "正義的崩塌、愛而不得、魔女化悲鳴"
       KYOKO:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "佐倉杏子"
+                subtitle: "末路求生者"
+                slogan: "「別傻了。在這個世界裡，只為別人許願的人活不長」"
+                desc: "你是被現實磨硬了殼的實用主義者——曾經的你也相信為他人犧牲是神聖的，直到那個許願毀了你的全家。從那以後你學會了先顧自己，學會了冷眼旁觀別人的悲劇，學會了用‘這不關我事’擋住所有想靠近的人。可你騙不了自己：當真正在乎的人陷入絕境，你還是會衝上去。你的硬是裝出來的，你的軟才是底色——只是你不敢再輕易把它交出來。"
+                keywords: "實用主義盔甲、家庭創傷、關鍵時刻的真心"
       MAMI:
-        name: ""
-        subtitle: ""
-        slogan: ""
-        desc: ""
-        keywords: ""
+                name: "巴麻美"
+                subtitle: "孤獨的前輩"
+                slogan: "「當魔法少女這麼久，我其實……一直都好害怕」"
+                desc: "你是優雅的盔甲下藏著深淵的人——你永遠是後輩面前從容不迫的前輩，泡著紅茶、繫著緞帶、用最漂亮的姿態消滅魔女。可沒有人知道你獨自戰鬥了多少年，沒有人知道你每個夜晚都在害怕下一次會不會就回不來了。你渴望同伴，渴望被需要，渴望有人能讓你卸下‘可靠前輩’的偽裝。當有人終於願意走近你，你會緊緊抓住——因為你太孤獨了，孤獨到寧可把脆弱藏在優雅裡，也不願被人看見。"
+                keywords: "優雅的盔甲、深層孤獨、渴望被需要"
       homura_devil:
-        name: 曉美焰
-        slogan: 重要的人一旦認定，你就很難退開。
-        desc: 你不是拒絕親近，只是靠近之前會觀察很久。一旦認定一個人重要，你會把對方的事當成自己的事；局面失控時，又會先收緊邊界，盡量自己處理。你和焰相似的地方不是什麼黑化，而是這份很難收回的認真。
-        keywords: 謹慎,邊界感,行動先於表達
+                name: "曉美焰"
+                slogan: "重要的人一旦認定，你就很難退開。"
+                desc: "你不是拒絕親近，只是靠近之前會觀察很久。一旦認定一個人重要，你會把對方的事當成自己的事；局面失控時，又會先收緊邊界，盡量自己處理。你和焰相似的地方不是什麼黑化，而是這份很難收回的認真。"
+                keywords: "謹慎,邊界感,行動先於表達"
       madoka_god:
-        name: 鹿目圓
-        slogan: 你常常先注意到別人的需要。
-        desc: 氣氛一不對，你通常會先看誰在難受，然後想自己能做什麼。照顧人時你很有行動力，問題是自己的需要常常被排到後面。你和圓相似的地方，是溫柔不只是態度，也會真的動手去做。
-        keywords: 敏感,照顧,行動力
+                name: "鹿目圓"
+                slogan: "你常常先注意到別人的需要。"
+                desc: "氣氛一不對，你通常會先看誰在難受，然後想自己能做什麼。照顧人時你很有行動力，問題是自己的需要常常被排到後面。你和圓相似的地方，是溫柔不只是態度，也會真的動手去做。"
+                keywords: "敏感,照顧,行動力"
       sayaka_siren:
-        name: 美樹沙耶香
-        slogan: 你對公平和承諾很敏感。
-        desc: 答應過的事，你會當真；看到敷衍和偏袒，也比一般人更難受。事情沒做好時，你容易先檢討自己，再把失望壓成憤怒。你和沙耶香相似的地方，是不願意用「隨便啦」處理重要關係。
-        keywords: 原則感,認真,自我要求
+                name: "美樹沙耶香"
+                slogan: "你對公平和承諾很敏感。"
+                desc: "答應過的事，你會當真；看到敷衍和偏袒，也比一般人更難受。事情沒做好時，你容易先檢討自己，再把失望壓成憤怒。你和沙耶香相似的地方，是不願意用「隨便啦」處理重要關係。"
+                keywords: "原則感,認真,自我要求"
       kyoko_pragmatist:
-        name: 佐倉杏子
-        slogan: 你的關心，常常包在現實判斷裡。
-        desc: 你習慣先算可行性，再決定要不要投入，不喜歡把氣氛說得很滿。但真正認定一個人後，你會用具體行動幫忙，只是不一定會承認自己在意。你和杏子相似的地方，是嘴上留餘地，事上不輕易退。
-        keywords: 務實,有底線,嘴硬心軟
+                name: "佐倉杏子"
+                slogan: "你的關心，常常包在現實判斷裡。"
+                desc: "你習慣先算可行性，再決定要不要投入，不喜歡把氣氛說得很滿。但真正認定一個人後，你會用具體行動幫忙，只是不一定會承認自己在意。你和杏子相似的地方，是嘴上留餘地，事上不輕易退。"
+                keywords: "務實,有底線,嘴硬心軟"
       emma_truth:
-        name: 櫻羽艾瑪
-        slogan: 你想弄清楚事情本來的樣子。
-        desc: 你不擅長用「算了」糊過去。一句話前後對不上，或者有人在關係裡回避問題，你會注意到，也會想繼續問。答案讓人不舒服時，你仍寧願先知道事實，再決定怎麼處理。
-        keywords: 求真,有邊界,不輕易自欺
+                name: "櫻羽艾瑪"
+                slogan: "你想弄清楚事情本來的樣子。"
+                desc: "你不擅長用「算了」糊過去。一句話前後對不上，或者有人在關係裡回避問題，你會注意到，也會想繼續問。答案讓人不舒服時，你仍寧願先知道事實，再決定怎麼處理。"
+                keywords: "求真,有邊界,不輕易自欺"
     questions: |-
       [
           { meta: "", text: "", options: ["", "", ""] },

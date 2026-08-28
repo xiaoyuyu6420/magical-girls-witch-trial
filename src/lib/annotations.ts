@@ -74,30 +74,27 @@ export const ANNOTATION_FALLBACKS: Record<AnnotationNode, string> = {
 };
 
 /**
- * 纯函数：根据用户当前三姿态累加分，选一条审判官批注。
+ * 纯函数：根据用户当前各维度累加分的集中度，选一条审判官批注。
  *
  * @param node 批注节点（5/10/15）
- * @param postureA 粉饰姿态累计分
- * @param postureB 清醒姿态累计分
- * @param postureC 扭曲姿态累计分
+ * @param dimScores 各维度累计分（key=维度 code，value=累加原始分）
  * @param rng 可选随机数生成器（默认 Math.random），单测注入确定性 rng
  * @returns 行为描写文案（无姿态标签/角色/百分比）
  */
 export function pickAnnotation(
   node: AnnotationNode,
-  postureA: number,
-  postureB: number,
-  postureC: number,
+  dimScores: Record<string, number>,
   rng: () => number = Math.random,
 ): string {
-  const total = postureA + postureB + postureC;
+  const values = Object.values(dimScores);
+  const total = values.reduce((s, v) => s + v, 0);
   if (total <= 0) {
     return ANNOTATION_FALLBACKS[node];
   }
 
-  // 主导姿态集中度：max / total。集中度高=倾向明显(笃定 H)；低=分散(回避 L)
-  const maxPosture = Math.max(postureA, postureB, postureC);
-  const dominance = maxPosture / total;
+  // 主导维度集中度：max / total。集中度高=倾向明显(笃定 H)；低=分散(回避 L)
+  const maxDim = Math.max(...values);
+  const dominance = maxDim / total;
   const tier: Tier = dominance >= 0.5 ? "H" : dominance >= 0.34 ? "M" : "L";
 
   const pool = POOLS[node][tier];

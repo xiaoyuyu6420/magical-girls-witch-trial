@@ -25,8 +25,9 @@ questions:    # 26 题（题库）
     options:
       - _score: 🔒 1
         label: ""          # 选项文案
-characters:   # 21 角色（16 witch-trial + 5 madoka）
+characters:   # 25 角色（16 witch-trial 原创 + 5 madoka + 4 觉醒变体隐藏角色）
   - _code: 🔒 EMMA
+    _vector: "🔒 LHH-LLM-HHH-LLL"   # 12 维向量（结构字段）
     slogan: ""
     desc: ""
     keywords: ""

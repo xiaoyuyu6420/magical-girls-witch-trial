@@ -1,86 +1,116 @@
 import { describe, it, expect } from "vitest";
-import { processAnswers, type AnswerInput } from "./answer-processor";
+import { processAnswers } from "./answer-processor";
 
-interface Opt {
+function makeOption(overrides: Partial<{
   id: number;
   questionId: number;
   score: number | null;
   value: string | null;
   trigger: string | null;
-  posture: string | null;
-  label: string;
-  question: { id: number; dim: string; type: string; renderType?: string };
+  dim: string;
+  type: string;
+}> = {}) {
+  return {
+    id: overrides.id ?? 1,
+    questionId: overrides.questionId ?? 1,
+    score: overrides.score ?? 1,
+    value: overrides.value ?? null,
+    trigger: overrides.trigger ?? null,
+    question: {
+      id: overrides.questionId ?? 1,
+      dim: overrides.dim ?? "S1",
+      type: overrides.type ?? "normal",
+    },
+  };
 }
 
-const opt = (id: number, questionId: number, over: Partial<Opt> = {}): Opt => ({
-  id, questionId,
-  score: 2, value: null, trigger: null, posture: null, label: "",
-  question: { id: questionId, dim: "POSTURE", type: "normal", renderType: "normal" },
-  ...over,
+describe("processAnswers", () => {
+  it("accumulates dim scores from normal questions", () => {
+    const options = [
+      makeOption({ id: 1, questionId: 1, score: 2, dim: "S1" }),
+      makeOption({ id: 2, questionId: 2, score: 3, dim: "S1" }),
+      makeOption({ id: 3, questionId: 3, score: 1, dim: "F2" }),
+    ];
+    const result = processAnswers(
+      [
+        { questionId: 1, optionId: 1 },
+        { questionId: 2, optionId: 2 },
+        { questionId: 3, optionId: 3 },
+      ],
+      options,
+    );
+    expect(result.dimScores.S1).toBe(5);
+    expect(result.dimScores.F2).toBe(1);
+    expect(result.validAnswers).toHaveLength(3);
+  });
+
+  it("extracts gateValue from gate question", () => {
+    const options = [
+      makeOption({ id: 10, questionId: 100, value: "destroy", dim: "GATE", type: "gate" }),
+    ];
+    const result = processAnswers(
+      [{ questionId: 100, optionId: 10 }],
+      options,
+    );
+    expect(result.gateValue).toBe("destroy");
+    expect(result.dimScores).toEqual({});
+  });
+
+  it("extracts triggerFired from trigger question", () => {
+    const options = [
+      makeOption({ id: 20, questionId: 200, trigger: "YUKI", dim: "TRIGGER", type: "trigger" }),
+    ];
+    const result = processAnswers(
+      [{ questionId: 200, optionId: 20 }],
+      options,
+    );
+    expect(result.triggerFired).toBe("YUKI");
+  });
+
+  it("skips invalid optionId", () => {
+    const options = [makeOption({ id: 1, questionId: 1 })];
+    const result = processAnswers(
+      [{ questionId: 1, optionId: 999 }],
+      options,
+    );
+    expect(result.validAnswers).toHaveLength(0);
+  });
+
+  it("skips answer where optionId doesn't match questionId", () => {
+    const options = [
+      makeOption({ id: 1, questionId: 1 }),
+      makeOption({ id: 2, questionId: 2 }),
+    ];
+    const result = processAnswers(
+      [{ questionId: 1, optionId: 2 }],
+      options,
+    );
+    expect(result.validAnswers).toHaveLength(0);
+  });
+
+  it("handles empty answers array", () => {
+    const result = processAnswers([], []);
+    expect(result.dimScores).toEqual({});
+    expect(result.validAnswers).toHaveLength(0);
+    expect(result.gateValue).toBeUndefined();
+    expect(result.triggerFired).toBeUndefined();
+  });
+
+  it("accepts all valid gate values", () => {
+    for (const val of ["destroy", "seen", "peace", "undecided"] as const) {
+      const options = [
+        makeOption({ id: 1, questionId: 1, value: val, dim: "GATE", type: "gate" }),
+      ];
+      const result = processAnswers([{ questionId: 1, optionId: 1 }], options);
+      expect(result.gateValue).toBe(val);
+    }
+  });
 });
 
-const ans = (questionId: number, optionId: number): AnswerInput => ({ questionId, optionId });
-
-describe("processAnswers (posture system)", () => {
-  it("按 posture 累加 score 到对应桶", () => {
+  it("rejects unknown gate values not in pack", () => {
     const options = [
-      opt(1, 1, { posture: "A", score: 3 }),
-      opt(2, 2, { posture: "B", score: 2 }),
-      opt(3, 3, { posture: "C", score: 4 }),
+      makeOption({ id: 1, questionId: 1, value: "explode", dim: "GATE", type: "gate" }),
     ];
-    const r = processAnswers([ans(1, 1), ans(2, 2), ans(3, 3)], options);
-    expect(r.postureA).toBe(3);
-    expect(r.postureB).toBe(2);
-    expect(r.postureC).toBe(4);
-    expect(r.validAnswers.length).toBe(3);
+    const result = processAnswers([{ questionId: 1, optionId: 1 }], options);
+    expect(result.gateValue).toBeUndefined();
   });
-
-  it("weight 题解析 weight::a|b|c 按 a*3/b*3/c*3 计入", () => {
-    const options = [
-      opt(1, 1, { label: "weight::2|1|0", score: 3, question: { id: 1, dim: "POSTURE", type: "normal", renderType: "weight" } }),
-    ];
-    const r = processAnswers([ans(1, 1)], options);
-    expect(r.postureA).toBe(6);
-    expect(r.postureB).toBe(3);
-    expect(r.postureC).toBe(0);
-  });
-
-  it("gate 题设 path、trigger 设 keyUnlocked、scale 设 tendency", () => {
-    const options = [
-      opt(1, 1, { value: "destroy", posture: "C", score: 4, question: { id: 1, dim: "GATE", type: "gate", renderType: "gate" } }),
-      opt(2, 2, { value: "true", posture: "C", score: 3, question: { id: 2, dim: "TRIGGER", type: "trigger", renderType: "trigger" } }),
-      opt(3, 3, { value: "OBSESSION", posture: "B", score: 3, question: { id: 3, dim: "POSTURE", type: "normal", renderType: "scale" } }),
-    ];
-    const r = processAnswers([ans(1, 1), ans(2, 2), ans(3, 3)], options);
-    expect(r.path).toBe("DESTRUCTION");
-    expect(r.keyUnlocked).toBe(true);
-    expect(r.tendency).toBe("OBSESSION");
-  });
-
-  it("gate/trigger/scale 的 posture 分也累加（忠于 HTML）", () => {
-    const options = [
-      opt(1, 1, { value: "peace", posture: "A", score: 4, question: { id: 1, dim: "GATE", type: "gate", renderType: "gate" } }),
-      opt(2, 2, { value: "false", posture: "B", score: 2, question: { id: 2, dim: "TRIGGER", type: "trigger", renderType: "trigger" } }),
-    ];
-    const r = processAnswers([ans(1, 1), ans(2, 2)], options);
-    expect(r.postureA).toBe(4);
-    expect(r.postureB).toBe(2);
-    expect(r.path).toBe("PEACE");
-    expect(r.keyUnlocked).toBe(false);
-  });
-
-  it("默认值：path=PEACE / keyUnlocked=false / tendency=SACRIFICE", () => {
-    const options = [opt(1, 1, { posture: "A", score: 3 })];
-    const r = processAnswers([ans(1, 1)], options);
-    expect(r.path).toBe("PEACE");
-    expect(r.keyUnlocked).toBe(false);
-    expect(r.tendency).toBe("SACRIFICE");
-  });
-
-  it("无效答案被过滤（optionId 不匹配）", () => {
-    const options = [opt(1, 1, { posture: "A", score: 3 })];
-    const r = processAnswers([ans(1, 999)], options);
-    expect(r.validAnswers.length).toBe(0);
-    expect(r.postureA).toBe(0);
-  });
-});

@@ -60,7 +60,6 @@ async function main() {
             score: o.score ?? j + 1,
             value: o.value ?? null,
             trigger: o.trigger ?? null,
-            posture: o.posture ?? null,
           })),
         },
       },

@@ -23,10 +23,9 @@ export const witchTrialPack: QuizPack = {
       undecided: { W1: 1 },
     },
     specialTriggers: {
-      SPECIAL_A: { destroy: "YUKI", seen: "ETL" },
-      SPECIAL_B: { destroy: "ETL", seen: "YUKI" },
-      YUKI: { destroy: "YUKI", seen: "YUKI" },
-      ETL: { destroy: "ETL", seen: "ETL" },
+      // Q19 接过钥匙(SPECIAL_A) + Q18 路径 → 解锁觉醒变体
+      SPECIAL_A: { destroy: "homura_devil", seen: "sayaka_siren" },
+      SPECIAL_B: { destroy: "kyoko_pragmatist", seen: "madoka_god" },
     },
     triggerGates: ["destroy", "seen"],
     optionShuffle: "stable-by-question-id",

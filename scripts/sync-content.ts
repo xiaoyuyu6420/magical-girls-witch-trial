@@ -24,6 +24,8 @@ const YAML_FILE = path.join(ROOT, "content", "content.yaml");
 interface YamlQuestion {
   _index: number;
   _dim: string;
+  /** 12 维维度代码（🔒 结构字段）：S1-F3/B1-B3/W1-W3 或 GATE/TRIGGER */
+  _dim_code?: string;
   _type: string;
   meta: string;
   text: string;
@@ -90,11 +92,11 @@ function updateTsFile(file: string, varName: string, kind: "questions" | "types"
     arrIdx++;
     const fields = runtimeQuestionFields(expected);
     if (ts.isCallExpression(elem)) {
-      // NQ(meta, text, options)：args[0] 是锁定题号，args[1] 是可编辑题干。
+      // NQ(dim, meta, text, options)：args[0] 是 12 维维度代码（_dim_code），args[1] 是题号标题，args[2] 是可编辑题干。
       const args = elem.arguments;
-      expectLock(expected._dim, "dim", strVal(args[0]) ?? "", `第${arrIdx + 1}题`);
-      if (args[1] && ts.isStringLiteral(args[1])) targets.push({ start: args[1].getStart(sf), end: args[1].getEnd(), newVal: JSON.stringify(fields.text) });
-      const optsArr = args[2];
+      expectLock(expected._dim_code ?? expected._dim, "dim_code", strVal(args[0]) ?? "", `第${arrIdx + 1}题`);
+      if (args[2] && ts.isStringLiteral(args[2])) targets.push({ start: args[2].getStart(sf), end: args[2].getEnd(), newVal: JSON.stringify(fields.text) });
+      const optsArr = args[3];
       if (optsArr && ts.isArrayLiteralExpression(optsArr)) {
         optsArr.elements.forEach((o, i) => {
           if (ts.isStringLiteral(o) && expected.options[i]) {

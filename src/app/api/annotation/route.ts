@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       return rngState / 2147483647;
     };
 
-    const text = pickAnnotation(node as AnnotationNode, processed.postureA, processed.postureB, processed.postureC, rng);
+    const text = pickAnnotation(node as AnnotationNode, processed.dimScores, rng);
     return NextResponse.json({ text });
   } catch (err) {
     console.error("Annotation error:", err);

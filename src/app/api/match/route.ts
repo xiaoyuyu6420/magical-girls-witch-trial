@@ -33,33 +33,23 @@ export async function POST(req: NextRequest) {
 
   const { answers } = parsed.data;
 
-  // Re-derive posture/path/keyUnlocked/tendency from DB — never trust the client.
+  // Re-derive dimScores/gateValue/triggerFired from DB — never trust the client.
   const optionIds = Array.from(new Set(answers.map((a) => a.optionId)));
   const options = await db.option.findMany({
     where: { id: { in: optionIds } },
     include: { question: { select: { id: true, dim: true, type: true, renderType: true } } },
   });
 
-  const processed = processAnswers(answers, options);
+  const { dimScores, gateValue, triggerFired, validAnswers } = processAnswers(answers, options);
 
-  if (processed.validAnswers.length !== answers.length) {
+  if (validAnswers.length !== answers.length) {
     return NextResponse.json(
       { error: "Invalid answers" },
       { status: 400 }
     );
   }
 
-  const result = match(
-    {
-      postureA: processed.postureA,
-      postureB: processed.postureB,
-      postureC: processed.postureC,
-      path: processed.path,
-      keyUnlocked: processed.keyUnlocked,
-      tendency: processed.tendency,
-    },
-    await db.personalityType.findMany(),
-  );
+  const result = match({ dimScores, gateValue, triggerFired }, await db.personalityType.findMany());
 
   return NextResponse.json(result);
 }
