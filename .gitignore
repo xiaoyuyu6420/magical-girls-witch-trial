@@ -85,3 +85,6 @@ smoke-result.txt
 # local copy backups
 backups/
 .zcode/
+
+# 角色卡重绘底图素材（版权图 + 体积大，不入库）
+assets/raw-characters/
