@@ -84,3 +84,4 @@ smoke-result.txt
 
 # local copy backups
 backups/
+.zcode/
