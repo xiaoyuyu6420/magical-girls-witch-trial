@@ -61,6 +61,10 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script_stop: true
           script: |
+            whoami
+            ls -ld /home/magical-girls || true
+            # 部署目录若为 root 所有，SSH 用户写不进（备份/下载 compose 均需写权限）
+            sudo -n chown -R "$(whoami)":"$(whoami)" /home/magical-girls || echo "[warn] sudo -n 不可用，继续尝试"
             cd /home/magical-girls
             curl -sSL https://raw.githubusercontent.com/xiaoyuyu6420/magical-girls-witch-trial/main/scripts/update.sh | bash
             docker compose ps
