@@ -88,3 +88,6 @@ backups/
 
 # 角色卡重绘底图素材（版权图 + 体积大，不入库）
 assets/raw-characters/
+
+# 角色卡底图（版权图，本地/Docker 存在，不入 git）
+public/characters/

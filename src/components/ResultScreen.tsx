@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { getIpMeta } from "@/content/packs/ip-registry";
 import { useLocalizedContent } from "@/lib/use-localized-content";
+import { characterImage } from "@/data/character-images";
 import { toPng } from "html-to-image";
 import { useI18n } from "@/lib/i18n";
 
@@ -70,6 +71,7 @@ export default function ResultScreen({ result, stats, onRestart, compactMotion =
   const ipTitle = t(`works.${ipMeta.ipCode}.title`);
   const workIntro = t(`works.${ipMeta.ipCode}.intro`);
   const fromTitle = t("result.revealFrom", { title: ipTitle });
+  const cardImage = characterImage(result.code);
 
   /* ── R5: prefers-reduced-motion check ── */
   const [prefersReducedMotion] = useState(() =>
@@ -292,13 +294,17 @@ export default function ResultScreen({ result, stats, onRestart, compactMotion =
         </div>
 
         <div className="editorial-grid" style={{ width: "100%" }}>
-          {/* 左栏：克制的角色判印卡；未来角色图可直接覆盖占位层。 */}
+          {/* 左栏：克制的角色判印卡；角色底图存在时覆盖占位层，无图角色（UNSET）保持星印。 */}
           <div className={`tarot-card-frame ${revealPhase === "done" ? "is-shimmering" : ""}`} data-character-code={result.code}>
             <div className="tarot-card-topline" aria-hidden="true">
               <span>{t("result.matchLabel")}</span>
               <span>{ipTitle}</span>
             </div>
-            <div className="tarot-placeholder">
+            {cardImage && (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={cardImage} alt="" className="character-img is-active" loading="eager" />
+            )}
+            <div className="tarot-placeholder" style={cardImage ? { visibility: "hidden" } : undefined}>
               <div className="tarot-sigil" aria-hidden="true">
                 <span className="tarot-sigil-orbit" />
                 <svg className="tarot-icon" viewBox="0 0 72 72">
