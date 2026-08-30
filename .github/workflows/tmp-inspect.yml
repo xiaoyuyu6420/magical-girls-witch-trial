@@ -7,7 +7,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect 1Panel openresty & app container
+      - name: Read app container logs
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -15,9 +15,4 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script_stop: false
           script: |
-            echo "=== app container ==="; docker ps -a --format "{{.Names}} {{.Status}} {{.Ports}}" | head -20
-            echo "=== app health ==="; curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://127.0.0.1:8091/api/count || true; echo
-            echo "=== 1panel sites dir ==="; ls /opt/1panel/apps/openresty/openresty/www/sites/ 2>/dev/null || ls /opt/1panel/www/sites/ 2>/dev/null || find /opt -maxdepth 4 -name "sites" -type d 2>/dev/null | head -5
-            echo "=== server_name ==="; grep -rh "server_name" /opt/1panel/apps/openresty/openresty/conf/conf.d/ /opt/1panel/www/sites/ 2>/dev/null | head -20
-            echo "=== witch-trial site conf ==="; grep -rl "8091" /opt/1panel/apps/openresty/openresty/conf/ /opt/1panel/www/ 2>/dev/null | head -5
-            echo "=== that conf content ==="; for f in $(grep -rl "8091" /opt/1panel/apps/openresty/openresty/conf/ /opt/1panel/www/ 2>/dev/null | head -2); do echo "--- $f"; cat "$f" | head -40; done
+            docker logs --tail 40 magical-girls-witch-trial 2>&1 | tail -40
