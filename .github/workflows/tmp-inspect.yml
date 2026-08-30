@@ -7,7 +7,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Enable HTTPS for magical.jadeai.icu
+      - name: Install cert and enable HTTPS
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -20,26 +20,14 @@ jobs:
             CONF=/opt/1panel/www/conf.d/magical.jadeai.icu.conf
             SSL_DIR=/opt/1panel/www/sites/magical.jadeai.icu/ssl
             OR_C=1Panel-openresty-ykQi
-            echo "=== mounts ==="
-            docker inspect "$OR_C" --format "{{range .Mounts}}{{.Source}}=>{{.Destination}}{{\"\n\"}}{{end}}"
-            HTML_HOST=$(docker inspect "$OR_C" --format "{{range .Mounts}}{{.Source}}=>{{.Destination}}{{\"\n\"}}{{end}}" | awk -F"=>" "\$2==\"/usr/share/nginx/html\"{print \$1}" | head -1)
-            echo "html host path: [$HTML_HOST]"
-            if [ -n "$HTML_HOST" ]; then
-              WEBROOT="$HTML_HOST"
-            else
-              WEBROOT=/opt/1panel/www/sites/magical.jadeai.icu/index
-              sudo -n sed -i "s|root /usr/share/nginx/html;|root /www/sites/magical.jadeai.icu/index;|" "$CONF"
-            fi
-            echo "webroot: $WEBROOT"
-            sudo -n mkdir -p "$WEBROOT/.well-known/acme-challenge"
-            sudo -n chown -R "$(whoami)" "$WEBROOT/.well-known" || true
-            chmod -R 755 "$WEBROOT/.well-known"
+            sudo -n mkdir -p "$SSL_DIR"
+            sudo -n chown -R "$(whoami)" "$SSL_DIR"
             ACME=~/.acme.sh/acme.sh
-            $ACME --issue --server letsencrypt -d magical.jadeai.icu -w "$WEBROOT" --force || { echo ISSUE_FAILED; exit 1; }
             $ACME --install-cert -d magical.jadeai.icu \
               --fullchain-file "$SSL_DIR/fullchain.pem" \
               --key-file "$SSL_DIR/privkey.pem" \
               --reloadcmd "docker exec $OR_C nginx -s reload" || { echo INSTALL_FAILED; exit 1; }
+            ls -la "$SSL_DIR"
             if ! grep -q "listen 443" "$CONF"; then
               {
                 echo ""
