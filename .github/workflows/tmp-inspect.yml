@@ -7,7 +7,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect nginx/caddy & ports
+      - name: Inspect 1Panel openresty & app container
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -15,9 +15,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script_stop: false
           script: |
-            echo "=== whoami/host ==="; whoami; hostname
-            echo "=== listening ports ==="; (sudo -n ss -tlnp 2>/dev/null || ss -tlnp 2>/dev/null || netstat -tlnp 2>/dev/null) | head -30
-            echo "=== nginx sites ==="; (sudo -n ls /etc/nginx/sites-enabled/ 2>/dev/null; ls /etc/nginx/sites-enabled/ 2>/dev/null) | head -10
-            echo "=== nginx server_name ==="; (sudo -n grep -r "server_name" /etc/nginx/sites-enabled/ /etc/nginx/conf.d/ 2>/dev/null || grep -r "server_name" /etc/nginx/sites-enabled/ /etc/nginx/conf.d/ 2>/dev/null) | head -20
-            echo "=== caddy ==="; (sudo -n cat /etc/caddy/Caddyfile 2>/dev/null || cat /etc/caddy/Caddyfile 2>/dev/null) | head -30
-            echo "=== cert files ==="; sudo -n ls /etc/letsencrypt/live/ 2>/dev/null || ls /etc/letsencrypt/live/ 2>/dev/null || echo "no letsencrypt dir"
+            echo "=== app container ==="; docker ps -a --format "{{.Names}} {{.Status}} {{.Ports}}" | head -20
+            echo "=== app health ==="; curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://127.0.0.1:8091/api/count || true; echo
+            echo "=== 1panel sites dir ==="; ls /opt/1panel/apps/openresty/openresty/www/sites/ 2>/dev/null || ls /opt/1panel/www/sites/ 2>/dev/null || find /opt -maxdepth 4 -name "sites" -type d 2>/dev/null | head -5
+            echo "=== server_name ==="; grep -rh "server_name" /opt/1panel/apps/openresty/openresty/conf/conf.d/ /opt/1panel/www/sites/ 2>/dev/null | head -20
+            echo "=== witch-trial site conf ==="; grep -rl "8091" /opt/1panel/apps/openresty/openresty/conf/ /opt/1panel/www/ 2>/dev/null | head -5
+            echo "=== that conf content ==="; for f in $(grep -rl "8091" /opt/1panel/apps/openresty/openresty/conf/ /opt/1panel/www/ 2>/dev/null | head -2); do echo "--- $f"; cat "$f" | head -40; done
