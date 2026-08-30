@@ -46,6 +46,11 @@ docker compose pull
 echo "重启服务..."
 docker compose up -d
 
+# 4. 顺带检查 HTTPS 证书续期（acme.sh 装在部署用户家目录，缺省跳过）
+if [ -f "$HOME/.acme.sh/acme.sh" ]; then
+  "$HOME/.acme.sh/acme.sh" --cron --home "$HOME/.acme.sh" >/dev/null 2>&1 || true
+fi
+
 echo ""
 echo "✅ 更新完成"
 docker compose ps

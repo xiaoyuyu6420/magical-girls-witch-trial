@@ -34,7 +34,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://witch-trial.vercel.app"), // replace with prod domain before launch
+  metadataBase: new URL("https://magical.jadeai.icu"), // 生产域名 magical.jadeai.icu（2026-08-30 已上线）
   title: "魔女审判 | WITCH TRIAL — 魔法少女人格测试",
   description: "26 道情境题，卸下伪装照见真实的自己。测测你最像哪位魔法少女——晓美焰、鹿目圆、沙耶香、杏子，还是清醒的审判者艾玛？",
   keywords: ["魔女审判", "人格测试", "魔法少女", "性格测试", "Witch Trial", "personality test", "MBTI"],
