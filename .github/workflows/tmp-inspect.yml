@@ -19,26 +19,27 @@ jobs:
             set -e
             CONF=/opt/1panel/www/conf.d/magical.jadeai.icu.conf
             SSL_DIR=/opt/1panel/www/sites/magical.jadeai.icu/ssl
-            WEBROOT=/opt/1panel/www/sites/magical.jadeai.icu/index
-            echo "=== conf full ==="; cat "$CONF"
-            OR_C=$(docker ps --format "{{.Names}}" | grep -i openresty | head -1 || true)
-            echo "openresty container: $OR_C"
-            if [ -n "$OR_C" ]; then
-              TEST_CMD="docker exec $OR_C nginx -t"
-              RELOAD_CMD="docker exec $OR_C nginx -s reload"
+            OR_C=1Panel-openresty-ykQi
+            echo "=== mounts ==="
+            docker inspect "$OR_C" --format "{{range .Mounts}}{{.Source}}=>{{.Destination}}{{\"\n\"}}{{end}}"
+            HTML_HOST=$(docker inspect "$OR_C" --format "{{range .Mounts}}{{.Source}}=>{{.Destination}}{{\"\n\"}}{{end}}" | awk -F"=>" "\$2==\"/usr/share/nginx/html\"{print \$1}" | head -1)
+            echo "html host path: [$HTML_HOST]"
+            if [ -n "$HTML_HOST" ]; then
+              WEBROOT="$HTML_HOST"
             else
-              TEST_CMD="sudo -n /usr/local/openresty/bin/openresty -t || sudo -n nginx -t"
-              RELOAD_CMD="sudo -n /usr/local/openresty/bin/openresty -s reload || sudo -n nginx -s reload"
+              WEBROOT=/opt/1panel/www/sites/magical.jadeai.icu/index
+              sudo -n sed -i "s|root /usr/share/nginx/html;|root /www/sites/magical.jadeai.icu/index;|" "$CONF"
             fi
+            echo "webroot: $WEBROOT"
             sudo -n mkdir -p "$WEBROOT/.well-known/acme-challenge"
-            sudo -n chown -R "$(whoami)" "$WEBROOT/.well-known"
-            chmod 755 "$WEBROOT/.well-known" "$WEBROOT/.well-known/acme-challenge"
+            sudo -n chown -R "$(whoami)" "$WEBROOT/.well-known" || true
+            chmod -R 755 "$WEBROOT/.well-known"
             ACME=~/.acme.sh/acme.sh
             $ACME --issue --server letsencrypt -d magical.jadeai.icu -w "$WEBROOT" --force || { echo ISSUE_FAILED; exit 1; }
             $ACME --install-cert -d magical.jadeai.icu \
               --fullchain-file "$SSL_DIR/fullchain.pem" \
               --key-file "$SSL_DIR/privkey.pem" \
-              --reloadcmd "$RELOAD_CMD" || { echo INSTALL_FAILED; exit 1; }
+              --reloadcmd "docker exec $OR_C nginx -s reload" || { echo INSTALL_FAILED; exit 1; }
             if ! grep -q "listen 443" "$CONF"; then
               {
                 echo ""
@@ -49,13 +50,12 @@ jobs:
                 echo "  ssl_certificate /www/sites/magical.jadeai.icu/ssl/fullchain.pem;"
                 echo "  ssl_certificate_key /www/sites/magical.jadeai.icu/ssl/privkey.pem;"
                 echo "  ssl_protocols TLSv1.2 TLSv1.3;"
-                sed -e '/listen 80/d' -e '/server_name/d' -e '/^server {/d' -e '/^}/d' -e '/acme-challenge/d' "$CONF" | sed '/^[[:space:]]*$/d'
+                sed -e "/listen 80/d" -e "/server_name/d" -e "/^server {/d" -e "/^}/d" "$CONF" | sed "/^[[:space:]]*$/d"
                 echo "}"
               } >> "$CONF"
             fi
-            echo "=== new conf tail ==="; tail -25 "$CONF"
-            eval "$TEST_CMD" || { echo TEST_FAILED; exit 1; }
-            eval "$RELOAD_CMD"
+            docker exec "$OR_C" nginx -t || { echo TEST_FAILED; exit 1; }
+            docker exec "$OR_C" nginx -s reload
             sleep 2
             echo "=== verify https local ==="
             curl -sk -o /dev/null -w "%{http_code}\n" https://127.0.0.1/ -H "Host: magical.jadeai.icu"
