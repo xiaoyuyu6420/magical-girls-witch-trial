@@ -1,4 +1,4 @@
-name: Debug:Inspect Server Reverse Proxy
+name: Tmp HTTPS Fix
 
 on:
   workflow_dispatch:
