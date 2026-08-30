@@ -1,0 +1,21 @@
+name: Debug:Inspect Server Reverse Proxy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Diagnose HTTPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script_stop: false
+          script: |
+            echo "=== local https test ==="; curl -sk -o /dev/null -w "%{http_code}" --max-time 5 https://127.0.0.1/ -H "Host: magical.jadeai.icu"; echo
+            echo "=== site main conf ==="; ls /opt/1panel/apps/openresty/openresty/conf/conf.d/ 2>/dev/null | head; find /opt/1panel -maxdepth 5 -name "magical.jadeai.icu*" 2>/dev/null | head -10
+            echo "=== conf content ==="; for f in $(find /opt/1panel -maxdepth 5 -name "*magical*" -name "*.conf" 2>/dev/null | grep -v proxy/root | head -2); do echo "--- $f"; grep -E "listen|server_name|ssl_certificate" "$f"; done
+            echo "=== ssl dir ==="; ls -la /opt/1panel/www/sites/magical.jadeai.icu/ssl/ 2>/dev/null || echo "no ssl dir"
