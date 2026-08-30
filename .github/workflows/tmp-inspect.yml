@@ -20,21 +20,25 @@ jobs:
             CONF=/opt/1panel/www/conf.d/magical.jadeai.icu.conf
             SSL_DIR=/opt/1panel/www/sites/magical.jadeai.icu/ssl
             WEBROOT=/opt/1panel/www/sites/magical.jadeai.icu/index
-            mkdir -p "$WEBROOT" "$SSL_DIR"
-            RELOAD="sudo -n /usr/local/openresty/bin/openresty -s reload || sudo -n openresty -s reload || sudo -n nginx -s reload || sudo -n systemctl reload openresty"
-            grep -q "acme-challenge" "$CONF" || sudo -n sed -i "/server_name magical.jadeai.icu;/a\\  location ^~ /.well-known/acme-challenge/ { root $WEBROOT; }" "$CONF"
-            eval "$RELOAD" || true
-            if [ ! -f ~/.acme.sh/acme.sh ]; then
-              rm -rf /tmp/acme.sh
-              git clone --depth 1 https://gitee.com/neilpang/acme.sh.git /tmp/acme.sh
-              (cd /tmp/acme.sh && ./acme.sh --install -m admin@jadeai.icu)
+            echo "=== conf full ==="; cat "$CONF"
+            OR_C=$(docker ps --format "{{.Names}}" | grep -i openresty | head -1 || true)
+            echo "openresty container: $OR_C"
+            if [ -n "$OR_C" ]; then
+              TEST_CMD="docker exec $OR_C nginx -t"
+              RELOAD_CMD="docker exec $OR_C nginx -s reload"
+            else
+              TEST_CMD="sudo -n /usr/local/openresty/bin/openresty -t || sudo -n nginx -t"
+              RELOAD_CMD="sudo -n /usr/local/openresty/bin/openresty -s reload || sudo -n nginx -s reload"
             fi
+            sudo -n mkdir -p "$WEBROOT/.well-known/acme-challenge"
+            sudo -n chown -R "$(whoami)" "$WEBROOT/.well-known"
+            chmod 755 "$WEBROOT/.well-known" "$WEBROOT/.well-known/acme-challenge"
             ACME=~/.acme.sh/acme.sh
             $ACME --issue --server letsencrypt -d magical.jadeai.icu -w "$WEBROOT" --force || { echo ISSUE_FAILED; exit 1; }
             $ACME --install-cert -d magical.jadeai.icu \
               --fullchain-file "$SSL_DIR/fullchain.pem" \
               --key-file "$SSL_DIR/privkey.pem" \
-              --reloadcmd "$RELOAD" || { echo INSTALL_FAILED; exit 1; }
+              --reloadcmd "$RELOAD_CMD" || { echo INSTALL_FAILED; exit 1; }
             if ! grep -q "listen 443" "$CONF"; then
               {
                 echo ""
@@ -42,15 +46,16 @@ jobs:
                 echo "  listen 443 ssl;"
                 echo "  http2 on;"
                 echo "  server_name magical.jadeai.icu;"
-                echo "  ssl_certificate $SSL_DIR/fullchain.pem;"
-                echo "  ssl_certificate_key $SSL_DIR/privkey.pem;"
+                echo "  ssl_certificate /www/sites/magical.jadeai.icu/ssl/fullchain.pem;"
+                echo "  ssl_certificate_key /www/sites/magical.jadeai.icu/ssl/privkey.pem;"
                 echo "  ssl_protocols TLSv1.2 TLSv1.3;"
                 sed -e '/listen 80/d' -e '/server_name/d' -e '/^server {/d' -e '/^}/d' -e '/acme-challenge/d' "$CONF" | sed '/^[[:space:]]*$/d'
                 echo "}"
               } >> "$CONF"
             fi
-            sudo -n /usr/local/openresty/bin/openresty -t 2>&1 || sudo -n openresty -t 2>&1 || sudo -n nginx -t 2>&1
-            eval "$RELOAD"
+            echo "=== new conf tail ==="; tail -25 "$CONF"
+            eval "$TEST_CMD" || { echo TEST_FAILED; exit 1; }
+            eval "$RELOAD_CMD"
             sleep 2
             echo "=== verify https local ==="
             curl -sk -o /dev/null -w "%{http_code}\n" https://127.0.0.1/ -H "Host: magical.jadeai.icu"
