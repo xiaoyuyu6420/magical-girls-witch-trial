@@ -7,7 +7,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Install cert and enable HTTPS
+      - name: Append 443 block and reload
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -18,16 +18,8 @@ jobs:
 
             set -e
             CONF=/opt/1panel/www/conf.d/magical.jadeai.icu.conf
-            SSL_DIR=/opt/1panel/www/sites/magical.jadeai.icu/ssl
             OR_C=1Panel-openresty-ykQi
-            sudo -n mkdir -p "$SSL_DIR"
-            sudo -n chown -R "$(whoami)" "$SSL_DIR"
-            ACME=~/.acme.sh/acme.sh
-            $ACME --install-cert -d magical.jadeai.icu \
-              --fullchain-file "$SSL_DIR/fullchain.pem" \
-              --key-file "$SSL_DIR/privkey.pem" \
-              --reloadcmd "docker exec $OR_C nginx -s reload" || { echo INSTALL_FAILED; exit 1; }
-            ls -la "$SSL_DIR"
+            sudo -n chown "$(whoami)" "$CONF"
             if ! grep -q "listen 443" "$CONF"; then
               {
                 echo ""
@@ -42,6 +34,7 @@ jobs:
                 echo "}"
               } >> "$CONF"
             fi
+            echo "=== new conf ==="; cat "$CONF"
             docker exec "$OR_C" nginx -t || { echo TEST_FAILED; exit 1; }
             docker exec "$OR_C" nginx -s reload
             sleep 2
