@@ -7,7 +7,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Append 443 block and reload
+      - name: Rewrite conf with single 443 block
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -20,23 +20,54 @@ jobs:
             CONF=/opt/1panel/www/conf.d/magical.jadeai.icu.conf
             OR_C=1Panel-openresty-ykQi
             sudo -n chown "$(whoami)" "$CONF"
-            if ! grep -q "listen 443" "$CONF"; then
-              {
-                echo ""
-                echo "server {"
-                echo "  listen 443 ssl;"
-                echo "  http2 on;"
-                echo "  server_name magical.jadeai.icu;"
-                echo "  ssl_certificate /www/sites/magical.jadeai.icu/ssl/fullchain.pem;"
-                echo "  ssl_certificate_key /www/sites/magical.jadeai.icu/ssl/privkey.pem;"
-                echo "  ssl_protocols TLSv1.2 TLSv1.3;"
-                sed -e "/listen 80/d" -e "/server_name/d" -e "/^server {/d" -e "/^}/d" "$CONF" | sed "/^[[:space:]]*$/d"
-                echo "}"
-              } >> "$CONF"
-            fi
-            echo "=== new conf ==="; cat "$CONF"
+            cat > /tmp/new-conf <<'NGINX'
+server {
+    listen 80;
+    server_name magical.jadeai.icu;
+    index index.php index.html index.htm default.php default.htm default.html;
+    access_log /www/sites/magical.jadeai.icu/log/access.log main;
+    error_log /www/sites/magical.jadeai.icu/log/error.log;
+    location ~ ^/(\.user.ini|\.htaccess|\.git|\.env|\.svn|\.project|LICENSE|README.md) {
+        return 404;
+    }
+    location ^~ /.well-known/acme-challenge {
+        allow all;
+        root /usr/share/nginx/html;
+    }
+    if ( $uri ~ "^/\.well-known/.*\.(php|jsp|py|js|css|lua|ts|go|zip|tar\.gz|rar|7z|sql|bak)$" ) {
+        return 403;
+    }
+    root /www/sites/magical.jadeai.icu/index;
+    include /www/sites/magical.jadeai.icu/proxy/*.conf;
+}
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name magical.jadeai.icu;
+    ssl_certificate /www/sites/magical.jadeai.icu/ssl/fullchain.pem;
+    ssl_certificate_key /www/sites/magical.jadeai.icu/ssl/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    index index.php index.html index.htm default.php default.htm default.html;
+    access_log /www/sites/magical.jadeai.icu/log/access.log main;
+    error_log /www/sites/magical.jadeai.icu/log/error.log;
+    location ~ ^/(\.user.ini|\.htaccess|\.git|\.env|\.svn|\.project|LICENSE|README.md) {
+        return 404;
+    }
+    location ^~ /.well-known/acme-challenge {
+        allow all;
+        root /usr/share/nginx/html;
+    }
+    if ( $uri ~ "^/\.well-known/.*\.(php|jsp|py|js|css|lua|ts|go|zip|tar\.gz|rar|7z|sql|bak)$" ) {
+        return 403;
+    }
+    root /www/sites/magical.jadeai.icu/index;
+    include /www/sites/magical.jadeai.icu/proxy/*.conf;
+}
+NGINX
+            sudo -n cp "$CONF" "$CONF.bak.$(date +%s)" && sudo -n cp /tmp/new-conf "$CONF"
             docker exec "$OR_C" nginx -t || { echo TEST_FAILED; exit 1; }
             docker exec "$OR_C" nginx -s reload
             sleep 2
             echo "=== verify https local ==="
             curl -sk -o /dev/null -w "%{http_code}\n" https://127.0.0.1/ -H "Host: magical.jadeai.icu"
+            curl -sk -o /dev/null -w "%{http_code}\n" https://127.0.0.1/api/count -H "Host: magical.jadeai.icu"
