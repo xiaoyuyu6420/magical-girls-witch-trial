@@ -10,7 +10,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Rewrite conf (single 443 block)
+      - name: Fix perms and diagnose handshake
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -19,16 +19,18 @@ jobs:
           script_stop: false
           script: |
             set -e
-            CONF=/opt/1panel/www/conf.d/magical.jadeai.icu.conf
             OR_C=1Panel-openresty-ykQi
-            B64="c2VydmVyIHsKICAgIGxpc3RlbiA4MDsKICAgIHNlcnZlcl9uYW1lIG1hZ2ljYWwuamFkZWFpLmljdTsKICAgIGluZGV4IGluZGV4LnBocCBpbmRleC5odG1sIGluZGV4Lmh0bSBkZWZhdWx0LnBocCBkZWZhdWx0Lmh0bSBkZWZhdWx0Lmh0bWw7CiAgICBhY2Nlc3NfbG9nIC93d3cvc2l0ZXMvbWFnaWNhbC5qYWRlYWkuaWN1L2xvZy9hY2Nlc3MubG9nIG1haW47CiAgICBlcnJvcl9sb2cgL3d3dy9zaXRlcy9tYWdpY2FsLmphZGVhaS5pY3UvbG9nL2Vycm9yLmxvZzsKICAgIGxvY2F0aW9uIH4gXi8oXC51c2VyLmluaXxcLmh0YWNjZXNzfFwuZ2l0fFwuZW52fFwuc3ZufFwucHJvamVjdHxMSUNFTlNFfFJFQURNRS5tZCkgewogICAgICAgIHJldHVybiA0MDQ7CiAgICB9CiAgICBsb2NhdGlvbiBefiAvLndlbGwta25vd24vYWNtZS1jaGFsbGVuZ2UgewogICAgICAgIGFsbG93IGFsbDsKICAgICAgICByb290IC91c3Ivc2hhcmUvbmdpbngvaHRtbDsKICAgIH0KICAgIGlmICggJHVyaSB+ICJeL1wud2VsbC1rbm93bi8uKlwuKHBocHxqc3B8cHl8anN8Y3NzfGx1YXx0c3xnb3x6aXB8dGFyXC5nenxyYXJ8N3p8c3FsfGJhaykkIiApIHsKICAgICAgICByZXR1cm4gNDAzOwogICAgfQogICAgcm9vdCAvd3d3L3NpdGVzL21hZ2ljYWwuamFkZWFpLmljdS9pbmRleDsKICAgIGluY2x1ZGUgL3d3dy9zaXRlcy9tYWdpY2FsLmphZGVhaS5pY3UvcHJveHkvKi5jb25mOwp9CnNlcnZlciB7CiAgICBsaXN0ZW4gNDQzIHNzbDsKICAgIGh0dHAyIG9uOwogICAgc2VydmVyX25hbWUgbWFnaWNhbC5qYWRlYWkuaWN1OwogICAgc3NsX2NlcnRpZmljYXRlIC93d3cvc2l0ZXMvbWFnaWNhbC5qYWRlYWkuaWN1L3NzbC9mdWxsY2hhaW4ucGVtOwogICAgc3NsX2NlcnRpZmljYXRlX2tleSAvd3d3L3NpdGVzL21hZ2ljYWwuamFkZWFpLmljdS9zc2wvcHJpdmtleS5wZW07CiAgICBzc2xfcHJvdG9jb2xzIFRMU3YxLjIgVExTdjEuMzsKICAgIGluZGV4IGluZGV4LnBocCBpbmRleC5odG1sIGluZGV4Lmh0bSBkZWZhdWx0LnBocCBkZWZhdWx0Lmh0bSBkZWZhdWx0Lmh0bWw7CiAgICBhY2Nlc3NfbG9nIC93d3cvc2l0ZXMvbWFnaWNhbC5qYWRlYWkuaWN1L2xvZy9hY2Nlc3MubG9nIG1haW47CiAgICBlcnJvcl9sb2cgL3d3dy9zaXRlcy9tYWdpY2FsLmphZGVhaS5pY3UvbG9nL2Vycm9yLmxvZzsKICAgIGxvY2F0aW9uIH4gXi8oXC51c2VyLmluaXxcLmh0YWNjZXNzfFwuZ2l0fFwuZW52fFwuc3ZufFwucHJvamVjdHxMSUNFTlNFfFJFQURNRS5tZCkgewogICAgICAgIHJldHVybiA0MDQ7CiAgICB9CiAgICBsb2NhdGlvbiBefiAvLndlbGwta25vd24vYWNtZS1jaGFsbGVuZ2UgewogICAgICAgIGFsbG93IGFsbDsKICAgICAgICByb290IC91c3Ivc2hhcmUvbmdpbngvaHRtbDsKICAgIH0KICAgIGlmICggJHVyaSB+ICJeL1wud2VsbC1rbm93bi8uKlwuKHBocHxqc3B8cHl8anN8Y3NzfGx1YXx0c3xnb3x6aXB8dGFyXC5nenxyYXJ8N3p8c3FsfGJhaykkIiApIHsKICAgICAgICByZXR1cm4gNDAzOwogICAgfQogICAgcm9vdCAvd3d3L3NpdGVzL21hZ2ljYWwuamFkZWFpLmljdS9pbmRleDsKICAgIGluY2x1ZGUgL3d3dy9zaXRlcy9tYWdpY2FsLmphZGVhaS5pY3UvcHJveHkvKi5jb25mOwp9Cg=="
-            echo "$B64" | tr -d '\n' | base64 -d > /tmp/new-conf
-            echo "=== decoded conf head ==="; head -6 /tmp/new-conf
-            sudo -n chown "$(whoami)" "$CONF"
-            sudo -n cp "$CONF" "$CONF.bak.$(date +%s)" && sudo -n cp /tmp/new-conf "$CONF"
-            docker exec "$OR_C" nginx -t || { echo TEST_FAILED; exit 1; }
-            docker exec "$OR_C" nginx -s reload
-            sleep 2
-            echo "=== verify https local ==="
-            curl -sk -o /dev/null -w "%{http_code}\n" https://127.0.0.1/ -H "Host: magical.jadeai.icu"
-            curl -sk -o /dev/null -w "%{http_code}\n" https://127.0.0.1/api/count -H "Host: magical.jadeai.icu"
+            SSL_DIR=/opt/1panel/www/sites/magical.jadeai.icu/ssl
+            echo "=== api site ssl perms (reference) ==="
+            grep -E "ssl_certificate" /opt/1panel/www/conf.d/api.jadeai.icu.conf | head -4
+            ls -la /opt/1panel/www/sites/api.jadeai.icu/ssl/ 2>/dev/null | head -6
+            echo "=== our ssl perms before ==="
+            ls -la "$SSL_DIR"
+            chmod 644 "$SSL_DIR/privkey.pem" "$SSL_DIR/fullchain.pem"
+            echo "=== curl -v handshake ==="
+            curl -skv https://127.0.0.1/ -H "Host: magical.jadeai.icu" 2>&1 | grep -E "SSL|error|subject|HTTP|schem" | head -10
+            echo "=== openresty logs ==="
+            docker logs --tail 12 "$OR_C" 2>&1 | tail -12
+            echo "=== final code ==="
+            curl -sk -o /dev/null -w "%{http_code}\n" https://127.0.0.1/ -H "Host: magical.jadeai.icu" || true
+            curl -sk -o /dev/null -w "%{http_code}\n" https://127.0.0.1/api/count -H "Host: magical.jadeai.icu" || true
