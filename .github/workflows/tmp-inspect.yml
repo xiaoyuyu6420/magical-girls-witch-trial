@@ -2,6 +2,9 @@ name: Tmp HTTPS Fix
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tmp-inspect.yml'
 
 jobs:
   inspect:
