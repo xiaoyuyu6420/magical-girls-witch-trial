@@ -20,4 +20,4 @@ jobs:
           script: |
             docker ps -a --format "{{.Names}} {{.Status}}" | grep magical
             echo "=== logs ==="
-            docker logs --tail 30 magical-girls-witch-trial 2>&1 | tail -30
+            docker logs --tail 25 magical-girls-witch-trial 2>&1 | tail -25
