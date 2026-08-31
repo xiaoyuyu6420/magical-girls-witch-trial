@@ -87,6 +87,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   // ── 批注插页：独立 state，不改 currentIndex ──
   const [interjection, setInterjection] = useState<AnnotationNode | null>(null);
   const [interjectionText, setInterjectionText] = useState<string>("");
+  const [interjectionExiting, setInterjectionExiting] = useState(false);
   const interjectionFetchedRef = useRef(false);
   // 记录已展示过的批注节点，避免点击关闭后 useEffect 因 answers.length 未变而重新触发（无限重开 bug）
   const shownInterjectionsRef = useRef<Set<AnnotationNode>>(new Set());
@@ -237,6 +238,24 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
       });
   }, [interjection, answers]);
 
+  // ── 批注浮条：从背景浮现、自动消散，不打断答题（可点击提前关闭）──
+  const dismissInterjection = useCallback(() => {
+    if (interjectionExiting) return;
+    setInterjectionExiting(true);
+    setTimeout(() => {
+      setInterjection(null);
+      setInterjectionText("");
+      setInterjectionExiting(false);
+    }, 500);
+  }, [interjectionExiting]);
+
+  useEffect(() => {
+    if (interjection === null) return;
+    const t = setTimeout(dismissInterjection, 4200);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [interjection, interjectionText]);
+
   const flushPending = useCallback(() => {
     clearTimeout(timerRef.current);
     clearTimeout(fadeTimerRef.current);
@@ -342,16 +361,6 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   // Keyboard support
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      // ── 批注插页：任意键继续 ──
-      if (interjection !== null) {
-        if (e.key === "Enter" || e.key === " " || e.key.length === 1) {
-          e.preventDefault();
-          setInterjection(null);
-          setInterjectionText("");
-        }
-        return;
-      }
-
       if (!current) return;
       const rt = current.renderType ?? current.type;
 
@@ -383,7 +392,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [current, isAnimating, handleSelect, flushPending, interjection]);
+  }, [current, isAnimating, handleSelect, flushPending]);
 
   // Update progress line
   useEffect(() => {
@@ -541,57 +550,31 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     );
   };
 
-  // ── 批注插页 overlay ──
+  // ── 批注浮条（背景浮现 → 自动消散；非阻塞，答题与键盘不受影响）──
   const renderInterjection = () => {
     if (interjection === null) return null;
     const nodeLabels: Record<number, string> = { 5: "I", 10: "II", 15: "III" };
     return (
       <div
-        className="interjection-overlay"
-        role="dialog"
-        aria-label="审判官批注"
-        style={{
-          position: "absolute", inset: 0, zIndex: 40,
-          display: "flex", flexDirection: "column",
-          justifyContent: "center", alignItems: "center",
-          background: "rgba(3,3,3,0.95)",
-          padding: "4vh 8vw",
-          cursor: "pointer",
-          // A4：reduced-motion 时跳过 staggerIn（inline 优先级高于 CSS 守卫，
-          // 故在 JS 侧按 reducedMotion state 门控，元素仍可见）。
-          animation: reducedMotion ? "none" : "staggerIn 0.6s var(--ease-out-expo) forwards",
-        }}
-        onClick={() => { setInterjection(null); setInterjectionText(""); }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            setInterjection(null);
-            setInterjectionText("");
-          }
-        }}
-        tabIndex={0}
+        className={`interjection-overlay ${interjectionExiting ? "is-leaving" : ""}`}
+        role="status"
+        aria-live="polite"
+        onClick={dismissInterjection}
       >
         <div style={{
-          fontFamily: "var(--f-title)", fontSize: "clamp(0.7rem,1.2vw,0.85rem)",
-          color: "var(--c-gold)", letterSpacing: "0.3em", marginBottom: "3vh",
-          opacity: 0.6,
+          fontFamily: "var(--f-title)", fontSize: "0.62rem",
+          color: "var(--c-gold)", letterSpacing: "0.3em", marginBottom: "0.55rem",
+          opacity: 0.65,
         }}>
           审判官批注 · {nodeLabels[interjection] ?? interjection}
         </div>
         <div style={{
-          fontSize: "clamp(1.1rem,2.5vw,1.6rem)", fontWeight: 400,
-          lineHeight: 1.8, textAlign: "center", maxWidth: 480,
+          fontSize: "clamp(0.95rem, 1.8vw, 1.15rem)", fontWeight: 400,
+          lineHeight: 1.75, textAlign: "center",
           color: "#EFEFEF",
           textShadow: "0 4px 20px rgba(0,0,0,0.8)",
         }}>
           {interjectionText || "…"}
-        </div>
-        <div style={{
-          marginTop: "4vh", fontFamily: "var(--f-title)",
-          fontSize: "0.65rem", color: "rgba(255,255,255,0.25)",
-          letterSpacing: "0.2em",
-        }}>
-          {t("test.keyHint") ? "按任意键继续" : "点击继续"}
         </div>
       </div>
     );
