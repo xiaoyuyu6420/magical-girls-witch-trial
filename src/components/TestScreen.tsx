@@ -32,6 +32,26 @@ const STORAGE_KEY = "witch-trial-progress";
 const ROMAN = ["I", "II", "III", "IV", "V"];
 const INTERJECTION_NODES: AnnotationNode[] = [5, 10, 15];
 
+/**
+ * 把选项 label 拆成「主句 + 尾部括号吐槽」。
+ * label 形如 `主句。（吐槽。）（触发特殊分支）【标记】`——从尾部循环剥离 （…）
+ * 作为 aside，尾部 【…】 保留在主句末尾（scale 题的【纯洁殉道】等倾向标签）。
+ * 拆不出来（如 weight 编码 label / 无吐槽选项）时原样返回，渲染端零行为变化。
+ */
+export function splitOptionLabel(label: string): { main: string; asides: string[] } {
+  const asides: string[] = [];
+  let rest = label.trimEnd();
+  const tag = rest.match(/(【[^】]*】)\s*$/);
+  if (tag) rest = rest.slice(0, tag.index).trimEnd();
+  for (;;) {
+    const m = rest.match(/（([^（）]*)）\s*$/);
+    if (!m) break;
+    asides.unshift(m[1]);
+    rest = rest.slice(0, m.index).trimEnd();
+  }
+  return { main: rest + (tag ?? ""), asides };
+}
+
 function readSavedProgress(): {
   currentIndex: number;
   answers: { questionId: number; optionId: number }[];
@@ -60,6 +80,136 @@ function readSavedProgress(): {
   } catch {
     return { currentIndex: 0, answers: [], gateValue: undefined };
   }
+}
+
+/**
+ * 生成放大镜位移贴图：每像素 R/G 通道编码"该输出像素应从背景哪里采样"。
+ * 透镜模型——放大率随半径衰减（中心最强）+ 边缘 rim 反向位移（桶形畸变），
+ * 供 feDisplacementMap 逐像素折射背景内容（真畸变，非贴图假光影）。
+ */
+function buildLensMap(size = 168): string {
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return "";
+  const img = ctx.createImageData(size, size);
+  const half = size / 2;
+  const SCALE = 110; // 须与 CSS 侧 feDisplacementMap scale 一致
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const px = x + 0.5 - half;
+      const py = y + 0.5 - half;
+      const r = Math.hypot(px, py) / half;
+      let dr = 0.5;
+      let dg = 0.5;
+      if (r <= 1) {
+        // 放大率：中心 ~1.75x，向边缘衰减到 ~1.0x
+        const mag = 1 + 0.75 * Math.pow(Math.max(0, 1 - r), 1.15);
+        // rim：最外 15% 半径额外向外弯，做出玻璃厚边的折射暗环
+        const rim = r > 0.85 ? Math.pow((r - 0.85) / 0.15, 2) * 0.3 : 0;
+        const k = (1 - 1 / mag) + rim;
+        dr = 0.5 - (px * k) / SCALE;
+        dg = 0.5 - (py * k) / SCALE;
+      }
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.max(0, Math.min(255, dr * 255));
+      img.data[i + 1] = Math.max(0, Math.min(255, dg * 255));
+      img.data[i + 2] = 128;
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvas.toDataURL();
+}
+
+/** 把放大镜 SVG 滤镜注入文档（一次），供 cursor-ring 的 backdrop-filter 引用 */
+function injectLensFilter(): void {
+  if (document.getElementById("witch-lens")) return;
+  const map = buildLensMap();
+  if (!map) return;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("style", "position:absolute;width:0;height:0;pointer-events:none");
+  // feImage 尺寸须与 hover 态 ring 尺寸（84px）一致，位移贴图恰好铺满滤镜区
+  svg.innerHTML =
+    `<filter id="witch-lens" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">` +
+    `<feImage href="${map}" x="0" y="0" width="84" height="84" preserveAspectRatio="none" result="map"/>` +
+    `<feDisplacementMap in="SourceGraphic" in2="map" scale="110" xChannelSelector="R" yChannelSelector="G"/>` +
+    `</filter>`;
+  document.body.appendChild(svg);
+}
+
+/**
+ * 答题页自定义光标（2026-08-31，用户反馈"首页有鼠标效果答题页没了"）：
+ * 复刻首页 light 版——金点立即跟随 + 圆环延迟跟随（rAF lerp），悬停可点元素
+ * 时 dot 缩没、ring 放大变金（body.hovering，样式在 globals.css 已有），
+ * 1.5s 无移动自动淡出。触屏 / reduced-motion 不启动。
+ * DOM 挂在组件内而非全局：/test 直开与 iframe 嵌入两种场景都生效。
+ */
+function CustomCursor() {
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    injectLensFilter();
+    const dot = dotRef.current;
+    const ring = ringRef.current;
+    if (!dot || !ring) return;
+
+    const mouse = { x: -100, y: -100 };
+    const ringPos = { x: -100, y: -100 };
+    let raf = 0;
+    let idleTimer = 0;
+    let started = false;
+
+    const setVisible = (v: boolean) => {
+      dot.style.opacity = v ? "1" : "0";
+      ring.style.opacity = v ? "1" : "0";
+    };
+    setVisible(false);
+
+    const onMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      dot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`;
+      if (!started) {
+        ringPos.x = mouse.x;
+        ringPos.y = mouse.y;
+        started = true;
+      }
+      setVisible(true);
+      clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => setVisible(false), 1500);
+      const target = e.target as HTMLElement | null;
+      document.body.classList.toggle(
+        "hovering",
+        !!target?.closest("button, a, .opt-block, .balance-pan, .weight-card, .interjection-overlay"),
+      );
+    };
+
+    const loop = () => {
+      ringPos.x += (mouse.x - ringPos.x) * 0.16;
+      ringPos.y += (mouse.y - ringPos.y) * 0.16;
+      ring.style.transform = `translate(${ringPos.x}px, ${ringPos.y}px) translate(-50%, -50%)`;
+      raf = requestAnimationFrame(loop);
+    };
+
+    window.addEventListener("mousemove", onMove);
+    raf = requestAnimationFrame(loop);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(raf);
+      clearTimeout(idleTimer);
+      document.body.classList.remove("hovering");
+    };
+  }, []);
+  return (
+    <>
+      <div id="cursor-dot" ref={dotRef} aria-hidden="true" />
+      <div id="cursor-ring" ref={ringRef} aria-hidden="true" />
+    </>
+  );
 }
 
 export default function TestScreen({ questions, onComplete, onExit }: TestScreenProps) {
@@ -193,12 +343,17 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   }, [safeIndex, current?.renderType]);
 
   // ── 换题时恢复已选高亮（回看场景：进入已答题显示上次的选择）──
+  // isRecap=true 表示当前选中来自"回看恢复"而非本次点击——渲染端据此跳过
+  // is-selected/is-dimmed 折叠动效（否则回看已答题时其他选项被压成细条无法点选，
+  // 桌面尤甚——2026-08-31 用户反馈"答案占满整个答题区域"即此）。
+  const [isRecap, setIsRecap] = useState(false);
   useEffect(() => {
     let disposed = false;
     queueMicrotask(() => {
       if (disposed) return;
       const saved = answers[safeIndex];
       setSelectedOptionId(saved ? saved.optionId : null);
+      setIsRecap(true);
     });
     return () => { disposed = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -270,11 +425,15 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
       onComplete({ answers: p.answers, gateValue: p.gateValue });
     } else {
       setAnswers(p.answers);
-      setCurrentIndex((i) => i + 1);
+      setCurrentIndex((i) => {
+        maxVisitedRef.current = Math.max(maxVisitedRef.current, i + 1);
+        return i + 1;
+      });
       setStageFadeOut(false);
     }
     setIsAnimating(false);
     setSelectedOptionId(null);
+    setIsRecap(false);
   }, [onComplete]);
 
   const handleSelect = useCallback((option: QuizOption) => {
@@ -286,6 +445,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     }
     setIsAnimating(true);
     setSelectedOptionId(option.id);
+    setIsRecap(false);
     document.body.classList.remove("hovering");
 
     const isTouchFeedback = touchFeedbackRef.current
@@ -346,6 +506,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     setIsAnimating(false);
     setStageFadeOut(false);
     setSelectedOptionId(null);
+    setIsRecap(false);
     setToastVerdict(false);
   }, []);
 
@@ -357,6 +518,18 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     if (isAnimating) cancelPending();
     setCurrentIndex(safeIndex - 1);
   }, [safeIndex, isAnimating, cancelPending]);
+
+  // ── 前进下一题（后退后再往回走）。显示条件 = 后方存在"到过的题"：
+  // maxVisitedRef 记录本次作答到达过的最大 index（后退不清除），因此
+  // 后退 1 步前进键立即可用——不依赖下一题是否已有作答记录。 ──
+  const maxVisitedRef = useRef(0);
+  const handleForward = useCallback(() => {
+    if (isAnimating) cancelPending();
+    setCurrentIndex((i) => {
+      const next = Math.min(i + 1, maxVisitedRef.current);
+      return next > i ? next : i;
+    });
+  }, [isAnimating, cancelPending]);
 
   // Keyboard support
   useEffect(() => {
@@ -427,19 +600,20 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
       case "scale":
         // 天平题：game-icons 天平图形 + 下方双选项，选中后天平变暗
         return (
-          <div className="balance-stage" role="radiogroup" aria-labelledby={questionLabelId}>
+          <div className={`balance-stage ${interjection !== null ? "has-interjection" : ""}`} role="radiogroup" aria-labelledby={questionLabelId}>
             <BalanceScaleIcon
               className={`balance-svg ${selectedOptionId !== null ? "is-resolved" : ""}`}
             />
             <div className="balance-beam-options">
               {current.options.map((option, idx) => {
                 const isSel = selectedOptionId === option.id;
-                const isOther = selectedOptionId !== null && !isSel;
                 return (
                   <button
                     type="button"
                     key={option.id}
-                    className={`balance-pan ${isSel ? "is-down" : ""} ${isOther ? "is-up" : ""}`}
+                    className={`balance-pan ${
+                      isSel ? (isRecap ? "is-recap" : "is-down") : ""
+                    } ${selectedOptionId !== null && !isRecap && !isSel ? "is-up" : ""}`}
                     role="radio"
                     aria-checked={isSel}
                     aria-label={option.label}
@@ -447,11 +621,22 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
                     onClick={() => handleSelect(option)}
                   >
                     <span className="balance-pan-key" aria-hidden="true">{ROMAN[idx]}</span>
-                    <span className="balance-pan-text">{option.label}</span>
+                    {(() => {
+                      const { main, asides } = splitOptionLabel(option.label);
+                      return (
+                        <span className="balance-pan-text">
+                          <span className="opt-main">{main}</span>
+                          {asides.length > 0 && (
+                            <span className="opt-aside">（{asides.join("）（")}）</span>
+                          )}
+                        </span>
+                      );
+                    })()}
                   </button>
                 );
               })}
             </div>
+            {renderInterjection()}
           </div>
         );
 
@@ -462,12 +647,14 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
       default:
         // normal/gate/trigger：原有纵向推开
         return (
-          <div className="options-stage" role="radiogroup" aria-labelledby={questionLabelId}>
+          <div className={`options-stage ${interjection !== null ? "has-interjection" : ""}`} role="radiogroup" aria-labelledby={questionLabelId}>
             {current.options.map((option, idx) => (
               <button
                 type="button"
                 key={option.id}
-                className={`opt-block ${selectedOptionId === option.id ? "is-selected" : ""} ${selectedOptionId !== null && selectedOptionId !== option.id ? "is-dimmed" : ""}`}
+                className={`opt-block ${
+                  selectedOptionId === option.id ? (isRecap ? "is-recap" : "is-selected") : ""
+                } ${selectedOptionId !== null && !isRecap && selectedOptionId !== option.id ? "is-dimmed" : ""}`}
                 role="radio"
                 aria-checked={false}
                 aria-label={option.label}
@@ -477,10 +664,21 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
                 <div className="opt-content">
                   {/* 2026-08-15 统一：两端同一罗马数字序号（I/II/III），消除手机/桌面分叉 */}
                   <div className="opt-index" aria-hidden="true">{ROMAN[idx] ?? (idx + 1)}</div>
-                  <div className="opt-text">{option.label}</div>
+                  {(() => {
+                    const { main, asides } = splitOptionLabel(option.label);
+                    return (
+                      <div className="opt-text">
+                        <span className="opt-main">{main}</span>
+                        {asides.length > 0 && (
+                          <span className="opt-aside">（{asides.join("）（")}）</span>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               </button>
             ))}
+            {renderInterjection()}
           </div>
         );
     }
@@ -506,7 +704,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     };
 
     return (
-      <div className="weight-stage" role="group" aria-label="心理筹码分配">
+      <div className={`weight-stage ${interjection !== null ? "has-interjection" : ""}`} role="group" aria-label="心理筹码分配">
         <div className="weight-allocator">
           {weightSlots.map((val, slotIdx) => (
             <div
@@ -546,6 +744,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
             落 锤 决 断
           </button>
         </div>
+        {renderInterjection()}
       </div>
     );
   };
@@ -584,8 +783,9 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     <div className="view-test" style={{ position: "relative", width: "100%", height: "100dvh" }}>
       {/* 32 背景层（z 0-1 内容之下）：Canvas 紫粒子 + 浮雕题号 + 胶片颗粒 */}
       <BackgroundLayers questionIndex={currentIndex} reducedMotion={reducedMotion} />
+      <CustomCursor />
       <div id="progress-line" />
-      <div className="grain-overlay-test" aria-hidden="true" />
+      {/* grain-overlay-test（胶片颗粒噪点）已移除：2026-08-31 用户反馈手机端背景噪点干扰阅读 */}
       {/* Top bar — HUD 双胶囊（32 提取）：左 PREV+计数器 / 右 EXIT。Q1 时
           #btn-back 保持 DOM（CSS 默认 opacity 0），safeIndex>0 时加 .visible 显现。
           .test-header 容器定位机制不动（桌面 absolute 顶角 / 移动端 flex 列）。 */}
@@ -599,14 +799,12 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
             onClick={handleBack}
             aria-label="返回上一题"
           >
-            {/* 双向箭头用内联 SVG 绘制（⇄ 字符在部分安卓系统字体缺字形会渲染
-                成空白，SVG 保证所有设备一致显示） */}
+            {/* 单向左箭头（功能只有"后退一题"；SVG 内联绘制保证安卓缺字形设备一致） */}
             <svg width="22" height="14" viewBox="0 0 24 16" fill="none"
               stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"
               strokeLinejoin="round" style={{ display: "block" }} aria-hidden="true">
-              <line x1="2" y1="8" x2="22" y2="8" />
-              <path d="M7 3 L2 8 L7 13" />
-              <path d="M17 3 L22 8 L17 13" />
+              <line x1="22" y1="8" x2="3" y2="8" />
+              <path d="M8 3 L3 8 L8 13" />
             </svg>
           </button>
           <div className="hud-counter">
@@ -614,6 +812,22 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
             <span className="counter-slash">/</span>
             <span>{String(displayQuestions.length).padStart(2, "0")}</span>
           </div>
+          <button
+            type="button"
+            id="btn-forward"
+            className={`hud-btn ${safeIndex < maxVisitedRef.current ? "visible" : ""}`}
+            tabIndex={safeIndex < maxVisitedRef.current ? 0 : -1}
+            onClick={handleForward}
+            aria-label="前进下一题"
+          >
+            {/* 与返回键镜像的单向右箭头（仅在后退过、下一题已作答时显现） */}
+            <svg width="22" height="14" viewBox="0 0 24 16" fill="none"
+              stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"
+              strokeLinejoin="round" style={{ display: "block" }} aria-hidden="true">
+              <line x1="2" y1="8" x2="21" y2="8" />
+              <path d="M16 3 L21 8 L16 13" />
+            </svg>
+          </button>
         </div>
         {/* 退出按钮（2026-08-15 统一：两端同一文案，不再按端分支） */}
         <div className="hud-capsule">
@@ -640,7 +854,9 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
             ) : (
               <span className="tag-pill">
                 <span className="pulse-orb" aria-hidden="true" />
-                <span>{current.meta || "审判"}</span>
+                {/* 题号 QN 数字换罗马数字（2026-08-31 用户要求）：与选项序号 I/II/III、
+                    背景水印的罗马数字体系统一 */}
+                <span>{(current.meta || "审判").replace(/^Q\s*(\d+)/, (_, n) => `Q ${ROMAN[Number(n) - 1] ?? n}`)}</span>
               </span>
             )}
             <span className="q-hint">{showKeyboardHint ? (renderType === "weight" ? t("test.weightHint") : t("test.keyHint")) : ""}</span>
@@ -649,7 +865,6 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
         </div>
         {renderOptions()}
       </div>
-      {renderInterjection()}
     </div>
   );
 }

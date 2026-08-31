@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>魔女审判 | WITCH TRIAL — 魔法少女人格测试</title>
-  <meta name="description" content="26 道情境题，卸下伪装照见真实的自己。测测你最像哪位魔法少女——晓美焰、鹿目圆、沙耶香、杏子，还是清醒的审判者艾玛？">
+  <meta name="description" content="26 道情境题，看看你在关系、责任和自我保护之间怎么选，匹配 24 位魔法少女中的哪一位。">
   <meta name="keywords" content="魔女审判, 人格测试, 魔法少女, 性格测试, Witch Trial, personality test">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#030303">
@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="魔女审判">
   <meta property="og:title" content="魔女审判 | WITCH TRIAL">
-  <meta property="og:description" content="卸下伪装，测测你最像哪位魔法少女。">
+  <meta property="og:description" content="26 道情境题，测测你最像哪位魔法少女。">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="zh_CN">
   <meta property="og:locale:alternate" content="zh_TW">
@@ -26,7 +26,7 @@
   <!-- <meta property="og:image" content="/og-image.png"> -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="魔女审判 | WITCH TRIAL">
-  <meta name="twitter:description" content="卸下伪装，测测你最像哪位魔法少女。">
+  <meta name="twitter:description" content="26 道情境题，测测你最像哪位魔法少女。">
   <!-- TODO: replace example.com with the production domain before launch -->
   <link rel="canonical" href="https://example.com/">
   <!-- Tell parsers JS is required for the custom cursor; toggled by inline script below so JS-off desktops keep a system cursor -->
@@ -876,8 +876,7 @@
       <span class="hero__rule"></span>
     </div>
     <div class="hero__taglines">
-      <p class="hero__tagline" data-scramble="卸下伪装 · 测测你最像哪位魔法少女">卸下伪装 · 测测你最像哪位魔法少女</p>
-      <p class="hero__tagline hero__tagline--quiet" data-scramble="命运唯有审判可定">命运唯有审判可定</p>
+      <p class="hero__tagline" data-scramble="26 道情境题，测测你最像哪位魔法少女">26 道情境题，测测你最像哪位魔法少女</p>
     </div>
     <div class="hero__cta-wrap magnetic-btn-wrap">
       <button class="hero__cta magnetic" data-scramble="接受审判" onclick="initiateDive()">接受审判</button>
@@ -898,8 +897,8 @@
         hudBottomRight: 'FOLIO · NO. 0451',
         overline: '序章 · PROLOGUE · I',
         kanji: '魔女审判',
-        tagline1: '卸下伪装 · 测测你最像哪位魔法少女',
-        tagline2: '命运唯有审判可定',
+        tagline1: '26 道情境题，测测你最像哪位魔法少女',
+        tagline2: '',
         btn: '接受审判',
         statsHum: '{count} 名 灵 魂 已 受 审',
         alert: '>> 正在生成你的人格分析报告 <<'
@@ -912,8 +911,8 @@
         hudBottomRight: 'FOLIO · NO. 0451',
         overline: '序章 · PROLOGUE · I',
         kanji: '魔女審判',
-        tagline1: '卸下偽裝 · 測測你最像哪位魔法少女',
-        tagline2: '命運唯有審判可定',
+        tagline1: '26 道情境題，測測你最像哪位魔法少女',
+        tagline2: '',
         btn: '接受審判',
         statsHum: '{count} 名 靈 魂 已 受 審',
         alert: '>> 正在生成你的人格分析報告 <<'
@@ -926,8 +925,8 @@
         hudBottomRight: 'CASE FILE · NO. 0451',
         overline: 'PROLOGUE · CHAPTER I',
         kanji: 'WITCH TRIAL',
-        tagline1: 'Drop the mask. Which magical girl are you?',
-        tagline2: 'Only the trial may name your soul.',
+        tagline1: '26 scenarios — which magical girl are you?',
+        tagline2: '',
         btn: 'Enter the Trial',
         statsHum: '{count} SOULS HAVE BEEN JUDGED',
         alert: '>> GENERATING YOUR PERSONALITY REPORT <<'
@@ -940,8 +939,8 @@
         hudBottomRight: 'FOLIO · NO. 0451',
         overline: '序章 · PROLOGUE · I',
         kanji: '魔女裁判',
-        tagline1: '仮面を外して · あなたはどの魔法少女？',
-        tagline2: '運命を定めるのは審判のみ',
+        tagline1: '26つの選択 · あなたはどの魔法少女？',
+        tagline2: '',
         btn: '審判を受ける',
         statsHum: '{count} の 魂 が 審 か れ た',
         alert: '>> 人格分析レポートを生成中 <<'
@@ -1550,6 +1549,9 @@
         frame.title = '魔女审判答题';
         frame.setAttribute('allow', 'fullscreen; clipboard-write');
         frame.addEventListener('load', () => {
+          // load 完成标记：initiateDive 据此把揭幕 fallback 从 2s 缩到 300ms
+          //（预热场景下 /test 的 ready postMessage 已在无监听时丢失）。
+          frame.dataset.ready = '1';
           try {
             const path = frame.contentWindow.location.pathname;
             if (path === '/' || path === '/index.html') {
@@ -1587,7 +1589,7 @@
       const hero = document.querySelector('.hero');
       const bgTextContainer = document.querySelector('.bg-text-container');
 
-      ensureEmbeddedTestFrame();
+      var frameEl = ensureEmbeddedTestFrame();
 
       // 单次连续背景过渡：#030303 → #000。原先 #030303→#b80a1f→#000 的红色中间态是
       // "闪一下"的根因——welcome 原背景已是近黑，突变到亮血红再回黑，读起来就是一记红闪。
@@ -1621,7 +1623,19 @@
         if (e.data === 'witch-trial-test-ready') revealTest();
       }
       window.addEventListener('message', onTestReady);
-      diveTimer = setTimeout(revealTest, 2000);
+      // iframe 已预热 load 完成时，ready postMessage 已在无监听时丢失，
+      // 等不到消息 → fallback 用短时长（/test 文档已就绪，只差题目 fetch 的几十 ms）；
+      // 未预热（极端场景）保持 2s 兜底。
+      var prewarmed = frameEl.dataset && frameEl.dataset.ready === '1';
+      diveTimer = setTimeout(revealTest, prewarmed ? 300 : 2000);
+    }
+
+    /* 预热答题 iframe（2026-08-31）：idle 时就加载 /test，点击"接受审判"时
+       文档与题目多数已就绪——消除"点击后黑屏等加载"的衔接卡顿。 */
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(function () { ensureEmbeddedTestFrame(); }, { timeout: 3000 });
+    } else {
+      setTimeout(ensureEmbeddedTestFrame, 1500);
     }
 
     // Restore saved language preference

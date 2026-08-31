@@ -11,7 +11,7 @@ const t = {
   },
   meta: {
     title: "魔女審判 | WITCH TRIAL",
-    description: "26 道情境題，卸下偽裝照見真實的自己。測測你最像哪位魔法少女。",
+    description: "26 道情境題，看看你在關係、責任和自我保護之間怎麼選，匹配 24 位魔法少女中的哪一位。",
   },
   welcome: {
     badge: "",

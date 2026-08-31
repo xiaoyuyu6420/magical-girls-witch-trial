@@ -111,7 +111,7 @@
     --c-text: #ede9f3;
     --c-dim: rgba(255,255,255,0.2);
     --f-title: 'Cinzel', serif;
-    --f-body: 'Noto Serif SC', serif;
+    --f-body: 'Noto Sans SC', sans-serif;
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out-circ: cubic-bezier(0.85, 0, 0.15, 1);
     --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.1);
@@ -192,12 +192,28 @@
   }
   body.in-test #progress-line { opacity: 1; }
 
-  /* ===== Cursor =====（死代码：DOM 只在 public/index.html，iframe /test 内不渲染） */
-  #cursor-dot, #cursor-ring { position: fixed; top: 0; left: 0; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); }
-  #cursor-dot { width: 4px; height: 4px; background: var(--c-gold); transition: width 0.2s, height 0.2s; }
-  #cursor-ring { width: 36px; height: 36px; border: 1px solid var(--c-dim); transition: width 0.4s var(--ease-out-expo), height 0.4s var(--ease-out-expo), border-color 0.4s; mix-blend-mode: difference; }
+  /* ===== Cursor =====（首页 DOM 在 index.html；答题页由 TestScreen 的 CustomCursor 组件挂载） */
+  #cursor-dot, #cursor-ring { position: fixed; top: 0; left: 0; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: opacity 0.3s; }
+  #cursor-dot { width: 6px; height: 6px; background: #b80a1f; transition: width 0.2s, height 0.2s; }
+  #cursor-ring { width: 36px; height: 36px; border: 1px solid var(--c-dim); transition: width 0.4s var(--ease-out-expo), height 0.4s var(--ease-out-expo), border-color 0.4s, background 0.4s, box-shadow 0.4s, mix-blend-mode 0.4s; mix-blend-mode: difference; }
   body.hovering #cursor-dot { width: 0; height: 0; }
-  body.hovering #cursor-ring { width: 70px; height: 70px; border-color: var(--c-gold); background: rgba(255, 215, 0, 0.05); backdrop-filter: blur(2px); }
+  /* 放大镜质感（2026-08-31，用户反馈"圈里模糊/挡题"）：去掉 backdrop blur——
+     透明玻璃渐变 + 双圈金属描边 + 左上高光，hover 时退出 difference 混合还原真实色。 */
+  /* 放大镜（2026-08-31 v2）：真实折射——backdrop-filter 引用 CustomCursor 注入的
+     feDisplacementMap 滤镜（球面透镜位移贴图，中心放大 + 边缘桶形畸变），
+     不支持 url() 的引擎（iOS Safari）自动降级为下方光影质感。 */
+  body.hovering #cursor-ring {
+    width: 84px; height: 84px;
+    border-color: rgba(212, 175, 55, 0.85);
+    mix-blend-mode: normal;
+    backdrop-filter: url(#witch-lens);
+    background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.10), rgba(212, 175, 55, 0.03) 42%, transparent 60%);
+    box-shadow:
+      inset 0 0 0 1px rgba(0, 0, 0, 0.35),
+      inset 0 0 0 2px rgba(212, 175, 55, 0.28),
+      inset 0 0 14px rgba(0, 0, 0, 0.28),
+      0 0 22px rgba(212, 175, 55, 0.14);
+  }
 
   /* ===== View Layers & Blind ===== */
   .view-layer {
@@ -447,7 +463,7 @@
   .q-text .rich-punch { color: #ffb6c1; font-weight: 500; text-shadow: 0 0 2px rgba(0,0,0,0.95), 0 0 10px rgba(255,182,193,0.6), 0 0 20px rgba(255,182,193,0.35), 1px 1px 3px rgba(0,0,0,0.8); }
   .q-text .rich-whisper { color: rgba(239,239,239,0.5); font-weight: 400; }
 
-  .options-stage { flex: 1; display: flex; width: 100vw; flex-direction: row; z-index: 2; }
+  .options-stage { flex: 1; display: flex; width: 100vw; flex-direction: row; z-index: 2; position: relative; }
   @media (max-width: 768px) { .options-stage { flex-direction: column; } }
 
   .opt-block {
@@ -469,7 +485,10 @@
 
   .opt-content { position: absolute; width: 90%; max-width: 400px; text-align: center; pointer-events: none; transition: opacity 0.2s, transform 0.4s var(--ease-out-expo); }
   .opt-index { font-family: var(--f-title); font-size: 3rem; opacity: 0.1; margin-bottom: 0.5rem; transition: all 0.3s; line-height: 1; }
-  .opt-text { font-size: clamp(1rem, 2vw, 1.2rem); font-weight: 300; letter-spacing: 0.1em; opacity: 0.8; transition: all 0.3s; }
+  .opt-text { font-size: clamp(1rem, 2vw, 1.2rem); font-weight: 400; letter-spacing: 0.06em; opacity: 0.85; transition: all 0.3s; }
+  /* 选项括号吐槽：拆出主句单独一行淡化显示（2026-08-31，用户反馈吐槽干扰主句阅读） */
+  .opt-text .opt-main, .balance-pan-text .opt-main { display: block; }
+  .opt-aside { display: block; margin-top: 0.4rem; font-size: 0.8em; letter-spacing: 0.02em; opacity: 0.5; line-height: 1.55; transition: opacity 0.3s; }
 
   .gate-badge { display: inline-block; padding: 0.25rem 1rem; border-radius: 9999px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; border: 1px solid rgba(212, 175, 55, 0.3); color: var(--c-gold); background: rgba(212, 175, 55, 0.05); }
 
@@ -517,6 +536,22 @@
     transition: all 0.4s var(--ease-out-expo);
   }
   #btn-back.visible { opacity: 1; pointer-events: auto; transform: translateX(0); }
+  /* 前进键（2026-08-31）：与返回键镜像，仅在下一题已作答时显现 */
+  #btn-forward {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(10px);
+    transition: all 0.4s var(--ease-out-expo);
+  }
+  #btn-forward.visible { opacity: 1; pointer-events: auto; transform: translateX(0); }
+
+  /* 回看恢复（is-recap，2026-08-31）：进入已答题时只标记上次选择——
+     不播 is-selected 展开动效、不把其他选项 is-dimmed 压成细条
+     （原实现回看时其他选项被折叠到无法点击）。 */
+  .opt-block.is-recap { border-color: rgba(212, 175, 55, 0.3); }
+  .opt-block.is-recap .opt-index { opacity: 1; }
+  .balance-pan.is-recap { border-color: rgba(212, 175, 55, 0.3); }
+  .balance-pan.is-recap .balance-pan-key { background: rgba(212, 175, 55, 0.12); }
 
   .hud-counter {
     font-family: var(--f-syne);
@@ -609,6 +644,7 @@
   .balance-stage {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     width: 100%; padding: 4vh 6vw 2vh; gap: 2vh; position: relative; z-index: 2;
+    overflow-y: auto;
   }
   .balance-svg {
     width: min(34vw, 200px); height: auto;
@@ -648,6 +684,7 @@
   .weight-stage {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
     width: 100%; padding: 3vh 6vw; gap: 2.5vh; position: relative; z-index: 2;
+    overflow-y: auto;
   }
   .weight-allocator { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 480px; }
   .weight-card {
@@ -1442,8 +1479,9 @@
       position: relative; flex-shrink: 0;
       height: calc(env(safe-area-inset-top, 0px) + 3.25rem);
       /* padding-top +1.25rem：返回/exit 按钮下移到 HUD 取景框线（y=10px）
-         下方，不再被边框线穿过；与 q-meta（absolute 居中）同处边框下第一行。 */
-      padding: calc(env(safe-area-inset-top, 0px) + 1.25rem) 1.25rem 0;
+         下方，不再被边框线穿过；与 q-meta（absolute 居中）同处边框下第一行。
+         左右 1.6rem（2026-08-31）：1.25rem 时胶囊贴住取景框竖线，与背景装饰重叠。 */
+      padding: calc(env(safe-area-inset-top, 0px) + 1.25rem) 1.6rem 0;
       align-items: center;
     }
     /* 水印缩小（25vw→15vw，不再顶出视口）+ 覆盖全局 translate(10%,-10%)
@@ -1528,6 +1566,12 @@
       scrollbar-width: none;
     }
     .options-stage::-webkit-scrollbar { display: none; }
+    /* 批注浮条（手机）：sticky 钉在滚动容器底部；容器加 has-interjection 时
+       底部预留浮条高度，末位选项可滚动到浮条上方，不被遮挡 */
+    .interjection-overlay { position: sticky; bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem); }
+    .options-stage.has-interjection { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 11rem); }
+    .balance-stage.has-interjection,
+    .weight-stage.has-interjection { padding-bottom: 10rem; }
     .opt-block {
       /* 用户选定「中间平衡」：卡片 ~120px（大屏）。clamp(5.5rem, 13vh, 7.5rem)
          让卡片随视口适度变化——小屏(667)~88px、大屏(895)~116px、上限 120px。
@@ -1557,10 +1601,13 @@
 
     .gate-badge { font-size: 9px; padding: 0.2rem 0.7rem; }
 
-    /* HUD 胶囊手机微缩（32 无特化，按视口收紧避免溢出） */
-    .hud-capsule { padding: 6px 14px; gap: 10px; }
+    /* HUD 胶囊手机微缩（32 无特化，按视口收紧避免溢出）；
+       2026-08-31 降权：进度数字从金色高亮降为暗白——HUD 是辅助信息，
+       不该抢题干/选项的视觉焦点（用户反馈：数字比文字突出） */
+    .hud-capsule { padding: 6px 14px; gap: 10px; border-color: rgba(212, 175, 55, 0.12); box-shadow: 0 0 20px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(255, 215, 0, 0.04); }
     .hud-btn { font-size: 0.65rem; letter-spacing: 1.5px; }
-    .hud-counter { font-size: 0.8rem; letter-spacing: 2px; }
+    .hud-counter { font-size: 0.7rem; font-weight: 500; letter-spacing: 1.5px; color: rgba(237, 233, 243, 0.55); text-shadow: none; }
+    .counter-slash { color: rgba(237, 233, 243, 0.3); opacity: 1; }
 
     /* Result（深色适配；滚动由 desktop-skin 的 #view-result overflow-y:auto 提供） */
     .result-layout {
@@ -2238,16 +2285,18 @@
   @keyframes viewTestEnterReduce { from { opacity: 0; } to { opacity: 1; } }
 }
 
-/* ── 批注浮条（2026-08-31：全屏盖层 → 底部浮现+自动消散，不打断答题）── */
+/* ── 批注浮条（2026-08-31 v2：桌面 absolute 钉底；手机 sticky + 容器预留底部空间，
+      选项可滚动到浮条上方，不再遮挡末位选项）── */
 .interjection-overlay {
   position: absolute;
-  left: 50%;
-  bottom: 7vh;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  bottom: 1.25rem;
   z-index: 40;
   max-width: 520px;
   width: calc(100% - 4rem);
-  background: rgba(16, 12, 24, 0.8);
+  margin: 0 auto;
+  background: rgba(16, 12, 24, 0.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(212, 175, 55, 0.25);
@@ -2262,12 +2311,12 @@
   animation: interjectionOut 0.5s var(--ease-out-expo) forwards;
 }
 @keyframes interjectionIn {
-  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 @keyframes interjectionOut {
-  from { opacity: 1; transform: translateX(-50%) translateY(0); }
-  to { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(12px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .interjection-overlay { animation: none; opacity: 1; }

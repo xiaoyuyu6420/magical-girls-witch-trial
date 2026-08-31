@@ -1,29 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Serif_SC } from "next/font/google";
+import { Noto_Sans_SC } from "next/font/google";
 import { Cinzel } from "next/font/google";
-import { Syne } from "next/font/google";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import AppShell from "@/components/AppShell";
 import DisclaimerFooter from "@/components/DisclaimerFooter";
 import { DocumentLang } from "@/components/DocumentLang";
 import "./globals.css";
 
-const notoSerif = Noto_Serif_SC({
-  variable: "--font-noto-serif",
+const notoSans = Noto_Sans_SC({
+  variable: "--font-noto-sans",
   subsets: ["latin"],
-  weight: ["300", "500", "700"],
+  weight: ["400", "500", "700"],
 });
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
   subsets: ["latin"],
   weight: ["400", "600", "800"],
-});
-
-const syne = Syne({
-  variable: "--font-syne",
-  subsets: ["latin"],
-  weight: ["500", "700", "800"],
 });
 
 export const viewport: Viewport = {
@@ -36,13 +29,13 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://magical.jadeai.icu"), // 生产域名 magical.jadeai.icu（2026-08-30 已上线）
   title: "魔女审判 | WITCH TRIAL — 魔法少女人格测试",
-  description: "26 道情境题，卸下伪装照见真实的自己。测测你最像哪位魔法少女——晓美焰、鹿目圆、沙耶香、杏子，还是清醒的审判者艾玛？",
+  description: "26 道情境题，看看你在关系、责任和自我保护之间怎么选，匹配 24 位魔法少女中的哪一位——晓美焰、鹿目圆、沙耶香、杏子，还是审判者艾玛？",
   keywords: ["魔女审判", "人格测试", "魔法少女", "性格测试", "Witch Trial", "personality test", "MBTI"],
   authors: [{ name: "Witch Trial" }],
   formatDetection: { telephone: false, email: false, address: false },
   openGraph: {
     title: "魔女审判 | WITCH TRIAL",
-    description: "卸下伪装，测测你最像哪位魔法少女。",
+    description: "26 道情境题，测测你最像哪位魔法少女。",
     type: "website",
     locale: "zh_CN",
     alternateLocale: ["zh_TW", "en_US", "ja_JP"],
@@ -54,7 +47,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "魔女审判 | WITCH TRIAL",
-    description: "卸下伪装，测测你最像哪位魔法少女。",
+    description: "26 道情境题，测测你最像哪位魔法少女。",
     images: ["/og-image.png"],
   },
   robots: { index: true, follow: true },
@@ -73,9 +66,9 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${notoSerif.variable} ${cinzel.variable} ${syne.variable} h-full antialiased dark`}
+      className={`${notoSans.variable} ${cinzel.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col font-[family-name:var(--font-noto-serif)]">
+      <body className="min-h-full flex flex-col font-[family-name:var(--font-noto-sans)]">
         <DocumentLang />
         <GoogleAnalytics />
         <AppShell>

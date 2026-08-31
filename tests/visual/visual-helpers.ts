@@ -72,7 +72,6 @@ export function maskWelcomeDynamic(page: Page): Locator[] {
     page.locator("#cursor-ring"),
     page.locator("#live-time"),
     page.locator(".status-blink"),
-    page.locator(".hero__stats"),
     page.locator(".giant-text.kanji"),
   ];
 }
@@ -87,6 +86,11 @@ export function maskWelcomeDynamic(page: Page): Locator[] {
 async function hideCanvasForScreenshot(page: Page): Promise<void> {
   await page.locator("#abyss-canvas").evaluate((el) => {
     (el as HTMLElement).style.visibility = "hidden";
+  });
+  // .hero__stats 同走隐藏而非 mask：mask 涂色按 bbox，计数数字实时变化时
+  // 边缘会露出 ~30px 差异超阈值（2026-08-31 welcome 三语言全挂的根因）。
+  await page.locator(".hero__stats").evaluateAll((els) => {
+    els.forEach((el) => ((el as HTMLElement).style.visibility = "hidden"));
   });
 }
 
