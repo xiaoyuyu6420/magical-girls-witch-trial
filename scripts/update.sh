@@ -44,7 +44,9 @@ echo "拉取镜像..."
 docker compose pull
 
 echo "重启服务..."
-docker compose up -d
+# --force-recreate：latest tag 内容变化但 compose 配置未变时，
+# 默认不会重建容器（旧镜像一直跑）；强制按新镜像重建
+docker compose up -d --force-recreate
 
 # 4. 顺带检查 HTTPS 证书续期（acme.sh 装在部署用户家目录，缺省跳过）
 if [ -f "$HOME/.acme.sh/acme.sh" ]; then
