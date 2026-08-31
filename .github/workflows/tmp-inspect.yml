@@ -10,7 +10,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Check image content
+      - name: Inspect image files
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -18,7 +18,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script_stop: false
           script: |
-            docker ps --format "{{.Names}} {{.Image}} {{.Status}}" | grep magical
-            echo "=== image files ==="
-            docker exec magical-girls-witch-trial ls /app/src/content 2>&1 | head -5
-            docker exec magical-girls-witch-trial ls /app/src/data 2>&1 | head -5
+            echo "=== image ls ==="
+            docker run --rm xiaoyuyu123/magical-girls-witch-trial:latest ls /app/src/ 2>&1 | head -10
+            echo "=== image content dir ==="
+            docker run --rm xiaoyuyu123/magical-girls-witch-trial:latest sh -c "ls /app/src/content/packs/witch-trial/ 2>&1 | head -5; ls /app/prisma/ 2>&1 | head -6"
