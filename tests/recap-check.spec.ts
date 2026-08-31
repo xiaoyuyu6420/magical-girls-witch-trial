@@ -1,5 +1,4 @@
 import { test, expect } from "@playwright/test";
-import { answerAllQuestions } from "./helpers";
 
 // 回看场景验证（2026-08-31 用户反馈）：
 // 1. 桌面后退到已答题，其他选项不得被 is-dimmed 折叠（原 bug：答案占满区域无法改选）

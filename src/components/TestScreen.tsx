@@ -218,6 +218,9 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   const [gateValue, setGateValue] = useState<string | undefined>();
   const [isAnimating, setIsAnimating] = useState(false);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
+  // 前进键语义：记录本次作答到达过的最大 index（后退不清除）。声明在前，
+  // 因 handleSelect 中会更新它；见 handleForward 注释。
+  const [maxVisited, setMaxVisited] = useState(0);
   const { t, locale } = useI18n();
   const [stageFadeOut, setStageFadeOut] = useState(false);
   const [toastVerdict, setToastVerdict] = useState(false);
@@ -425,10 +428,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
       onComplete({ answers: p.answers, gateValue: p.gateValue });
     } else {
       setAnswers(p.answers);
-      setCurrentIndex((i) => {
-        maxVisitedRef.current = Math.max(maxVisitedRef.current, i + 1);
-        return i + 1;
-      });
+      setCurrentIndex((i) => i + 1);
       setStageFadeOut(false);
     }
     setIsAnimating(false);
@@ -446,6 +446,7 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     setIsAnimating(true);
     setSelectedOptionId(option.id);
     setIsRecap(false);
+    setMaxVisited((v) => Math.max(v, safeIndex + 1));
     document.body.classList.remove("hovering");
 
     const isTouchFeedback = touchFeedbackRef.current
@@ -520,16 +521,12 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   }, [safeIndex, isAnimating, cancelPending]);
 
   // ── 前进下一题（后退后再往回走）。显示条件 = 后方存在"到过的题"：
-  // maxVisitedRef 记录本次作答到达过的最大 index（后退不清除），因此
-  // 后退 1 步前进键立即可用——不依赖下一题是否已有作答记录。 ──
-  const maxVisitedRef = useRef(0);
+  // 后退 1 步前进键立即可用——不依赖下一题是否已有作答记录。
+  // maxVisited 在 handleSelect（事件处理器）里更新；用 state 因为它驱动按钮显隐渲染。 ──
   const handleForward = useCallback(() => {
     if (isAnimating) cancelPending();
-    setCurrentIndex((i) => {
-      const next = Math.min(i + 1, maxVisitedRef.current);
-      return next > i ? next : i;
-    });
-  }, [isAnimating, cancelPending]);
+    setCurrentIndex(Math.min(safeIndex + 1, maxVisited));
+  }, [isAnimating, cancelPending, maxVisited, safeIndex]);
 
   // Keyboard support
   useEffect(() => {
@@ -815,8 +812,8 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
           <button
             type="button"
             id="btn-forward"
-            className={`hud-btn ${safeIndex < maxVisitedRef.current ? "visible" : ""}`}
-            tabIndex={safeIndex < maxVisitedRef.current ? 0 : -1}
+            className={`hud-btn ${safeIndex < maxVisited ? "visible" : ""}`}
+            tabIndex={safeIndex < maxVisited ? 0 : -1}
             onClick={handleForward}
             aria-label="前进下一题"
           >
