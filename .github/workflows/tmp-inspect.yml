@@ -10,7 +10,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Container status
+      - name: Verify DB content
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -19,5 +19,7 @@ jobs:
           script_stop: false
           script: |
             docker ps --format "{{.Names}} {{.Status}}" | grep magical
-            echo "=== logs ==="
-            docker logs --tail 20 magical-girls-witch-trial 2>&1 | tail -20
+            echo "=== DB slogan check ==="
+            docker exec magical-girls-witch-trial sqlite3 /app/data/witch-trial.db "SELECT code, substr(slogan,1,30) FROM PersonalityType WHERE code IN ('HIRO','NOAH','MARGO','HANNA');"
+            echo "=== DB Q26 label check ==="
+            docker exec magical-girls-witch-trial sqlite3 /app/data/witch-trial.db "SELECT substr(label,1,40) FROM Option WHERE label LIKE '%生死%' OR label LIKE '%圣光%';"
