@@ -18,6 +18,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/src/data ./src/data
+COPY --from=builder /app/src/content ./src/content
 COPY --from=builder /app/src/i18n ./src/i18n
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/scripts/backup.sh /app/scripts/backup.sh
