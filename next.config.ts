@@ -25,6 +25,9 @@ const nextConfig: NextConfig = {
       // Serve the static welcome page directly at "/" — bypasses React/Next runtime
       // for the landing experience to keep TTI minimal. The quiz lives at /test.
       { source: "/", destination: "/index.html" },
+      // X5 诊断页目录：public 静态文件不做目录索引，补 /x5 → /x5/index.html
+      { source: "/x5", destination: "/x5/index.html" },
+      { source: "/x5/", destination: "/x5/index.html" },
     ];
   },
 };
