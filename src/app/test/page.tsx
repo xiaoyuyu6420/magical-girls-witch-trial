@@ -6,6 +6,9 @@ import TestScreen from "@/components/TestScreen";
 import ResultScreen from "@/components/ResultScreen";
 import FullscreenButton from "@/components/FullscreenButton";
 import { AuroraBurst } from "@/components/AuroraBurst";
+import { DirectorProvider, useSpellDirector } from "@/components/spells/director";
+import { readGrimoire } from "@/components/spells/useGrimoire";
+import { SPELLS } from "@/components/spells/registry";
 import { trackEvent } from "@/components/GoogleAnalytics";
 import type { QuizQuestion } from "@/components/TestScreen";
 
@@ -15,6 +18,30 @@ interface MatchResult {
   top3: { code: string; name: string; similarity: number; translations?: string }[];
   group: string; borderType: boolean; special: boolean;
   translations?: string;
+}
+
+/**
+ * 结果页觉醒桥（DirectorProvider 内部才能拿到 emit）：
+ * 结果揭晓 1.2s 后发 awaken 事件——registry 按 result.code 命中该角色的能力演出。
+ * 反向锚定：结果先定、演出后播，是确认仪式而非预告（零暗示原则）。
+ */
+function AwakenBridge({ code, altName, active }: { code: string | null; altName?: string; active: boolean }) {
+  const { emit } = useSpellDirector();
+  useEffect(() => {
+    if (!active || !code) return;
+    // 2.6s：等极光转场（桌面 1.3s）完全退场后再起演出，否则浮字被盖只能一闪而过
+    const t = setTimeout(() => {
+      emit({ kind: "awaken", target: code, payload: { altName } });
+      // 大魔女终局：见证账本集齐（除 YUKI 外全部能力）→ 6s 后追加终局场
+      const g = readGrimoire();
+      const rest = SPELLS.filter((s) => s.id !== "yuki-great-witch");
+      if (rest.every((s) => g.seen[s.id])) {
+        setTimeout(() => emit({ kind: "awaken", target: "YUKI" }), 6000);
+      }
+    }, 2600);
+    return () => clearTimeout(t);
+  }, [active, code, altName, emit]);
+  return null;
 }
 
 export default function TestPage() {
@@ -173,6 +200,9 @@ export default function TestPage() {
 
   return (
     <ErrorBoundary>
+      {/* 魔法演出系统：舞台随 quiz→result 切换（quiz 能力不会在结果页误触发）。
+          演出层渲染在 Provider 内部，与计分/匹配管线零耦合（零暗示原则）。 */}
+      <DirectorProvider stage={showResult ? "result" : "quiz"}>
       <div style={{
         background: "#030303",
         minHeight: "100vh",
@@ -180,12 +210,15 @@ export default function TestPage() {
         fontFamily: "'Space Mono', monospace"
       }}>
         {showResult && result ? (
+          <>
           <ResultScreen
             result={result}
             stats={stats}
             onRestart={handleRestart}
             compactMotion={compactMotion}
           />
+          <AwakenBridge code={result.code} altName={result.top3?.[1]?.name} active={showResult} />
+          </>
         ) : loadError && !questions.length ? (
           <div style={{
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
@@ -250,6 +283,7 @@ export default function TestPage() {
 
         <FullscreenButton />
       </div>
+      </DirectorProvider>
     </ErrorBoundary>
   );
 }

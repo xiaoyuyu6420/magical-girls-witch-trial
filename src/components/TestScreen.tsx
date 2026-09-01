@@ -7,6 +7,7 @@ import type { AnnotationNode } from "@/lib/annotations";
 import { ANNOTATION_FALLBACKS } from "@/lib/annotations";
 import { renderRichText } from "@/lib/rich-text";
 import { BackgroundLayers } from "./BackgroundLayers";
+import { useSpellDirector } from "@/components/spells/director";
 
 export interface QuizQuestion {
   id: number; dim: string; text: string; order: number; type: string; meta: string;
@@ -222,6 +223,9 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
   // 因 handleSelect 中会更新它；见 handleForward 注释。
   const [maxVisited, setMaxVisited] = useState(0);
   const { t, locale } = useI18n();
+  // 魔法演出系统：本组件只负责发"行为元数据"事件（翻页/进度/停留），
+  // 触发匹配与克制规则全在 Director——与计分/匹配管线零耦合（零暗示原则）。
+  const spell = useSpellDirector();
   const [stageFadeOut, setStageFadeOut] = useState(false);
   const [toastVerdict, setToastVerdict] = useState(false);
   const [showKeyboardHint, setShowKeyboardHint] = useState(false);
@@ -361,6 +365,29 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     return () => { disposed = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [safeIndex]);
+
+  // ── 魔法演出传感器：切题时发进度事件 + 起停留计时（20s 犹豫 → 记录犹豫峰值）──
+  // __trialStats 同时是可可「千里眼」的内容源（看穿你自己的答题数据）
+  useEffect(() => {
+    if (!current) return;
+    const w = window as unknown as {
+      __trialStats?: { start: number; maxDwellSec: number; maxDwellQ: number };
+    };
+    if (!w.__trialStats) w.__trialStats = { start: Date.now(), maxDwellSec: 0, maxDwellQ: 0 };
+    const stats = w.__trialStats;
+    // 题目锚定：演出台词要"对得上眼前这道题"，把题号 + 题目标题随事件带给调度器
+    const questionMeta = (current.meta || "").replace(/^Q\s*\d+\s*[·.\-–]\s*/, "").trim()
+      || current.text.replace(/[“”"']/g, "").slice(0, 10);
+    spell.emit({ kind: "progress", questionIndex: safeIndex, payload: { questionIndex: safeIndex, questionMeta } });
+    const t0 = Date.now();
+    const t = window.setTimeout(() => {
+      const sec = Math.round((Date.now() - t0) / 1000);
+      if (sec > stats.maxDwellSec) { stats.maxDwellSec = sec; stats.maxDwellQ = safeIndex + 1; }
+      spell.emit({ kind: "dwell", questionIndex: safeIndex, payload: { questionIndex: safeIndex, questionMeta } });
+    }, 20000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [safeIndex, current?.id]);
 
   // ── 批注插页：answers.length 命中 5/10/15 且未显示过时触发 ──
   useEffect(() => {
@@ -517,8 +544,9 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     // 动画中点击回退：丢弃当前未确认的作答并中止推进，再回退，
     // 否则回退请求被吞、fade 残影残留出现"压缩"视觉。
     if (isAnimating) cancelPending();
+    spell.emit({ kind: "backtrack", questionIndex: safeIndex });
     setCurrentIndex(safeIndex - 1);
-  }, [safeIndex, isAnimating, cancelPending]);
+  }, [safeIndex, isAnimating, cancelPending, spell]);
 
   // ── 前进下一题（后退后再往回走）。显示条件 = 后方存在"到过的题"：
   // 后退 1 步前进键立即可用——不依赖下一题是否已有作答记录。
