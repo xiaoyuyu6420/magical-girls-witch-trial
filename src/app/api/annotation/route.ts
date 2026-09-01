@@ -62,7 +62,18 @@ export async function POST(req: NextRequest) {
       return rngState / 2147483647;
     };
 
-    const text = pickAnnotation(node as AnnotationNode, processed.dimScores, rng);
+    // 后台自定义池：读 DB，按 tier 分组；某 tier 空 → pickAnnotation 内部回退内置池
+    const rows = await db.annotation.findMany({
+      where: { node },
+      orderBy: { order: "asc" },
+    });
+    const poolOverride = rows.length > 0 ? {
+      H: rows.filter((r) => r.tier === "H").map((r) => r.text),
+      M: rows.filter((r) => r.tier === "M").map((r) => r.text),
+      L: rows.filter((r) => r.tier === "L").map((r) => r.text),
+    } : undefined;
+
+    const text = pickAnnotation(node as AnnotationNode, processed.dimScores, rng, poolOverride);
     return NextResponse.json({ text });
   } catch (err) {
     console.error("Annotation error:", err);

@@ -110,3 +110,16 @@ model Answer {
   optionId   Int?
   option     Option?    @relation(fields: [optionId], references: [id], onDelete: SetNull)
 }
+
+/// 审判官批注（第 5/10/15 题后浮条）：node=题目序数，tier=主导维度集中度档位
+/// （H 笃定 / M 摇摆 / L 回避）。同 node+tier 多条时随机取一条；空池回退内置文案。
+/// 后台「批注文案」tab 可编辑；DB 无记录时 /api/annotation 回退 lib/annotations 内置池。
+model Annotation {
+  id    Int    @id @default(autoincrement())
+  node  Int
+  tier  String
+  text  String
+  order Int    @default(0)
+
+  @@index([node, tier])
+}

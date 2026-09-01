@@ -1,0 +1,63 @@
+/* =========================================================
+   Admin 后台样式：新 tab 组件类 + 移动端适配
+   （2026-08-31 用户反馈：手机上文案显示不全、难编辑）
+   ========================================================= */
+
+/* ── 通用组件类（新 tab 使用）── */
+.admin-tab { display: flex; flex-direction: column; gap: 1rem; }
+.admin-hint { color: rgba(255, 255, 255, 0.35); font-size: 0.78rem; line-height: 1.6; margin: 0; }
+.admin-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px; padding: 1rem; }
+.admin-card-title { color: #d4af37; font-size: 0.9rem; margin: 0 0 0.75rem; letter-spacing: 0.05em; }
+.admin-group { margin-bottom: 1rem; }
+.admin-group-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; }
+.admin-group-label { color: rgba(255, 255, 255, 0.55); font-size: 0.78rem; font-weight: 700; }
+.admin-group-empty { color: rgba(255, 255, 255, 0.2); font-size: 0.72rem; padding: 0.35rem 0; }
+.admin-row { display: flex; gap: 0.4rem; align-items: flex-start; margin-bottom: 0.35rem; }
+.admin-input { width: 100%; }
+.admin-textarea { resize: vertical; line-height: 1.55; }
+.admin-savebar { display: flex; gap: 0.75rem; align-items: center; position: sticky; bottom: 0; padding: 0.75rem 0; background: linear-gradient(transparent, #050308 30%); }
+.admin-btn-primary { display: inline-block; background: #d4af37; color: #050308; border: none; border-radius: 6px; padding: 0.5rem 1.4rem; font-weight: 700; cursor: pointer; font-size: 0.85rem; text-decoration: none; }
+.admin-btn-ghost { background: transparent; border: 1px solid rgba(255, 255, 255, 0.14); color: rgba(255, 255, 255, 0.6); border-radius: 5px; padding: 0.28rem 0.7rem; font-size: 0.72rem; cursor: pointer; text-decoration: none; display: inline-block; }
+.admin-btn-danger { color: #ef8484; border-color: rgba(239, 100, 100, 0.3); }
+
+/* 素材库网格 */
+.asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem; }
+.asset-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 10px; padding: 0.6rem; display: flex; flex-direction: column; gap: 0.45rem; }
+.asset-img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; background: rgba(255, 255, 255, 0.03); }
+.asset-code { color: rgba(255, 255, 255, 0.7); font-size: 0.72rem; display: flex; gap: 0.4rem; align-items: center; }
+.asset-badge { background: rgba(212, 175, 55, 0.15); color: #d4af37; font-size: 0.62rem; padding: 0.05rem 0.4rem; border-radius: 999px; }
+.asset-actions { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.admin-backup { margin-top: 0.5rem; }
+
+/* ── 移动端适配 ── */
+@media (max-width: 768px) {
+  /* 外壳收边 + 防横向溢出 */
+  .admin-shell { padding: 0.75rem !important; overflow-x: hidden; }
+  .admin-topbar h1 { font-size: 1rem !important; }
+
+  /* tab 栏横滑（6 个 tab 手机放不下） */
+  .admin-tabs { overflow-x: auto; scrollbar-width: none; gap: 0.25rem !important; margin-bottom: 1rem !important; }
+  .admin-tabs::-webkit-scrollbar { display: none; }
+  .admin-tabs button { font-size: 0.8rem !important; padding: 0.45rem 0.7rem !important; }
+
+  /* 输入普遍 16px：防 iOS 聚焦自动放大导致布局跳 */
+  .admin-shell input, .admin-shell textarea, .admin-shell select { font-size: 16px !important; }
+
+  /* 题目编辑：选项行换行，textarea 全宽自适应 */
+  .admin-opt-row { flex-wrap: wrap; }
+  .admin-opt-row textarea { min-height: 3.2em; }
+
+  /* 卡片紧凑 */
+  .admin-card { padding: 0.8rem; }
+  .asset-grid { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 0.5rem; }
+
+  /* 用户详情弹窗 → 全屏 sheet */
+  .admin-modal-body {
+    width: 100vw !important; max-width: none !important;
+    height: 100dvh !important; max-height: none !important;
+    border-radius: 0 !important; padding: 1rem !important;
+  }
+
+  /* 用户表格：保横向滚动，给个最小宽避免列挤死 */
+  .admin-table-wrap table { min-width: 720px; }
+}

@@ -79,12 +79,14 @@ export const ANNOTATION_FALLBACKS: Record<AnnotationNode, string> = {
  * @param node 批注节点（5/10/15）
  * @param dimScores 各维度累计分（key=维度 code，value=累加原始分）
  * @param rng 可选随机数生成器（默认 Math.random），单测注入确定性 rng
+ * @param poolOverride 后台自定义池（按 tier 分组的 DB 文案）；某 tier 空则回退内置池
  * @returns 行为描写文案（无姿态标签/角色/百分比）
  */
 export function pickAnnotation(
   node: AnnotationNode,
   dimScores: Record<string, number>,
   rng: () => number = Math.random,
+  poolOverride?: Partial<Record<Tier, string[]>>,
 ): string {
   const values = Object.values(dimScores);
   const total = values.reduce((s, v) => s + v, 0);
@@ -97,7 +99,8 @@ export function pickAnnotation(
   const dominance = maxDim / total;
   const tier: Tier = dominance >= 0.5 ? "H" : dominance >= 0.34 ? "M" : "L";
 
-  const pool = POOLS[node][tier];
+  const override = poolOverride?.[tier];
+  const pool = override && override.length > 0 ? override : POOLS[node][tier];
   if (!pool || pool.length === 0) {
     return ANNOTATION_FALLBACKS[node];
   }

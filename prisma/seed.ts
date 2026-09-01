@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { PERSONALITY_TYPES, QUESTIONS } from "../src/data/quiz-content";
+import { ANNOTATION_POOLS } from "../src/lib/annotations";
 
 const prisma = new PrismaClient();
 
@@ -113,6 +114,22 @@ async function main() {
     }
   }
   console.log(`  → ${QUESTIONS.length} questions synced (${textChanges} text updates)`);
+
+  // ── 审判官批注：全量替换（表小、无关联数据；代码池为权威源，后台编辑即时生效、
+  //    下次部署随镜像刷新——与题目文案同一语义） ──
+  console.log("Syncing annotations...");
+  await prisma.annotation.deleteMany();
+  const annotationRows: { node: number; tier: string; text: string; order: number }[] = [];
+  for (const [nodeKey, tiers] of Object.entries(ANNOTATION_POOLS)) {
+    const node = Number(nodeKey);
+    for (const [tier, texts] of Object.entries(tiers as Record<string, string[]>)) {
+      (texts as string[]).forEach((text, order) => annotationRows.push({ node, tier, text, order }));
+    }
+  }
+  if (annotationRows.length > 0) {
+    await prisma.annotation.createMany({ data: annotationRows });
+  }
+  console.log(`  → ${annotationRows.length} annotations synced`);
 }
 
 main()

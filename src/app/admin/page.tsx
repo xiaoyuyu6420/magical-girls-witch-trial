@@ -2,13 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
+import AnnotationsTab from "./_components/AnnotationsTab";
+import AssetsTab from "./_components/AssetsTab";
+import "./admin.css";
 
 const Recharts = dynamic(() => import("./_components/DashboardTab"), { ssr: false });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Rec = Record<string, any>;
 
-type Tab = "dashboard" | "users" | "questions" | "types";
+type Tab = "dashboard" | "users" | "questions" | "types" | "annotations" | "assets";
 
 const API_BASE = "/api/admin";
 const TABS: { key: Tab; label: string }[] = [
@@ -16,6 +19,8 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "users", label: "用户追踪" },
   { key: "questions", label: "题目管理" },
   { key: "types", label: "人格管理" },
+  { key: "annotations", label: "批注文案" },
+  { key: "assets", label: "素材库" },
 ];
 
 export default function AdminPage() {
@@ -97,15 +102,15 @@ export default function AdminPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1400, margin: "0 auto", padding: "1.5rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+    <div className="admin-shell" style={{ maxWidth: 1400, margin: "0 auto", padding: "1.5rem" }}>
+      <div className="admin-topbar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
         <h1 style={{ fontFamily: "'Cinzel', serif", fontSize: "1.2rem", letterSpacing: "0.2em", color: "#d4af37" }}>WITCH TRIAL ADMIN</h1>
         <button onClick={handleLogout} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 6, padding: "0.4rem 1rem", cursor: "pointer", fontSize: "0.75rem" }}>退出</button>
       </div>
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.5rem" }}>
+      <div className="admin-tabs" style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.5rem" }}>
         {TABS.map((t) => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            style={{ background: "transparent", border: "none", color: tab === t.key ? "#d4af37" : "rgba(255,255,255,0.3)", fontWeight: tab === t.key ? 700 : 400, fontSize: "0.85rem", padding: "0.5rem 1rem", cursor: "pointer", borderBottom: tab === t.key ? "2px solid #d4af37" : "2px solid transparent" }}>
+            style={{ background: "transparent", border: "none", color: tab === t.key ? "#d4af37" : "rgba(255,255,255,0.3)", fontWeight: tab === t.key ? 700 : 400, fontSize: "0.85rem", padding: "0.5rem 1rem", cursor: "pointer", borderBottom: tab === t.key ? "2px solid #d4af37" : "2px solid transparent", whiteSpace: "nowrap" }}>
             {t.label}
           </button>
         ))}
@@ -115,6 +120,8 @@ export default function AdminPage() {
         {tab === "users" && <UsersTab api={api} />}
         {tab === "questions" && <QuestionsTab api={api} />}
         {tab === "types" && <TypesTab api={api} />}
+        {tab === "annotations" && <AnnotationsTab api={api} />}
+        {tab === "assets" && <AssetsTab api={api} />}
       </div>
     </div>
   );
@@ -182,7 +189,7 @@ function UsersTab({ api }: { api: (path: string, opts?: RequestInit) => Promise<
         <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.8rem", alignSelf: "center" }}>共 {total} 条</span>
       </div>
       {loading ? <div style={{ color: "rgba(255,255,255,0.3)" }}>加载中...</div> : (
-        <div style={{ overflowX: "auto" }}>
+        <div className="admin-table-wrap" style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
@@ -217,8 +224,8 @@ function UsersTab({ api }: { api: (path: string, opts?: RequestInit) => Promise<
         </div>
       )}
       {selectedUser && userDetail && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 9999 }} onClick={() => setSelectedUser(null)}>
-          <div style={{ background: "#0a0612", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "1.5rem", maxWidth: 800, width: "90%", maxHeight: "80vh", overflow: "auto" }} onClick={(e) => e.stopPropagation()}>
+        <div className="admin-modal" style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 9999 }} onClick={() => setSelectedUser(null)}>
+          <div className="admin-modal-body" style={{ background: "#0a0612", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "1.5rem", maxWidth: 800, width: "90%", maxHeight: "80vh", overflow: "auto" }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem" }}>
               <h2 style={{ fontSize: "1rem", color: "#d4af37" }}>用户 #{userDetail.id} 详情</h2>
               <button onClick={() => setSelectedUser(null)} style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer" }}>关闭</button>
@@ -467,17 +474,17 @@ function QuestionsTab({ api }: { api: (path: string, opts?: RequestInit) => Prom
 
               <div style={{ fontSize: "0.75rem" }}>
                 {localeOptions.map((label, i) => (
-                  <div key={i} style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.3rem" }}>
-                    <span style={{ color: "rgba(255,255,255,0.3)", width: 20 }}>{i + 1}.</span>
-                    <textarea value={label} onChange={(e) => setLocaleOption(i, e.target.value)} rows={1} style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.75rem" }} />
+                  <div key={i} className="admin-opt-row" style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.3rem" }}>
+                    <span style={{ color: "rgba(255,255,255,0.3)", width: 20, flexShrink: 0 }}>{i + 1}.</span>
+                    <textarea value={label} onChange={(e) => setLocaleOption(i, e.target.value)} rows={2} className="admin-input admin-textarea" style={{ flex: 1, minWidth: 0, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.8rem" }} />
                     {editLocale === "zh-CN" && (
                       <>
-                        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.7rem" }}>分</span>
-                        <input type="number" value={(editData.options as Rec[])[i]?.score as number ?? 0} onChange={(e) => updateOption(i, "score", parseInt(e.target.value) || 0)} style={{ width: 50, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#d4af37", fontSize: "0.75rem", textAlign: "center" }} />
+                        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.7rem", flexShrink: 0 }}>分</span>
+                        <input type="number" value={(editData.options as Rec[])[i]?.score as number ?? 0} onChange={(e) => updateOption(i, "score", parseInt(e.target.value) || 0)} style={{ width: 50, flexShrink: 0, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#d4af37", fontSize: "0.75rem", textAlign: "center" }} />
                       </>
                     )}
                     {editLocale === "zh-CN" && (editData.type === "gate" || editData.type === "trigger") && (
-                      <input value={((editData.options as Rec[])[i]?.value as string) || ((editData.options as Rec[])[i]?.trigger as string) || ""} onChange={(e) => updateOption(i, editData.type === "gate" ? "value" : "trigger", e.target.value)} placeholder={editData.type === "gate" ? "value" : "trigger"} style={{ width: 100, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.7rem" }} />
+                      <input value={((editData.options as Rec[])[i]?.value as string) || ((editData.options as Rec[])[i]?.trigger as string) || ""} onChange={(e) => updateOption(i, editData.type === "gate" ? "value" : "trigger", e.target.value)} placeholder={editData.type === "gate" ? "value" : "trigger"} style={{ width: 100, flexShrink: 0, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.7rem" }} />
                     )}
                   </div>
                 ))}
