@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X5诊断 · 猜想D·TextScramble乱码</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#030303;color:#EFEFEF;font-family:monospace;min-height:100vh;overflow-x:hidden}
+.note{position:relative;z-index:50;max-width:640px;margin:24px auto;padding:16px 20px;line-height:1.9;font-size:14px;background:rgba(0,0,0,.6);border:1px solid #444;border-radius:8px}
+.note b{color:#d4af37}
+
+</style>
+
+<script>
+(function(){
+  var frames=0,last=0,el=null;
+  function loop(t){
+    frames++;
+    if(!last)last=t;
+    if(t-last>=800){
+      var fps=Math.round(frames*1000/(t-last));
+      if(el){el.textContent=fps+' FPS';el.style.color=fps>=50?'#4f4':(fps>=25?'#fd4':'#f44');}
+      frames=0;last=t;
+    }
+    requestAnimationFrame(loop);
+  }
+  function boot(){
+    el=document.createElement('div');
+    el.style.cssText='position:fixed;top:10px;right:10px;z-index:2147483647;font:700 24px/1 monospace;color:#4f4;background:rgba(0,0,0,.85);padding:10px 14px;border:2px solid #666;border-radius:8px;pointer-events:none';
+    document.body.appendChild(el);
+    requestAnimationFrame(loop);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+</head><body>
+<div class="note"><b>【猜想D·TextScramble乱码】</b><br>复刻首页的乱码解码效果：5 个元素同时跑 TextScramble（每帧 innerHTML 替换，与首页 loader+标题+overline+tagline+按钮同规模），每 5 秒循环重放。<br>验证：X5 上每帧 innerHTML 解析重排的开销。<br><b>观察：</b>乱码本身是否一个字一个字蹦（帧率低的表现）。<br><span style="color:#888">看右上角 FPS：≥50 绿=流畅；25-50 黄=偏卡；&lt;25 红=卡。</span></div>
+<div style="display:flex;flex-direction:column;gap:28px;padding:40px 24px;max-width:640px;margin:0 auto;position:relative;z-index:5">
+    <div class="sc" data-scramble="序章 · PROLOGUE · I" style="font-size:13px;letter-spacing:.3em">序章 · PROLOGUE · I</div>
+    <div class="sc" data-scramble="魔法少女审判书" style="font-size:clamp(28px,7.2vw,52px);font-weight:700;letter-spacing:.3em">魔法少女审判书</div>
+    <div class="sc" data-scramble="26 道情境题，测测你最像哪位魔法少女" style="font-size:15px">26 道情境题，测测你最像哪位魔法少女</div>
+    <div class="sc" data-scramble="接受审判" style="display:inline-block;padding:18px 42px;border:1px solid #EFEFEF;font-size:17px;letter-spacing:.3em">接受审判</div>
+    <div class="sc" data-scramble="INQUISITION OPEN · 审判庭 · 准备就绪" style="font-size:11px;letter-spacing:.2em;color:#888">INQUISITION OPEN · 审判庭 · 准备就绪</div>
+  </div>
+<script>
+class TextScramble{
+  constructor(el){this.el=el;this.chars='!<>-_\\/[]{}—=+*^?#________';this.update=this.update.bind(this);this.frameRequest=0;this.frame=0;}
+  setText(newText){
+    var oldText=this.el.innerText;
+    var length=Math.max(oldText.length,newText.length);
+    var promise=new Promise((res)=>this.resolve=res);
+    this.queue=[];
+    for(var i=0;i<length;i++){
+      var from=oldText[i]||'';
+      var to=newText[i]||'';
+      var start=Math.floor(Math.random()*40);
+      var end=start+Math.floor(Math.random()*40);
+      this.queue.push({from:from,to:to,start:start,end:end});
+    }
+    cancelAnimationFrame(this.frameRequest);
+    this.frame=0;
+    this.update();
+    return promise;
+  }
+  update(){
+    var output='';
+    var complete=0;
+    for(var i=0,n=this.queue.length;i<n;i++){
+      var q=this.queue[i];
+      if(this.frame>=q.end){complete++;output+=q.to;}
+      else if(this.frame>=q.start){
+        if(!q.char||Math.random()<0.28){q.char=this.chars[Math.floor(Math.random()*this.chars.length)];this.queue[i]=q;q.char=q.char;}
+        output+='<span style="color:#d4af37">'+q.char+'</span>';
+      } else output+=q.from;
+    }
+    this.el.innerHTML=output;
+    if(complete===this.queue.length){this.resolve();}
+    else{this.frameRequest=requestAnimationFrame(this.update);this.frame++;}
+  }
+}
+var els=[].slice.call(document.querySelectorAll('[data-scramble]'));
+var round=0;
+function playAll(){
+  round++;
+  els.forEach(function(el,idx){
+    var s=new TextScramble(el);
+    setTimeout(function(){s.setText(el.getAttribute('data-scramble')+' '+round);},idx*200);
+  });
+  setTimeout(playAll,5000);
+}
+setTimeout(playAll,600);</script>
+</body></html>

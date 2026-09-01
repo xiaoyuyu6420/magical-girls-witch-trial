@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X5 卡顿诊断 · 目录</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}
+body{background:#030303;color:#EFEFEF;font-family:monospace;padding:24px 16px}
+h1{font-size:18px;color:#d4af37;letter-spacing:.2em;margin-bottom:8px}
+p.tip{color:#888;font-size:12px;line-height:1.8;margin-bottom:20px}
+a{display:block;color:#EFEFEF;text-decoration:none;padding:16px;border:1px solid #333;border-radius:10px;margin-bottom:10px;line-height:1.6}
+a b{color:#d4af37;font-size:15px}
+a span{color:#888;font-size:12px}
+a:active{background:#1a1a1a}
+</style></head><body>
+<h1>X5 卡顿诊断</h1>
+<p class="tip">在 QQ 里逐个打开，看每页右上角 FPS 数字（绿≥50 / 黄25-50 / 红&lt;25）。<br>哪个页面 FPS 崩了，凶手就是它测的特性。建议按 ①→⑩ 顺序测。</p>
+<a href="./base.html"><b>① 基准·空白页</b><br><span>测设备 X5 的基础帧率（应该 55-60）</span></a><a href="./canvas.html"><b>② 猜想A · Canvas粒子动画</b><br><span>~1300 粒子每帧重绘</span></a><a href="./noise.html"><b>③ 猜想B · feTurbulence噪点</b><br><span>全屏SVG噪点+滚动测试</span></a><a href="./blend.html"><b>④ 猜想C · 巨字混合(静态)</b><br><span>mix-blend-mode exclusion，底层静态</span></a><a href="./canvas-blend.html"><b>⑤ 猜想C+A · 粒子叠巨字(关键)</b><br><span>canvas动画+blend巨字组合</span></a><a href="./scramble.html"><b>⑥ 猜想D · 乱码效果</b><br><span>5元素同时TextScramble</span></a><a href="./fonts.html"><b>⑦ 猜想E · Google Fonts</b><br><span>字体网络耗时</span></a><a href="./hud.html"><b>⑧ 猜想F · HUD时间戳+跑马灯</b><br><span>每帧innerText+闪烁+滚动</span></a><a href="./quiz-card.html"><b>⑨ 猜想G · 答题卡毛玻璃</b><br><span>backdrop-filter blur</span></a><a href="./full.html"><b>⑩ 全组合 · 首页复刻</b><br><span>全部特性叠加+探针</span></a>
+</body></html>

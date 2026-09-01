@@ -1,0 +1,41 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X5诊断 · 猜想G·答题卡backdrop-filter</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#030303;color:#EFEFEF;font-family:monospace;min-height:100vh;overflow-x:hidden}
+.note{position:relative;z-index:50;max-width:640px;margin:24px auto;padding:16px 20px;line-height:1.9;font-size:14px;background:rgba(0,0,0,.6);border:1px solid #444;border-radius:8px}
+.note b{color:#d4af37}
+.opt{background:rgba(10,5,20,0.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:22px 20px;font-size:15px;line-height:2;cursor:pointer;animation:staggerIn .6s ease both}
+   @keyframes staggerIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+</style>
+
+<script>
+(function(){
+  var frames=0,last=0,el=null;
+  function loop(t){
+    frames++;
+    if(!last)last=t;
+    if(t-last>=800){
+      var fps=Math.round(frames*1000/(t-last));
+      if(el){el.textContent=fps+' FPS';el.style.color=fps>=50?'#4f4':(fps>=25?'#fd4':'#f44');}
+      frames=0;last=t;
+    }
+    requestAnimationFrame(loop);
+  }
+  function boot(){
+    el=document.createElement('div');
+    el.style.cssText='position:fixed;top:10px;right:10px;z-index:2147483647;font:700 24px/1 monospace;color:#4f4;background:rgba(0,0,0,.85);padding:10px 14px;border:2px solid #666;border-radius:8px;pointer-events:none';
+    document.body.appendChild(el);
+    requestAnimationFrame(loop);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+</head><body>
+<div class="note"><b>【猜想G·答题卡backdrop-filter】</b><br>复刻答题页选项卡：backdrop-filter blur(8px) + 半透明背景 + 边框，3 张卡片循环 stagger 入场动画。<br>验证：X5 对 backdrop-filter 的支持/性能（老内核软件模糊非常卡；不支持的直接无毛玻璃但可能仍走慢路径）。<br><span style="color:#888">看右上角 FPS：≥50 绿=流畅；25-50 黄=偏卡；&lt;25 红=卡。</span></div>
+<div style="max-width:640px;margin:40px auto;padding:0 20px;display:flex;flex-direction:column;gap:18px;z-index:5;position:relative">
+   <div class="opt" style="animation-delay:0s"> Option A · 递过伞，并把这笔人情记在心里。挺现实的，这伞可不是白给的。</div><div class="opt" style="animation-delay:0.25s"> Option B · 犹豫了一下还是开口了。怕麻烦还硬当好人，你不累啊？</div><div class="opt" style="animation-delay:0.5s"> Option C · 毫不犹豫地递过伞。帮个小忙，顺便爽一把道德优越感。</div>
+   </div>
+<script></script>
+</body></html>

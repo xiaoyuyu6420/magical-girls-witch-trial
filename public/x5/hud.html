@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X5诊断 · 猜想F·HUD时间戳+闪烁灯</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#030303;color:#EFEFEF;font-family:monospace;min-height:100vh;overflow-x:hidden}
+.note{position:relative;z-index:50;max-width:640px;margin:24px auto;padding:16px 20px;line-height:1.9;font-size:14px;background:rgba(0,0,0,.6);border:1px solid #444;border-radius:8px}
+.note b{color:#d4af37}
+.hud-top{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:14px 16px;font-size:11px;letter-spacing:.2em;color:#888;z-index:20}
+   .status-blink{display:inline-block;width:6px;height:6px;background:#d4af37;border-radius:50%;margin-right:8px;animation:blink 2.5s cubic-bezier(.4,0,.6,1) infinite}
+   @keyframes blink{0%,100%{opacity:1;box-shadow:0 0 12px 2px #d4af37}50%{opacity:.2;box-shadow:0 0 2px #d4af37}}
+   .marquee-container{position:fixed;left:20px;top:0;bottom:0;width:20px;overflow:hidden;border-right:1px solid rgba(255,255,255,.05);z-index:4}
+   .marquee-content{writing-mode:vertical-rl;text-orientation:mixed;white-space:nowrap;font-size:10px;letter-spacing:.4em;color:#888;animation:scrollVert 90s linear infinite}
+   @keyframes scrollVert{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+</style>
+
+<script>
+(function(){
+  var frames=0,last=0,el=null;
+  function loop(t){
+    frames++;
+    if(!last)last=t;
+    if(t-last>=800){
+      var fps=Math.round(frames*1000/(t-last));
+      if(el){el.textContent=fps+' FPS';el.style.color=fps>=50?'#4f4':(fps>=25?'#fd4':'#f44');}
+      frames=0;last=t;
+    }
+    requestAnimationFrame(loop);
+  }
+  function boot(){
+    el=document.createElement('div');
+    el.style.cssText='position:fixed;top:10px;right:10px;z-index:2147483647;font:700 24px/1 monospace;color:#4f4;background:rgba(0,0,0,.85);padding:10px 14px;border:2px solid #666;border-radius:8px;pointer-events:none';
+    document.body.appendChild(el);
+    requestAnimationFrame(loop);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+</head><body>
+<div class="note"><b>【猜想F·HUD时间戳+闪烁灯】</b><br>复刻首页 HUD：右上角时间戳<b>每帧写 innerText</b>（rAF 60次/秒）+ 状态灯 box-shadow 闪烁动画 + 左侧竖排无限滚动跑马灯。<br>验证：持续的 DOM 文本写入 + CSS 动画在小元素上的合成开销。<br><span style="color:#888">看右上角 FPS：≥50 绿=流畅；25-50 黄=偏卡；&lt;25 红=卡。</span></div>
+<div class="hud-top"><div><span class="status-blink"></span>INQUISITION OPEN · 审判庭 · 准备就绪</div><div id="live-time">00:00:00:00</div></div>
+   <div class="marquee-container"><div class="marquee-content">魔女审判 · WITCH TRIAL · 魔女审判 · WITCH TRIAL · 魔女审判 · WITCH TRIAL · 魔女审判 · WITCH TRIAL · 魔女审判 · WITCH TRIAL · 魔女审判 · WITCH TRIAL · 魔女审判 · WITCH TRIAL · 魔女审判 · WITCH TRIAL · </div></div>
+<script>
+function updateTime(){
+  var now=new Date();
+  var h=('0'+now.getHours()).slice(-2),m=('0'+now.getMinutes()).slice(-2),s=('0'+now.getSeconds()).slice(-2),ms=('0'+(Math.floor(now.getMilliseconds()/10))).slice(-2);
+  var el=document.getElementById('live-time');
+  var t='T-'+h+':'+m+':'+s+':'+ms;
+  if(el.innerText!==t)el.innerText=t;
+  requestAnimationFrame(updateTime);
+}
+updateTime();</script>
+</body></html>

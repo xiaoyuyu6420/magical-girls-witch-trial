@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X5诊断 · 猜想B·feTurbulence噪点</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#030303;color:#EFEFEF;font-family:monospace;min-height:100vh;overflow-x:hidden}
+.note{position:relative;z-index:50;max-width:640px;margin:24px auto;padding:16px 20px;line-height:1.9;font-size:14px;background:rgba(0,0,0,.6);border:1px solid #444;border-radius:8px}
+.note b{color:#d4af37}
+.noise{position:fixed;inset:0;z-index:10;pointer-events:none;opacity:0.08;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")}
+   p{position:relative;z-index:20}
+</style>
+
+<script>
+(function(){
+  var frames=0,last=0,el=null;
+  function loop(t){
+    frames++;
+    if(!last)last=t;
+    if(t-last>=800){
+      var fps=Math.round(frames*1000/(t-last));
+      if(el){el.textContent=fps+' FPS';el.style.color=fps>=50?'#4f4':(fps>=25?'#fd4':'#f44');}
+      frames=0;last=t;
+    }
+    requestAnimationFrame(loop);
+  }
+  function boot(){
+    el=document.createElement('div');
+    el.style.cssText='position:fixed;top:10px;right:10px;z-index:2147483647;font:700 24px/1 monospace;color:#4f4;background:rgba(0,0,0,.85);padding:10px 14px;border:2px solid #666;border-radius:8px;pointer-events:none';
+    document.body.appendChild(el);
+    requestAnimationFrame(loop);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+</head><body>
+<div class="note"><b>【猜想B·feTurbulence噪点】</b><br>复刻首页的全屏噪点层：SVG feTurbulence fractalNoise data-URI 平铺全屏（纯静态，无 JS 动画）。<br>验证：X5 软件光栅化 SVG filter 的代价。<br><b>测试方法：</b>看 FPS 之余，用手指上下滚动本页（页面做长了），滚动掉帧/撕裂 = 噪点是凶手。<br><span style="color:#888">看右上角 FPS：≥50 绿=流畅；25-50 黄=偏卡；&lt;25 红=卡。</span></div>
+<p style="padding:12px 20px;color:#777;line-height:2">第 1 行 · 滚动测试行 SCROLL TEST 1</p><p style="padding:12px 20px;color:#777;line-height:2">第 2 行 · 滚动测试行 SCROLL TEST 2</p><p style="padding:12px 20px;color:#777;line-height:2">第 3 行 · 滚动测试行 SCROLL TEST 3</p><p style="padding:12px 20px;color:#777;line-height:2">第 4 行 · 滚动测试行 SCROLL TEST 4</p><p style="padding:12px 20px;color:#777;line-height:2">第 5 行 · 滚动测试行 SCROLL TEST 5</p><p style="padding:12px 20px;color:#777;line-height:2">第 6 行 · 滚动测试行 SCROLL TEST 6</p><p style="padding:12px 20px;color:#777;line-height:2">第 7 行 · 滚动测试行 SCROLL TEST 7</p><p style="padding:12px 20px;color:#777;line-height:2">第 8 行 · 滚动测试行 SCROLL TEST 8</p><p style="padding:12px 20px;color:#777;line-height:2">第 9 行 · 滚动测试行 SCROLL TEST 9</p><p style="padding:12px 20px;color:#777;line-height:2">第 10 行 · 滚动测试行 SCROLL TEST 10</p><p style="padding:12px 20px;color:#777;line-height:2">第 11 行 · 滚动测试行 SCROLL TEST 11</p><p style="padding:12px 20px;color:#777;line-height:2">第 12 行 · 滚动测试行 SCROLL TEST 12</p><p style="padding:12px 20px;color:#777;line-height:2">第 13 行 · 滚动测试行 SCROLL TEST 13</p><p style="padding:12px 20px;color:#777;line-height:2">第 14 行 · 滚动测试行 SCROLL TEST 14</p><p style="padding:12px 20px;color:#777;line-height:2">第 15 行 · 滚动测试行 SCROLL TEST 15</p><p style="padding:12px 20px;color:#777;line-height:2">第 16 行 · 滚动测试行 SCROLL TEST 16</p><p style="padding:12px 20px;color:#777;line-height:2">第 17 行 · 滚动测试行 SCROLL TEST 17</p><p style="padding:12px 20px;color:#777;line-height:2">第 18 行 · 滚动测试行 SCROLL TEST 18</p><p style="padding:12px 20px;color:#777;line-height:2">第 19 行 · 滚动测试行 SCROLL TEST 19</p><p style="padding:12px 20px;color:#777;line-height:2">第 20 行 · 滚动测试行 SCROLL TEST 20</p><p style="padding:12px 20px;color:#777;line-height:2">第 21 行 · 滚动测试行 SCROLL TEST 21</p><p style="padding:12px 20px;color:#777;line-height:2">第 22 行 · 滚动测试行 SCROLL TEST 22</p><p style="padding:12px 20px;color:#777;line-height:2">第 23 行 · 滚动测试行 SCROLL TEST 23</p><p style="padding:12px 20px;color:#777;line-height:2">第 24 行 · 滚动测试行 SCROLL TEST 24</p><p style="padding:12px 20px;color:#777;line-height:2">第 25 行 · 滚动测试行 SCROLL TEST 25</p><p style="padding:12px 20px;color:#777;line-height:2">第 26 行 · 滚动测试行 SCROLL TEST 26</p><p style="padding:12px 20px;color:#777;line-height:2">第 27 行 · 滚动测试行 SCROLL TEST 27</p><p style="padding:12px 20px;color:#777;line-height:2">第 28 行 · 滚动测试行 SCROLL TEST 28</p><p style="padding:12px 20px;color:#777;line-height:2">第 29 行 · 滚动测试行 SCROLL TEST 29</p><p style="padding:12px 20px;color:#777;line-height:2">第 30 行 · 滚动测试行 SCROLL TEST 30</p>
+<script></script>
+<div class="noise"></div></body></html>
