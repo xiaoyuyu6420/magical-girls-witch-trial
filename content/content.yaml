@@ -555,8 +555,8 @@ ui:
         title: 魔法少女小圆
         intro: 一个关于愿望、代价与选择的故事。
     meta:
-      title: 魔女审判 | WITCH TRIAL
-      description: 26 道情境题，看看你在关系、责任和自我保护之间怎么选，匹配 24 位魔法少女中的哪一位。
+      title: 魔法少女审判书 · 序章 | WITCH TRIAL
+      description: 魔法少女人格测试：26 道情境题，看看你在关系、责任和自我保护之间怎么选，匹配 24 位魔法少女中的哪一位。
     welcome:
       badge: ""
       title: ""
@@ -820,8 +820,8 @@ ui:
         title: Madoka Magica
         intro: A story about wishes, costs, and the choices people make.
     meta:
-      title: Witch Trial — Magical Girl Personality Test
-      description: 26 scenarios that show who you really are. Which magical girl are you?
+      title: The Magical Girl Trial: Prologue
+      description: A magical girl personality test: 26 scenarios that show who you really are. Which magical girl are you?
     welcome:
       badge: ""
       title: ""
@@ -1085,8 +1085,8 @@ ui:
         title: 魔法少女まどか☆マギカ
         intro: 願いと代償、そして選択の物語。
     meta:
-      title: 魔女裁判 — 魔法少女性格診断
-      description: 26 のシチュエーション問題で、あなたの本当の姿を見つめる。あなたはどの魔法少女？
+      title: 魔法少女診断書 · 序章 | 魔女裁判
+      description: 魔法少女の性格診断。26 のシチュエーション問題で、あなたの本当の姿を見つめる。あなたはどの魔法少女？
     welcome:
       badge: ""
       title: ""
@@ -1350,8 +1350,8 @@ ui:
         title: 魔法少女小圓
         intro: 一個關於願望、代價與選擇的故事。
     meta:
-      title: 魔女審判 | WITCH TRIAL
-      description: 26 道情境題，看看你在關係、責任和自我保護之間怎麼選，匹配 24 位魔法少女中的哪一位。
+      title: 魔法少女審判書 · 序章 | WITCH TRIAL
+      description: 魔法少女人格測驗：26 道情境題，看看你在關係、責任和自我保護之間怎麼選，匹配 24 位魔法少女中的哪一位。
     welcome:
       badge: ""
       title: ""

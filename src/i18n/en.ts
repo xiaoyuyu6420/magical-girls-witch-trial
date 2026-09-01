@@ -10,8 +10,8 @@ const t = {
     },
   },
   meta: {
-    title: "Witch Trial — Magical Girl Personality Test",
-    description: "26 scenarios that show who you really are. Which magical girl are you?",
+    title: "The Magical Girl Trial: Prologue",
+    description: "A magical girl personality test: 26 scenarios that show who you really are. Which magical girl are you?",
   },
   welcome: {
     badge: "",

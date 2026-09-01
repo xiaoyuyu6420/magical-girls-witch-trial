@@ -10,8 +10,8 @@ const t = {
     },
   },
   meta: {
-    title: "魔女審判 | WITCH TRIAL",
-    description: "26 道情境題，看看你在關係、責任和自我保護之間怎麼選，匹配 24 位魔法少女中的哪一位。",
+    title: "魔法少女審判書 · 序章 | WITCH TRIAL",
+    description: "魔法少女人格測驗：26 道情境題，看看你在關係、責任和自我保護之間怎麼選，匹配 24 位魔法少女中的哪一位。",
   },
   welcome: {
     badge: "",

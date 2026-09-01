@@ -28,32 +28,32 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://magical.jadeai.icu"), // 生产域名 magical.jadeai.icu（2026-08-30 已上线）
-  title: "魔女审判 | WITCH TRIAL — 魔法少女人格测试",
-  description: "26 道情境题，看看你在关系、责任和自我保护之间怎么选，匹配 24 位魔法少女中的哪一位——晓美焰、鹿目圆、沙耶香、杏子，还是审判者艾玛？",
-  keywords: ["魔女审判", "人格测试", "魔法少女", "性格测试", "Witch Trial", "personality test", "MBTI"],
+  title: "魔法少女审判书 · 序章 | WITCH TRIAL",
+  description: "魔法少女人格测试：26 道情境题，看看你在关系、责任和自我保护之间怎么选，匹配 24 位魔法少女中的哪一位——晓美焰、鹿目圆、沙耶香、杏子，还是审判者艾玛？",
+  keywords: ["魔法少女审判书", "魔女审判", "魔法少女人格测试", "人格测试", "魔法少女", "性格测试", "Witch Trial", "personality test", "MBTI"],
   authors: [{ name: "Witch Trial" }],
   formatDetection: { telephone: false, email: false, address: false },
   openGraph: {
-    title: "魔女审判 | WITCH TRIAL",
+    title: "魔法少女审判书 · 序章 | WITCH TRIAL",
     description: "26 道情境题，测测你最像哪位魔法少女。",
     type: "website",
     locale: "zh_CN",
     alternateLocale: ["zh_TW", "en_US", "ja_JP"],
-    siteName: "Witch Trial",
+    siteName: "魔法少女审判书",
     images: [
-      { url: "/og-image.png", width: 1200, height: 630, alt: "WITCH TRIAL 魔女审判" },
+      { url: "/og-image.png", width: 1200, height: 630, alt: "魔法少女审判书 WITCH TRIAL" },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "魔女审判 | WITCH TRIAL",
+    title: "魔法少女审判书 · 序章 | WITCH TRIAL",
     description: "26 道情境题，测测你最像哪位魔法少女。",
     images: ["/og-image.png"],
   },
   robots: { index: true, follow: true },
   appleWebApp: {
     capable: true,
-    title: "魔女审判",
+    title: "审判书",
     statusBarStyle: "black-translucent",
   },
 };
