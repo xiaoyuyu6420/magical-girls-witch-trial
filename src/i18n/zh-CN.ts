@@ -154,6 +154,15 @@ const t = {
     text: "",
     options: ["", ""],
   },
+  // ── 404 页 + 异常态（sync-content.ts 从 yaml system 段填充；/api/copy 可覆盖）──
+  nf: {
+    title: "该页已被审判。罪名：不存在。", sub1: "结界受损——但有什么东西，正在试图修复它。", sub2: "裂纹在光里一点点愈合。再试一次，也许就好了。", sub3: "伤口，会好的。", sub4: "伤口已经好了。……不过这里本来就没有路。我送你回去吧。",
+    badge: "✦ 梅露露的治疗 · MERURU", retry: "再次受审", home: "返回审判庭",
+  },
+  err: {
+    loadTitle: "题目加载失败", loadDesc: "暂时无法加载题目，请稍后再试。", loadRetry: "重新尝试",
+    submitTitle: "结果生成失败", submitDesc: "结果暂时没有生成成功，请稍后重新提交。{error}", submitRetry: "重新提交",
+  },
   disclaimer: {
     footer: "本测试为同人二创作品，与原作版权方无隶属关系 · 测试结果仅供参考",
     result: "角色版权归原作方所有 · 测试结果仅供参考",

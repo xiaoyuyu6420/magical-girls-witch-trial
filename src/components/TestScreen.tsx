@@ -82,135 +82,9 @@ function readSavedProgress(): {
   }
 }
 
-/**
- * 生成放大镜位移贴图：每像素 R/G 通道编码"该输出像素应从背景哪里采样"。
- * 透镜模型——放大率随半径衰减（中心最强）+ 边缘 rim 反向位移（桶形畸变），
- * 供 feDisplacementMap 逐像素折射背景内容（真畸变，非贴图假光影）。
- */
-function buildLensMap(size = 168): string {
-  const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = size;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return "";
-  const img = ctx.createImageData(size, size);
-  const half = size / 2;
-  const SCALE = 110; // 须与 CSS 侧 feDisplacementMap scale 一致
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const px = x + 0.5 - half;
-      const py = y + 0.5 - half;
-      const r = Math.hypot(px, py) / half;
-      let dr = 0.5;
-      let dg = 0.5;
-      if (r <= 1) {
-        // 放大率：中心 ~1.75x，向边缘衰减到 ~1.0x
-        const mag = 1 + 0.75 * Math.pow(Math.max(0, 1 - r), 1.15);
-        // rim：最外 15% 半径额外向外弯，做出玻璃厚边的折射暗环
-        const rim = r > 0.85 ? Math.pow((r - 0.85) / 0.15, 2) * 0.3 : 0;
-        const k = (1 - 1 / mag) + rim;
-        dr = 0.5 - (px * k) / SCALE;
-        dg = 0.5 - (py * k) / SCALE;
-      }
-      const i = (y * size + x) * 4;
-      img.data[i] = Math.max(0, Math.min(255, dr * 255));
-      img.data[i + 1] = Math.max(0, Math.min(255, dg * 255));
-      img.data[i + 2] = 128;
-      img.data[i + 3] = 255;
-    }
-  }
-  ctx.putImageData(img, 0, 0);
-  return canvas.toDataURL();
-}
-
-/** 把放大镜 SVG 滤镜注入文档（一次），供 cursor-ring 的 backdrop-filter 引用 */
-function injectLensFilter(): void {
-  if (document.getElementById("witch-lens")) return;
-  const map = buildLensMap();
-  if (!map) return;
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("aria-hidden", "true");
-  svg.setAttribute("style", "position:absolute;width:0;height:0;pointer-events:none");
-  // feImage 尺寸须与 hover 态 ring 尺寸（84px）一致，位移贴图恰好铺满滤镜区
-  svg.innerHTML =
-    `<filter id="witch-lens" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">` +
-    `<feImage href="${map}" x="0" y="0" width="84" height="84" preserveAspectRatio="none" result="map"/>` +
-    `<feDisplacementMap in="SourceGraphic" in2="map" scale="110" xChannelSelector="R" yChannelSelector="G"/>` +
-    `</filter>`;
-  document.body.appendChild(svg);
-}
-
-/**
- * 答题页自定义光标（2026-08-31，用户反馈"首页有鼠标效果答题页没了"）：
- * 复刻首页 light 版——金点立即跟随 + 圆环延迟跟随（rAF lerp），悬停可点元素
- * 时 dot 缩没、ring 放大变金（body.hovering，样式在 globals.css 已有），
- * 1.5s 无移动自动淡出。触屏 / reduced-motion 不启动。
- * DOM 挂在组件内而非全局：/test 直开与 iframe 嵌入两种场景都生效。
- */
-function CustomCursor() {
-  const dotRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (window.matchMedia("(pointer: coarse)").matches) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    injectLensFilter();
-    const dot = dotRef.current;
-    const ring = ringRef.current;
-    if (!dot || !ring) return;
-
-    const mouse = { x: -100, y: -100 };
-    const ringPos = { x: -100, y: -100 };
-    let raf = 0;
-    let idleTimer = 0;
-    let started = false;
-
-    const setVisible = (v: boolean) => {
-      dot.style.opacity = v ? "1" : "0";
-      ring.style.opacity = v ? "1" : "0";
-    };
-    setVisible(false);
-
-    const onMove = (e: MouseEvent) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-      dot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`;
-      if (!started) {
-        ringPos.x = mouse.x;
-        ringPos.y = mouse.y;
-        started = true;
-      }
-      setVisible(true);
-      clearTimeout(idleTimer);
-      idleTimer = window.setTimeout(() => setVisible(false), 1500);
-      const target = e.target as HTMLElement | null;
-      document.body.classList.toggle(
-        "hovering",
-        !!target?.closest("button, a, .opt-block, .balance-pan, .weight-card, .interjection-overlay"),
-      );
-    };
-
-    const loop = () => {
-      ringPos.x += (mouse.x - ringPos.x) * 0.16;
-      ringPos.y += (mouse.y - ringPos.y) * 0.16;
-      ring.style.transform = `translate(${ringPos.x}px, ${ringPos.y}px) translate(-50%, -50%)`;
-      raf = requestAnimationFrame(loop);
-    };
-
-    window.addEventListener("mousemove", onMove);
-    raf = requestAnimationFrame(loop);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      cancelAnimationFrame(raf);
-      clearTimeout(idleTimer);
-      document.body.classList.remove("hovering");
-    };
-  }, []);
-  return (
-    <>
-      <div id="cursor-dot" ref={dotRef} aria-hidden="true" />
-      <div id="cursor-ring" ref={ringRef} aria-hidden="true" />
-    </>
-  );
-}
+// 自定义光标 + 放大镜折射（buildLensMap/injectLensFilter/CustomCursor）已回退
+//（2026-09-01）：backdrop-filter: url(#witch-lens) 引用 SVG feDisplacementMap，
+// 在 X5 老内核上逐像素软件折射，是答题页卡顿的主因之一。
 
 export default function TestScreen({ questions, onComplete, onExit }: TestScreenProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -781,7 +655,6 @@ export default function TestScreen({ questions, onComplete, onExit }: TestScreen
     <div className="view-test" style={{ position: "relative", width: "100%", height: "100dvh" }}>
       {/* 32 背景层（z 0-1 内容之下）：Canvas 紫粒子 + 浮雕题号 + 胶片颗粒 */}
       <BackgroundLayers questionIndex={currentIndex} reducedMotion={reducedMotion} />
-      <CustomCursor />
       <div id="progress-line" />
       {/* grain-overlay-test（胶片颗粒噪点）已移除：2026-08-31 用户反馈手机端背景噪点干扰阅读 */}
       {/* Top bar — HUD 双胶囊（32 提取）：左 PREV+计数器 / 右 EXIT。Q1 时

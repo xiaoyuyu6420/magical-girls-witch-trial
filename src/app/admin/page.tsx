@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import AnnotationsTab from "./_components/AnnotationsTab";
 import AssetsTab from "./_components/AssetsTab";
+import CopyTab from "./_components/CopyTab";
+import AutoTextarea from "./_components/AutoTextarea";
 import "./admin.css";
 
 const Recharts = dynamic(() => import("./_components/DashboardTab"), { ssr: false });
@@ -11,7 +13,7 @@ const Recharts = dynamic(() => import("./_components/DashboardTab"), { ssr: fals
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Rec = Record<string, any>;
 
-type Tab = "dashboard" | "users" | "questions" | "types" | "annotations" | "assets";
+type Tab = "dashboard" | "users" | "questions" | "types" | "copy" | "annotations" | "assets";
 
 const API_BASE = "/api/admin";
 const TABS: { key: Tab; label: string }[] = [
@@ -19,6 +21,7 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "users", label: "用户追踪" },
   { key: "questions", label: "题目管理" },
   { key: "types", label: "人格管理" },
+  { key: "copy", label: "全站文案" },
   { key: "annotations", label: "批注文案" },
   { key: "assets", label: "素材库" },
 ];
@@ -120,6 +123,7 @@ export default function AdminPage() {
         {tab === "users" && <UsersTab api={api} />}
         {tab === "questions" && <QuestionsTab api={api} />}
         {tab === "types" && <TypesTab api={api} />}
+        {tab === "copy" && <CopyTab api={api} />}
         {tab === "annotations" && <AnnotationsTab api={api} />}
         {tab === "assets" && <AssetsTab api={api} />}
       </div>
@@ -470,13 +474,13 @@ function QuestionsTab({ api }: { api: (path: string, opts?: RequestInit) => Prom
               <LangSwitcher value={editLocale} onChange={setEditLocale} />
 
               <input value={localeMeta} onChange={(e) => setLocaleField("meta", e.target.value)} placeholder="meta" style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem 0.5rem", color: "#e6e6e6", fontSize: "0.8rem", marginBottom: "0.4rem" }} />
-              <textarea value={localeText} onChange={(e) => setLocaleField("text", e.target.value)} rows={3} style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.5rem", color: "#e6e6e6", fontSize: "0.8rem", marginBottom: "0.5rem", resize: "vertical" }} />
+              <AutoTextarea value={localeText} onChange={(e) => setLocaleField("text", e.target.value)} minRows={3} style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.5rem", color: "#e6e6e6", fontSize: "0.8rem", marginBottom: "0.5rem" }} />
 
               <div style={{ fontSize: "0.75rem" }}>
                 {localeOptions.map((label, i) => (
-                  <div key={i} className="admin-opt-row" style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.3rem" }}>
-                    <span style={{ color: "rgba(255,255,255,0.3)", width: 20, flexShrink: 0 }}>{i + 1}.</span>
-                    <textarea value={label} onChange={(e) => setLocaleOption(i, e.target.value)} rows={2} className="admin-input admin-textarea" style={{ flex: 1, minWidth: 0, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.8rem" }} />
+                  <div key={i} className="admin-opt-row" style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", marginBottom: "0.3rem" }}>
+                    <span style={{ color: "rgba(255,255,255,0.3)", width: 20, flexShrink: 0, paddingTop: "0.45rem" }}>{i + 1}.</span>
+                    <AutoTextarea value={label} onChange={(e) => setLocaleOption(i, e.target.value)} minRows={2} className="admin-input admin-textarea" style={{ flex: 1, minWidth: 0, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.8rem" }} />
                     {editLocale === "zh-CN" && (
                       <>
                         <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.7rem", flexShrink: 0 }}>分</span>
@@ -496,16 +500,16 @@ function QuestionsTab({ api }: { api: (path: string, opts?: RequestInit) => Prom
             </div>
           ) : (
             <div onClick={() => startEdit(q)} style={{ cursor: "pointer" }}>
-              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.3rem" }}>
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.3rem", flexWrap: "wrap" }}>
                 <span style={{ color: "#d4af37", fontSize: "0.8rem", fontWeight: 700 }}>#{q.order as number}</span>
                 <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.7rem" }}>{q.dim as string}</span>
                 {(q.type as string) !== "normal" && <span style={{ background: "rgba(212,175,55,0.1)", color: "#d4af37", fontSize: "0.65rem", padding: "0.1rem 0.5rem", borderRadius: 999 }}>{q.type as string}</span>}
                 {(q.meta as string) && <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "0.7rem" }}>{q.meta as string}</span>}
               </div>
-              <div style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.6)" }}>{(q.text as string).slice(0, 80)}...</div>
-              <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.2)", marginTop: "0.3rem" }}>
+              <div style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.6)" }}>{q.text as string}</div>
+              <div style={{ marginTop: "0.4rem" }}>
                 {(q.options as Rec[]).map((o, i) => (
-                  <span key={i} style={{ marginRight: "1rem" }}>{i + 1}. 分={o.score as number} </span>
+                  <div key={i} className="admin-opt-preview">{i + 1}. {o.label as string}</div>
                 ))}
               </div>
             </div>
@@ -601,7 +605,7 @@ function TypesTab({ api }: { api: (path: string, opts?: RequestInit) => Promise<
               <input value={getTypeField("name")} onChange={(e) => setTypeField("name", e.target.value)} placeholder="名称" style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.8rem", marginBottom: "0.3rem" }} />
               <input value={getTypeField("subtitle") || ""} onChange={(e) => setTypeField("subtitle", e.target.value)} placeholder="副标题" style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.8rem", marginBottom: "0.3rem" }} />
               <input value={getTypeField("slogan")} onChange={(e) => setTypeField("slogan", e.target.value)} placeholder="标语" style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.8rem", marginBottom: "0.3rem" }} />
-              <textarea value={getTypeField("desc")} onChange={(e) => setTypeField("desc", e.target.value)} rows={3} placeholder="描述" style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.75rem", marginBottom: "0.3rem", resize: "vertical" }} />
+              <AutoTextarea value={getTypeField("desc")} onChange={(e) => setTypeField("desc", e.target.value)} minRows={3} placeholder="描述" style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.75rem", marginBottom: "0.3rem" }} />
               <input value={getTypeField("keywords") || ""} onChange={(e) => setTypeField("keywords", e.target.value)} placeholder="关键词" style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "0.3rem", color: "#e6e6e6", fontSize: "0.75rem", marginBottom: "0.5rem" }} />
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <button onClick={saveType} disabled={saving} style={{ background: "#d4af37", color: "#050308", border: "none", borderRadius: 4, padding: "0.4rem 1rem", fontSize: "0.8rem", cursor: "pointer", fontWeight: 700 }}>{saving ? "保存中..." : "保存"}</button>

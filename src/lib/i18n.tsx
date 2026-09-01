@@ -38,6 +38,29 @@ const loaders: Record<Locale, () => Promise<any>> = {
   ja: () => import("@/i18n/ja").then((m) => m.default),
 };
 
+/**
+ * 把 CopyEntry 调配中心的覆盖值（点分路径 → 文案）合并到内置翻译之上。
+ * 后台「全站文案」/ content.yaml sync 改的文案经 /api/copy 在这里生效；
+ * DB 无记录的 key 保持内置默认。
+ */
+function applyCopyOverrides(
+  base: Record<string, unknown>,
+  entries: Record<string, string>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = JSON.parse(JSON.stringify(base));
+  for (const [path, value] of Object.entries(entries)) {
+    const keys = path.split(".");
+    let node: Record<string, unknown> = out;
+    for (let i = 0; i < keys.length - 1; i++) {
+      const k = keys[i];
+      if (node[k] == null || typeof node[k] !== "object") node[k] = {};
+      node = node[k] as Record<string, unknown>;
+    }
+    node[keys[keys.length - 1]] = value;
+  }
+  return out;
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("zh-CN");
   const [translations, setTranslations] = useState<Record<string, unknown>>({});
@@ -50,19 +73,34 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let alive = true;
     loaders[locale]().then((t) => {
+      if (!alive) return;
       setTranslations(t);
       setMounted(true);
     });
+    // DB 文案覆盖：拉取失败或为空时保持内置默认，无感降级。
+    fetch(`/api/copy?locale=${locale}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!alive || !data?.entries) return;
+        if (Object.keys(data.entries as object).length === 0) return;
+        return loaders[locale]().then((base) => {
+          if (alive) setTranslations(applyCopyOverrides(base, data.entries));
+        });
+      })
+      .catch(() => { /* 覆盖拉取失败 → 内置默认 */ });
     if (typeof document !== "undefined") {
       document.documentElement.lang = locale;
     }
+    return () => {
+      alive = false;
+    };
   }, [locale]);
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
     localStorage.setItem(STORAGE_KEY, l);
-    loaders[l]().then(setTranslations);
   }, []);
 
   const t = useCallback((key: string, vars?: Record<string, string | number>): string => {

@@ -123,3 +123,23 @@ model Annotation {
 
   @@index([node, tier])
 }
+
+/// 全站文案调配中心（2026-09-01）：UI 界面文案 / 首页 / 404 / 错误态的统一存储。
+/// （题目/选项/角色/批注分别在 Question/Option/PersonalityType/Annotation 表。）
+/// group: ui(测试+结果页界面) | home(首页) | nf(404页) | err(异常态)
+/// key: 点分路径（ui 组如 result.share；home 组如 tagline1；nf/err 组如 nf.title）
+/// locale: zh-CN | zh-TW | en | ja
+/// 语义：行不存在或 value 为空 = 回退代码内置默认（src/i18n/*.ts、public/index.html）。
+/// content.yaml 的 ui/home/system 段经 sync-content.ts 覆盖写入（yaml 是种子权威，
+/// 后台编辑在两次 sync 之间生效）；运行时经 /api/copy 分发。
+model CopyEntry {
+  id        Int      @id @default(autoincrement())
+  group     String
+  key       String
+  locale    String
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@unique([key, locale])
+  @@index([group, locale])
+}

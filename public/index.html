@@ -808,10 +808,10 @@
         <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
       </svg>
     </div>
-    <div class="fs-prompt-title">沉浸体验</div>
-    <div class="fs-prompt-desc">点击下方按钮进入全屏模式，获得最佳审判体验</div>
-    <button class="fs-prompt-btn" onclick="enterFullscreen()">进入全屏</button>
-    <span class="fs-prompt-skip" onclick="skipFullscreen()">稍后再说</span>
+    <div id="fs-prompt-title" class="fs-prompt-title">沉浸体验</div>
+    <div id="fs-prompt-desc" class="fs-prompt-desc">点击下方按钮进入全屏模式，获得最佳审判体验</div>
+    <button id="fs-prompt-btn" class="fs-prompt-btn" onclick="enterFullscreen()">进入全屏</button>
+    <span id="fs-prompt-skip" class="fs-prompt-skip" onclick="skipFullscreen()">稍后再说</span>
   </div>
 
   <!-- FULLSCREEN BUTTON -->
@@ -1508,6 +1508,32 @@
       })
       .catch(() => {});
 
+    // 全站文案覆盖（CopyEntry 调配中心）：拉取 DB 覆盖值合并进内置 i18n 对象，
+    // 后台「全站文案」/ content.yaml 的改动无需改本文件即可生效。失败或为空时
+    // 保持本文件内置默认。
+    fetch('/api/copy?group=home')
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => {
+        if (!d || !d.byLocale) return;
+        const locMap = { 'zh-CN': 'zh', 'zh-TW': 'tw', 'en': 'en', 'ja': 'jp' };
+        for (const [loc, entries] of Object.entries(d.byLocale)) {
+          const key = locMap[loc];
+          if (key && i18n[key]) Object.assign(i18n[key], entries);
+        }
+        // 全屏提示是静态节点，直接按当前语言刷文本
+        const cur = i18n[currentLang] || {};
+        const setTxt = (id, k) => { const el = document.getElementById(id); if (el && cur[k]) el.textContent = cur[k]; };
+        setTxt('fs-prompt-title', 'fsTitle');
+        setTxt('fs-prompt-desc', 'fsDesc');
+        const fsBtn = document.getElementById('fs-prompt-btn');
+        if (fsBtn && cur.fsBtn) fsBtn.textContent = cur.fsBtn;
+        const fsSkip = document.getElementById('fs-prompt-skip');
+        if (fsSkip && cur.fsSkip) fsSkip.textContent = cur.fsSkip;
+        // 非中文语言：重放当前语言，把覆盖值刷到 hero / HUD
+        if (currentLang !== 'zh') switchLang(currentLang);
+      })
+      .catch(() => {});
+
     /* =========================================================
        7. ACTION
        ========================================================= */
@@ -1644,13 +1670,9 @@
       diveTimer = setTimeout(revealTest, prewarmed ? 300 : 2000);
     }
 
-    /* 预热答题 iframe（2026-08-31）：idle 时就加载 /test，点击"接受审判"时
-       文档与题目多数已就绪——消除"点击后黑屏等加载"的衔接卡顿。 */
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(function () { ensureEmbeddedTestFrame(); }, { timeout: 3000 });
-    } else {
-      setTimeout(ensureEmbeddedTestFrame, 1500);
-    }
+    // 预热答题 iframe 已回退（2026-09-01）：idle 时预载 /test 会在 X5 老内核上
+    // 让首页与 iframe 两套动画同时跑，主线程打满导致全站卡顿。
+    // 点击"接受审判"时再按需加载 iframe（上周的行为），性能优先。
 
     // Restore saved language preference
     document.addEventListener('DOMContentLoaded', () => {

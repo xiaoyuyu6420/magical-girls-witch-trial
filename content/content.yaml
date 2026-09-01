@@ -820,8 +820,8 @@ ui:
         title: Madoka Magica
         intro: A story about wishes, costs, and the choices people make.
     meta:
-      title: The Magical Girl Trial: Prologue
-      description: A magical girl personality test: 26 scenarios that show who you really are. Which magical girl are you?
+      title: "The Magical Girl Trial: Prologue"
+      description: "A magical girl personality test: 26 scenarios that show who you really are. Which magical girl are you?"
     welcome:
       badge: ""
       title: ""
@@ -1606,3 +1606,148 @@ ui:
     disclaimer:
       footer: 本測試為同人二創作品，與原作版權方無隸屬關係 · 測試結果僅供參考
       result: 角色版權歸原作方所有 · 測試結果僅供參考
+
+# ── 首页文案（✏️）────────────────────────────────────────────
+# public/index.html 内联 i18n 的 DB 覆盖源：sync-content.ts 写入 CopyEntry(group=home)，
+# 首页启动时经 /api/copy?group=home 拉取覆盖。留空 = 用 index.html 内置默认。
+home:
+  zh-CN:
+    loader: WITCH TYPOLOGY
+    verify: ANALYSIS READY
+    hudTop: INQUISITION OPEN · 审判庭 · 准备就绪
+    hudBottomRight: FOLIO · NO. 0451
+    overline: 序章 · PROLOGUE · I
+    kanji: 魔女审判
+    heroTitle: 魔法少女审判书
+    eyebrow: WITCH TRIAL
+    tagline1: 26 道情境题，测测你最像哪位魔法少女
+    btn: 接受审判
+    statsHum: "{count} 名 灵 魂 已 受 审"
+    alert: ">> 正在生成你的人格分析报告 <<"
+    fsTitle: 沉浸体验
+    fsDesc: 点击下方按钮进入全屏模式，获得最佳审判体验
+    fsBtn: 进入全屏
+    fsSkip: 稍后再说
+  en:
+    loader: WITCH TYPOLOGY
+    verify: ANALYSIS READY
+    hudTop: INQUISITION OPEN · TRIBUNAL READY
+    hudBottomRight: CASE FILE · NO. 0451
+    overline: PROLOGUE · CHAPTER I
+    kanji: WITCH TRIAL
+    heroTitle: TRIAL
+    eyebrow: MAGICAL GIRL
+    tagline1: 26 scenarios — which magical girl are you?
+    btn: Enter the Trial
+    statsHum: "{count} SOULS HAVE BEEN JUDGED"
+    alert: ">> GENERATING YOUR PERSONALITY REPORT <<"
+    fsTitle: Immersive Mode
+    fsDesc: Tap the button below to enter fullscreen for the best trial experience
+    fsBtn: Enter Fullscreen
+    fsSkip: Maybe later
+  ja:
+    loader: 魔女タイプ診断
+    verify: 診断完了
+    hudTop: INQUISITION OPEN · 審判廷 起動
+    hudBottomRight: FOLIO · NO. 0451
+    overline: 序章 · PROLOGUE · I
+    kanji: 魔女裁判
+    heroTitle: 魔法少女診断書
+    eyebrow: WITCH TRIAL
+    tagline1: 26つの選択 · あなたはどの魔法少女？
+    btn: 審判を受ける
+    statsHum: "{count} の 魂 が 審 か れ た"
+    alert: ">> 人格分析レポートを生成中 <<"
+    fsTitle: 没入モード
+    fsDesc: 下のボタンでフルスクリーンにすると、最適な審判体験が得られます
+    fsBtn: フルスクリーン表示
+    fsSkip: 後で
+  zh-TW:
+    loader: WITCH TYPOLOGY
+    verify: ANALYSIS READY
+    hudTop: INQUISITION OPEN · 審判庭 · 準備就緒
+    hudBottomRight: FOLIO · NO. 0451
+    overline: 序章 · PROLOGUE · I
+    kanji: 魔女審判
+    heroTitle: 魔法少女審判書
+    eyebrow: WITCH TRIAL
+    tagline1: 26 道情境題，測測你最像哪位魔法少女
+    btn: 接受審判
+    statsHum: "{count} 名 靈 魂 已 受 審"
+    alert: ">> 正在生成你的人格分析報告 <<"
+    fsTitle: 沉浸體驗
+    fsDesc: 點擊下方按鈕進入全螢幕模式，獲得最佳審判體驗
+    fsBtn: 進入全螢幕
+    fsSkip: 稍後再說
+
+# ── 系统页文案（✏️）：404 页 + 异常态 ─────────────────────────
+# sync-content.ts 写入 CopyEntry(group=nf / err)，并同步进 src/i18n/*.ts 的 nf/err 段（内置默认）。
+system:
+  zh-CN:
+    nf:
+      title: 该页已被审判。罪名：不存在。
+      sub1: 结界受损——但有什么东西，正在试图修复它。
+      sub2: 裂纹在光里一点点愈合。再试一次，也许就好了。
+      sub3: 伤口，会好的。
+      sub4: 伤口已经好了。……不过这里本来就没有路。我送你回去吧。
+      badge: ✦ 梅露露的治疗 · MERURU
+      retry: 再次受审
+      home: 返回审判庭
+    err:
+      loadTitle: 题目加载失败
+      loadDesc: 暂时无法加载题目，请稍后再试。
+      loadRetry: 重新尝试
+      submitTitle: 结果生成失败
+      submitDesc: "结果暂时没有生成成功，请稍后重新提交。{error}"
+      submitRetry: 重新提交
+  en:
+    nf:
+      title: "This page has been judged. Verdict: it does not exist."
+      sub1: "The barrier is damaged—but something is trying to repair it."
+      sub2: "The cracks are healing in the light. Try once more—it might work."
+      sub3: "The wound will heal."
+      sub4: "It has healed now. …But there was never a road here to begin with. Let me walk you back."
+      badge: "✦ Meruru's Healing · MERURU"
+      retry: "Face judgment again"
+      home: "Return to the Tribunal"
+    err:
+      loadTitle: "Failed to load questions"
+      loadDesc: "Couldn't load the questions right now. Please try again later."
+      loadRetry: "Retry"
+      submitTitle: "Failed to generate result"
+      submitDesc: "Your result couldn't be generated. Please submit again later. {error}"
+      submitRetry: "Resubmit"
+  ja:
+    nf:
+      title: このページは審判されました。罪名：存在しない。
+      sub1: 結界が損傷しています——でも何かが、修復しようとしている。
+      sub2: ひび割れが光の中で少しずつ癒えていく。もう一度試せば、うまくいくかも。
+      sub3: 傷は、きっと治る。
+      sub4: もう治ったよ。……でも、ここにはもともと道なんてなかった。送ってあげる。
+      badge: ✦ メルルの治癒 · MERURU
+      retry: もう一度審判を受ける
+      home: 審判廷へ戻る
+    err:
+      loadTitle: 問題の読み込みに失敗しました
+      loadDesc: 現在問題を読み込めません。しばらくしてからもう一度お試しください。
+      loadRetry: 再試行
+      submitTitle: 結果の生成に失敗しました
+      submitDesc: "結果を生成できませんでした。しばらくしてからもう一度送信してください。{error}"
+      submitRetry: 再送信
+  zh-TW:
+    nf:
+      title: 該頁已被審判。罪名：不存在。
+      sub1: 結界受損——但有什麼東西，正在試圖修復它。
+      sub2: 裂痕在光裡一點點癒合。再試一次，也許就好了。
+      sub3: 傷口，會好的。
+      sub4: 傷口已經好了。……不過這裡本來就沒有路。我送你回去吧。
+      badge: ✦ 梅露露的治療 · MERURU
+      retry: 再次受審
+      home: 返回審判庭
+    err:
+      loadTitle: 題目載入失敗
+      loadDesc: 暫時無法載入題目，請稍後再試。
+      loadRetry: 重新嘗試
+      submitTitle: 結果生成失敗
+      submitDesc: "結果暫時沒有生成成功，請稍後重新提交。{error}"
+      submitRetry: 重新提交

@@ -152,6 +152,15 @@ const t = {
     text: "",
     options: ["Take the bloodstained key and clench your fist. (Triggers: the hidden path of the fallen witch / the obsessed god)", "Shake your head and turn back into the mist. (Stays on: the ordinary trial path)"],
   },
+  // ── 404 page + error states (filled by sync-content.ts from yaml system section; overridable via /api/copy) ──
+  nf: {
+    title: "This page has been judged. Verdict: it does not exist.", sub1: "The barrier is damaged—but something is trying to repair it.", sub2: "The cracks are healing in the light. Try once more—it might work.", sub3: "The wound will heal.", sub4: "It has healed now. …But there was never a road here to begin with. Let me walk you back.",
+    badge: "✦ Meruru's Healing · MERURU", retry: "Face judgment again", home: "Return to the Tribunal",
+  },
+  err: {
+    loadTitle: "Failed to load questions", loadDesc: "Couldn't load the questions right now. Please try again later.", loadRetry: "Retry",
+    submitTitle: "Failed to generate result", submitDesc: "Your result couldn't be generated. Please submit again later. {error}", submitRetry: "Resubmit",
+  },
   disclaimer: {
     footer: "A fan-made test, not affiliated with the original copyright holders · Results are for reference only",
     result: "Characters belong to their original creators · Results are for reference only",

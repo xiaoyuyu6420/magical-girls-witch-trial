@@ -29,6 +29,20 @@
 .asset-actions { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 .admin-backup { margin-top: 0.5rem; }
 
+/* ── 全站文案 tab（CopyEntry 调配中心）── */
+.admin-copy-groups { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.admin-copy-chip { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.5); border-radius: 999px; padding: 0.32rem 0.9rem; font-size: 0.78rem; cursor: pointer; }
+.admin-copy-chip[data-active="true"] { background: rgba(212, 175, 55, 0.15); border-color: rgba(212, 175, 55, 0.5); color: #d4af37; font-weight: 700; }
+.admin-copy-toolbar { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+.admin-copy-search { flex: 1; min-width: 140px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 0.4rem 0.7rem; color: #e6e6e6; font-size: 0.8rem; outline: none; }
+.admin-copy-row { padding: 0.75rem; }
+.admin-copy-row[data-overridden] { border-color: rgba(212, 175, 55, 0.25); }
+.admin-copy-row-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+.admin-copy-key { color: rgba(255, 255, 255, 0.55); font-size: 0.72rem; font-family: "Space Mono", monospace; word-break: break-all; }
+
+/* 题目折叠态的答案预览：不进编辑也能看到完整答案文字 */
+.admin-opt-preview { font-size: 0.72rem; color: rgba(255, 255, 255, 0.38); line-height: 1.6; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+
 /* ── 移动端适配 ── */
 @media (max-width: 768px) {
   /* 外壳收边 + 防横向溢出 */
@@ -43,9 +57,21 @@
   /* 输入普遍 16px：防 iOS 聚焦自动放大导致布局跳 */
   .admin-shell input, .admin-shell textarea, .admin-shell select { font-size: 16px !important; }
 
-  /* 题目编辑：选项行换行，textarea 全宽自适应 */
+  /* 题目编辑：选项行换行，textarea 全宽自适应（配合 AutoTextarea 自动长高） */
   .admin-opt-row { flex-wrap: wrap; }
-  .admin-opt-row textarea { min-height: 3.2em; }
+  .admin-opt-row textarea { min-height: 3.2em; width: 100%; }
+  /* 分值 / value 小输入框换行后并排，宽度可控 */
+  .admin-opt-row input[type="number"] { width: 56px !important; }
+  .admin-opt-row input:not([type="number"]) { width: 100% !important; }
+
+  /* 折叠态答案预览：手机放宽到 2 行 */
+  .admin-opt-preview { -webkit-line-clamp: 2; }
+
+  /* 全站文案 tab：工具栏纵排、行内按钮加大触区 */
+  .admin-copy-toolbar { flex-direction: column; align-items: stretch; }
+  .admin-copy-search { width: 100%; }
+  .admin-copy-row-head { flex-wrap: wrap; }
+  .admin-copy-chip { padding: 0.4rem 1rem; font-size: 0.82rem; }
 
   /* 卡片紧凑 */
   .admin-card { padding: 0.8rem; }

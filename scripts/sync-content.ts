@@ -7,7 +7,8 @@
  *   1. DB（Question/Option/PersonalityType 表）—— API 渲染立即生效
  *   2. src/data/quiz-content.ts（题库 seed 源）
  *   3. src/content/packs/madoka/config.ts（madoka 角色 seed 源）
- *   4. src/i18n/{zh-CN,en,ja,zh-TW}.ts（UI 文案 + 翻译源）
+ *   4. src/i18n/{zh-CN,en,ja,zh-TW}.ts（UI 文案 + 翻译源，含 nf/err 段）
+ *   5. DB CopyEntry 表（全站文案调配中心：ui/home/nf/err × 四语言，/api/copy 分发）
  *
  * yaml 是权威源——只读 yaml，按 yaml 覆盖以上目标。
  * 🔒 字段（结构）会被验证未被改动，改了即报错退出。
@@ -50,6 +51,8 @@ const doc = yamlParse(fs.readFileSync(YAML_FILE, "utf8")) as {
   questions: YamlQuestion[];
   characters: YamlChar[];
   ui: Record<string, Record<string, unknown>>;
+  home?: Record<string, Record<string, unknown>>;
+  system?: Record<string, { nf?: Record<string, unknown>; err?: Record<string, unknown> }>;
 };
 
 // ---- AST helpers ----
@@ -210,7 +213,13 @@ function updateI18n(locale: string, file: string, uiData: Record<string, unknown
     if (!ts.isVariableStatement(stmt)) continue;
     for (const decl of stmt.declarationList.declarations) {
       if (decl.initializer && ts.isObjectLiteralExpression(decl.initializer)) {
-        visit(decl.initializer, "", uiData);
+        // nf/err（404 页 + 异常态）骨架在 i18n 文件里，值从 yaml system 段取
+        const data = {
+          ...uiData,
+          ...(doc.system?.[locale]?.nf ? { nf: doc.system[locale].nf } : {}),
+          ...(doc.system?.[locale]?.err ? { err: doc.system[locale].err } : {}),
+        };
+        visit(decl.initializer, "", data);
       }
     }
   }
@@ -298,6 +307,52 @@ async function updateDB() {
   }
 }
 
+// ---- 4) 全站文案入库（CopyEntry 调配中心）----
+// ui → 测试/结果页界面文案；home → 首页；system.nf/err → 404/错误态。
+// 只写非空值（空 = 回退代码内置默认）；yaml 非空值覆盖 DB（yaml 是种子权威）。
+function flattenCopy(obj: Record<string, unknown>, prefix = ""): { key: string; value: string }[] {
+  const out: { key: string; value: string }[] = [];
+  for (const [k, v] of Object.entries(obj)) {
+    // 去掉 yaml 键上的防御性引号（如 '"witch-trial"' → witch-trial），与运行时对象键一致
+    const path = (prefix ? `${prefix}.${k}` : k).replaceAll('"', "");
+    if (v != null && typeof v === "object") out.push(...flattenCopy(v as Record<string, unknown>, path));
+    else if (typeof v === "string" && v.trim() !== "") out.push({ key: path, value: v });
+  }
+  return out;
+}
+
+async function updateCopyDB() {
+  const prisma = new PrismaClient();
+  try {
+    // 清理历史脏键（yaml 防御性引号曾漏进键名，如 works."witch-trial".title）
+    await prisma.copyEntry.deleteMany({ where: { key: { contains: '"' } } });
+    let count = 0;
+    const upsertAll = async (group: string, locale: string, pairs: { key: string; value: string }[]) => {
+      for (const { key, value } of pairs) {
+        await prisma.copyEntry.upsert({
+          where: { key_locale: { key, locale } },
+          update: { group, value },
+          create: { group, key, locale, value },
+        });
+        count++;
+      }
+    };
+    for (const locale of ["zh-CN", "en", "ja", "zh-TW"] as const) {
+      // ui：跳过题库翻译容器（questions/gate/trigger 是死骨架/数组，另走题目管线）
+      const uiData = Object.fromEntries(
+        Object.entries(doc.ui[locale] ?? {}).filter(([k]) => k !== "questions" && k !== "gate" && k !== "trigger"),
+      );
+      await upsertAll("ui", locale, flattenCopy(uiData));
+      if (doc.home?.[locale]) await upsertAll("home", locale, flattenCopy(doc.home[locale]));
+      if (doc.system?.[locale]?.nf) await upsertAll("nf", locale, flattenCopy(doc.system[locale].nf));
+      if (doc.system?.[locale]?.err) await upsertAll("err", locale, flattenCopy(doc.system[locale].err));
+    }
+    console.log(`  ✓ DB CopyEntry: ${count} 条文案入库（ui/home/nf/err × 四语言）`);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
 // ---- main ----
 (async () => {
   console.log("=== sync-content: yaml → 项目 ===");
@@ -310,6 +365,8 @@ async function updateDB() {
   }
   console.log("\n2) 更新 DB（渲染立即生效）");
   await updateDB();
+  console.log("\n3) 全站文案入库（CopyEntry 调配中心）");
+  await updateCopyDB();
   console.log("\n✓ sync 完成。项目 http://localhost:3010 已是最新文案。");
 })().catch((e) => {
   console.error("sync 失败:", e);

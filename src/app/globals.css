@@ -175,8 +175,6 @@
      clip the last answer on short phones. The landing page keeps the footer. */
   body:has(.view-test) footer,
   body:has(#view-result) footer { display: none; }
-
-  @media (pointer: coarse) { #cursor-dot, #cursor-ring { display: none !important; } }
 }
 
 /* ===== Base：布局 / 结构 / 全局组件（两端通用）===== */
@@ -192,28 +190,9 @@
   }
   body.in-test #progress-line { opacity: 1; }
 
-  /* ===== Cursor =====（首页 DOM 在 index.html；答题页由 TestScreen 的 CustomCursor 组件挂载） */
-  #cursor-dot, #cursor-ring { position: fixed; top: 0; left: 0; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: opacity 0.3s; }
-  #cursor-dot { width: 6px; height: 6px; background: #b80a1f; transition: width 0.2s, height 0.2s; }
-  #cursor-ring { width: 36px; height: 36px; border: 1px solid var(--c-dim); transition: width 0.4s var(--ease-out-expo), height 0.4s var(--ease-out-expo), border-color 0.4s, background 0.4s, box-shadow 0.4s, mix-blend-mode 0.4s; mix-blend-mode: difference; }
-  body.hovering #cursor-dot { width: 0; height: 0; }
-  /* 放大镜质感（2026-08-31，用户反馈"圈里模糊/挡题"）：去掉 backdrop blur——
-     透明玻璃渐变 + 双圈金属描边 + 左上高光，hover 时退出 difference 混合还原真实色。 */
-  /* 放大镜（2026-08-31 v2）：真实折射——backdrop-filter 引用 CustomCursor 注入的
-     feDisplacementMap 滤镜（球面透镜位移贴图，中心放大 + 边缘桶形畸变），
-     不支持 url() 的引擎（iOS Safari）自动降级为下方光影质感。 */
-  body.hovering #cursor-ring {
-    width: 84px; height: 84px;
-    border-color: rgba(212, 175, 55, 0.85);
-    mix-blend-mode: normal;
-    backdrop-filter: url(#witch-lens);
-    background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.10), rgba(212, 175, 55, 0.03) 42%, transparent 60%);
-    box-shadow:
-      inset 0 0 0 1px rgba(0, 0, 0, 0.35),
-      inset 0 0 0 2px rgba(212, 175, 55, 0.28),
-      inset 0 0 14px rgba(0, 0, 0, 0.28),
-      0 0 22px rgba(212, 175, 55, 0.14);
-  }
+  /* 自定义光标样式已回退（2026-09-01）：答题页恢复系统光标。
+     原 backdrop-filter: url(#witch-lens)（SVG feDisplacementMap 折射）在 X5
+     老内核上逐像素软件计算，是答题页卡顿主因之一。 */
 
   /* ===== View Layers & Blind ===== */
   .view-layer {

@@ -11,11 +11,24 @@
  */
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/lib/i18n";
 
 const HEAL_KEY = "witch-trial-404-heal";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Rec = Record<string, any>;
+
 export default function NotFound() {
   const [level, setLevel] = useState(0); // 0 = 尚未读账（首帧按全裂渲染避免闪烁）
+  const { translations } = useI18n();
+
+  // 文案走全站调配中心（i18n nf 段，可被 /api/copy 覆盖）；
+  // 翻译包未加载完成时回退内置中文，避免首帧闪出键名。
+  const nf = (translations as Rec)?.nf as Rec | undefined;
+  const tx = (key: string, fallback: string): string => {
+    const v = nf?.[key];
+    return typeof v === "string" && v ? v : fallback;
+  };
 
   useEffect(() => {
     // 异步读账（规避 effect 内同步 setState 的 lint 规则）
@@ -85,23 +98,23 @@ export default function NotFound() {
 
       <div className="nf-stack">
         <div className="nf-code">404</div>
-        <div className="nf-title">该页已被审判。罪名：不存在。</div>
+        <div className="nf-title">{tx("title", "该页已被审判。罪名：不存在。")}</div>
         <div className={`nf-sub ${healed ? "is-heal" : ""}`}>
           {healed
-            ? "伤口已经好了。……不过这里本来就没有路。我送你回去吧。"
+            ? tx("sub4", "伤口已经好了。……不过这里本来就没有路。我送你回去吧。")
             : level >= 3
-              ? "伤口，会好的。"
+              ? tx("sub3", "伤口，会好的。")
               : level === 2
-                ? "裂纹在光里一点点愈合。再试一次，也许就好了。"
-                : "结界受损——但有什么东西，正在试图修复它。"}
+                ? tx("sub2", "裂纹在光里一点点愈合。再试一次，也许就好了。")
+                : tx("sub1", "结界受损——但有什么东西，正在试图修复它。")}
         </div>
-        <div className="nf-badge">✦ 梅露露的治疗 · MERURU</div>
+        <div className="nf-badge">{tx("badge", "✦ 梅露露的治疗 · MERURU")}</div>
         <div className="nf-actions">
           <button type="button" className="nf-btn" onClick={() => window.location.reload()}>
-            再次受审
+            {tx("retry", "再次受审")}
           </button>
           <a href="/" className={`nf-btn ${healed ? "is-primary" : ""}`} style={{ textDecoration: "none" }}>
-            返回审判庭
+            {tx("home", "返回审判庭")}
           </a>
         </div>
       </div>

@@ -7,7 +7,11 @@ import ResultScreen from "@/components/ResultScreen";
 import FullscreenButton from "@/components/FullscreenButton";
 import { AuroraBurst } from "@/components/AuroraBurst";
 import { trackEvent } from "@/components/GoogleAnalytics";
+import { useI18n } from "@/lib/i18n";
 import type { QuizQuestion } from "@/components/TestScreen";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Rec = Record<string, any>;
 
 interface MatchResult {
   code: string; name: string; subtitle?: string; slogan: string; desc: string; keywords?: string;
@@ -18,6 +22,13 @@ interface MatchResult {
 }
 
 export default function TestPage() {
+  const { translations } = useI18n();
+  // 异常态文案走全站调配中心（i18n err 段，可被 /api/copy 覆盖）；翻译包未就绪时回退内置中文。
+  const err = (translations as Rec)?.err as Rec | undefined;
+  const etx = (key: string, fallback: string): string => {
+    const v = err?.[key];
+    return typeof v === "string" && v ? v : fallback;
+  };
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [result, setResult] = useState<MatchResult | null>(null);
   const [stats, setStats] = useState<{ totalParticipants: number; typePercentage: number; typeCount: number } | null>(null);
@@ -192,9 +203,9 @@ export default function TestPage() {
             minHeight: "100vh", padding: "2rem", textAlign: "center",
             fontFamily: "'Noto Serif SC', serif",
           }}>
-            <div style={{ fontSize: "1.2rem", color: "#d4af37", marginBottom: "1rem", fontFamily: "'Cinzel', serif", letterSpacing: "0.2em" }}>题目加载失败</div>
+            <div style={{ fontSize: "1.2rem", color: "#d4af37", marginBottom: "1rem", fontFamily: "'Cinzel', serif", letterSpacing: "0.2em" }}>{etx("loadTitle", "题目加载失败")}</div>
             <div style={{ fontSize: "0.8rem", color: "#888", marginBottom: "1.5rem" }}>
-              暂时无法加载题目，请稍后再试。
+              {etx("loadDesc", "暂时无法加载题目，请稍后再试。")}
             </div>
             <button
               onClick={() => { setLoadError(null); loadQuiz(); }}
@@ -204,7 +215,7 @@ export default function TestPage() {
                 padding: "0.5rem 1.5rem", cursor: "pointer", borderRadius: 2,
               }}
             >
-              重新尝试
+              {etx("loadRetry", "重新尝试")}
             </button>
           </div>
         ) : submitError ? (
@@ -213,9 +224,9 @@ export default function TestPage() {
             minHeight: "100vh", padding: "2rem", textAlign: "center",
             fontFamily: "'Noto Serif SC', serif",
           }}>
-            <div style={{ fontSize: "1.2rem", color: "#d4af37", marginBottom: "1rem", fontFamily: "'Cinzel', serif", letterSpacing: "0.2em" }}>结果生成失败</div>
+            <div style={{ fontSize: "1.2rem", color: "#d4af37", marginBottom: "1rem", fontFamily: "'Cinzel', serif", letterSpacing: "0.2em" }}>{etx("submitTitle", "结果生成失败")}</div>
             <div style={{ fontSize: "0.8rem", color: "#888", marginBottom: "1.5rem", maxWidth: 420, lineHeight: 1.7 }}>
-              结果暂时没有生成成功，请稍后重新提交。{submitError}
+              {etx("submitDesc", "结果暂时没有生成成功，请稍后重新提交。{error}").replace("{error}", submitError ?? "")}
             </div>
             <button
               onClick={() => {
@@ -228,7 +239,7 @@ export default function TestPage() {
                 padding: "0.5rem 1.5rem", cursor: "pointer", borderRadius: 2,
               }}
             >
-              重新提交
+              {etx("submitRetry", "重新提交")}
             </button>
           </div>
         ) : (

@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from "react";
+import AutoTextarea from "./AutoTextarea";
 
 type Rec = Record<string, any>;
 
@@ -98,10 +99,10 @@ export default function AnnotationsTab({ api }: { api: (path: string, opts?: Req
               )}
               {textsFor(node, key).map((text, i) => (
                 <div key={i} className="admin-row">
-                  <textarea
+                  <AutoTextarea
                     value={text}
                     onChange={(e) => setText(node, key, i, e.target.value)}
-                    rows={2}
+                    minRows={2}
                     className="admin-input admin-textarea"
                   />
                   <button className="admin-btn-ghost admin-btn-danger" onClick={() => removeRow(node, key, i)}>删</button>
