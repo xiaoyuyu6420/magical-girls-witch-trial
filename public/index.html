@@ -90,26 +90,12 @@
       opacity: 0.6;
     }
 
-    /* X5 静态降级模式下的微弱动态：canvas 不跑 rAF，靠 CSS 给整层加一个
-       极慢的明暗呼吸，避免完全死板又不产生每帧合成开销。仅在 JS 检测到
-       X5 时给 <body> 加 .x5-static 类后才启用。 */
-    body.x5-static #abyss-canvas {
-      animation: x5-breath 6s ease-in-out infinite;
-    }
-    @keyframes x5-breath {
-      0%, 100% { opacity: 0.5; }
-      50% { opacity: 0.72; }
-    }
-
     .noise {
       position: absolute;
       inset: 0;
       z-index: 10;
       pointer-events: none;
-      /* 预烘焙噪点 PNG：原 feTurbulence SVG 在 X5 老内核上需软件光栅化，全屏平铺极卡；
-         换成静态平铺图（灰度+opacity 等效 8% 噪点），零运行时开销。 */
-      background-image: url("/noise.png");
-      opacity: 0.08;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
     }
 
     .vignette {
@@ -1136,15 +1122,6 @@
     const cursorDot = document.getElementById('cursor-dot');
     const cursorRing = document.getElementById('cursor-ring');
 
-    // ── 性能降级判定（X5/QQ/微信内置 = 老 Chromium，Canvas2D 无 GPU 加速）──
-    // 这类内核上跑 60fps 全屏粒子循环会把主线程打满，连带 loader 的 scramble
-    // 走不完 → 背景动效永远不出现。检测到就只画一帧静态场，不启动 rAF 循环。
-    const IS_X5 = /MQQBrowser|QQBrowser|MicroMessenger/i.test(navigator.userAgent || '');
-    if (IS_X5) document.body.classList.add('x5-static');
-    // 移动端 canvas 内部像素减半（CSS 仍 100% 拉伸），光栅化面积减 75%，
-    // 粒子半径随之 ×SCALE，视觉上圆点更柔和——移动端看不出差别。
-    const RENDER_SCALE = (window.innerWidth < 768 || IS_X5) ? 0.5 : 1;
-
     // 固定的环中心点（magical girls 那几个字后面）
     let centerX = 0, centerY = 0;
 
@@ -1163,14 +1140,8 @@
     cursorRing.style.opacity = '0';
 
     function resize() {
-      // width/height 仍存 CSS 逻辑像素，供所有坐标计算用；
-      // canvas 物理像素按 RENDER_SCALE 缩放，再用 setTransform 把坐标系映射回去，
-      // 这样下游代码（seedDashes/mouse/center）完全不用改，只是底层光栅像素减半。
-      width  = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width  = Math.floor(width  * RENDER_SCALE);
-      canvas.height = Math.floor(height * RENDER_SCALE);
-      ctx.setTransform(RENDER_SCALE, 0, 0, RENDER_SCALE, 0, 0);
+      width  = canvas.width  = window.innerWidth;
+      height = canvas.height = window.innerHeight;
       if (!mouse.hasMoved) { mouse.x = width * 0.5; mouse.y = height * 0.45; }
       if (ringCenter.x === 0 && ringCenter.y === 0) {
         ringCenter.x = mouse.x; ringCenter.y = mouse.y;
@@ -1240,8 +1211,7 @@
     function seedDashes() {
       dashes = [];
       // Lattice spacing — slightly denser than dashes since dots are smaller visually.
-      // X5/移动端格子放大：粒子数减半，每帧 arc/fill 次数减半。
-      const cell = IS_X5 ? 54 : (width < 768 ? 46 : 38);
+      const cell = 38;
       const cols = Math.ceil(width  / cell) + 2;
       const rows = Math.ceil(height / cell) + 2;
       for (let j = -1; j < rows; j++) {
@@ -1289,7 +1259,7 @@
       ];
     }
 
-    function drawField(time) {
+    function animateCanvas(time) {
       ctx.clearRect(0, 0, width, height);
       ctx.lineCap = 'round';
 
@@ -1401,37 +1371,9 @@
         ctx.arc(px, py, radius, 0, Math.PI * 2);
         ctx.fill();
       }
-    }
-
-    // 自定义光标更新（桌面端跟随）。合并进主循环，避免额外 rAF。
-    let cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-    let rx = cx, ry = cy;
-    function updateCursor() {
-      if (window.innerWidth <= 768) return; // 仅桌面端
-      cursorDot.style.transform = `translate(calc(${mouse.x}px - 50%), calc(${mouse.y}px - 50%))`;
-      rx += (mouse.x - rx) * 0.15;
-      ry += (mouse.y - ry) * 0.15;
-      cursorRing.style.transform = `translate(calc(${rx}px - 50%), calc(${ry}px - 50%))`;
-    }
-
-    if (IS_X5) {
-      // ── X5 静态降级：不跑 60fps rAF 循环。loader 结束后只画一帧
-      //    展开完成的环 + 粒子场（ringExpand 直接置 1），靠 CSS 脉动光晕
-      //    提供微弱动态感。这样老内核上既不卡、又有背景视觉。
-      window.__paintStaticField = function () {
-        ringExpand = 1;
-        ringCenter.x = centerX; ringCenter.y = centerY;
-        drawField(performance.now());
-      };
-    } else {
-      // ── 正常内核：单一 rAF 循环同时驱动粒子场 + 光标，省一个循环。
-      function animateCanvas(time) {
-        drawField(time);
-        updateCursor();
-        requestAnimationFrame(animateCanvas);
-      }
       requestAnimationFrame(animateCanvas);
     }
+    requestAnimationFrame(animateCanvas);
 
     /* =========================================================
        3. CUSTOM CURSOR LOGIC
@@ -1439,8 +1381,20 @@
     // 初始隐藏自定义光标（setCursorVisible 会在第一次 mousemove 时显示）
     cursorDot.style.opacity = '0';
     cursorRing.style.opacity = '0';
-    // cx/cy/rx/ry 与 updateCursor() 已在上方主循环区声明并合并进 animateCanvas，
-    // 这里不再保留独立的 rAF 循环——少一个 60fps 回调，省主线程。
+
+    let cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+    let rx = cx, ry = cy;
+
+    function animateCursor() {
+      if (window.innerWidth > 768) { // 仅在非手机端更新光标
+        cursorDot.style.transform = `translate(calc(${mouse.x}px - 50%), calc(${mouse.y}px - 50%))`;
+        rx += (mouse.x - rx) * 0.15;
+        ry += (mouse.y - ry) * 0.15;
+        cursorRing.style.transform = `translate(calc(${rx}px - 50%), calc(${ry}px - 50%))`;
+      }
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
 
     document.querySelectorAll('button, a, .magnetic').forEach(el => {
       el.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
@@ -1484,14 +1438,10 @@
       const m = String(now.getMinutes()).padStart(2, '0');
       const s = String(now.getSeconds()).padStart(2, '0');
       const ms = String(Math.floor(now.getMilliseconds() / 10)).padStart(2, '0');
-      const el = document.getElementById('live-time');
-      if (!el) return;
-      const t = `T-${h}:${m}:${s}:${ms}`;
-      if (el.innerText !== t) el.innerText = t;
+      document.getElementById('live-time').innerText = `T-${h}:${m}:${s}:${ms}`;
+      requestAnimationFrame(updateTime);
     }
-    // 10ms 颗粒度但 200ms 触发：X5 老内核 rAF 频率低+每帧写 innerText 会强制 reflow，
-    // 改成定时器+文本去重后，页面闲置时不再每秒 60 次 DOM 写入。
-    setInterval(updateTime, 200);
+    updateTime();
 
     /* =========================================================
        6. BOOT SEQUENCE
@@ -1507,30 +1457,6 @@
 
       const scrambler = new TextScramble(loaderText);
 
-      // 进入主画面的统一入口（loader 上移 + 展开环 + 触发标题 scramble）。
-      // 抽成函数 + entered 标志，让下面的超时兜底和正常流程共用，且不重复执行。
-      let entered = false;
-      function enterMain() {
-        if (entered) return;
-        entered = true;
-        const loaderEl = document.getElementById('loader');
-        if (loaderEl) loaderEl.style.transform = 'translateY(-100%)';
-        startRingExpand();
-        // X5 静态降级：不跑 rAF，loader 退场后立刻画一帧展开完成的环+粒子。
-        // 正常内核走 rAF 循环，此处不画（rAF 会接管）。
-        if (IS_X5 && typeof window.__paintStaticField === 'function') {
-          // 延一帧等 loader transform 生效再画，避免被盖住。
-          setTimeout(window.__paintStaticField, 50);
-        }
-        const scrambles = document.querySelectorAll('[data-scramble]');
-        scrambles.forEach((el, index) => {
-          const targetText = el.getAttribute('data-scramble');
-          el.innerText = '';
-          const s = new TextScramble(el);
-          setTimeout(() => s.setText(targetText), 500 + index * 200);
-        });
-      }
-
       let progress = 0;
       const interval = setInterval(() => {
         progress += Math.random() * 15;
@@ -1539,20 +1465,20 @@
 
         if (progress === 100) {
           clearInterval(interval);
-          // 超时兜底：X5 上 scramble 的 rAF 可能掉到几 fps 走不完，
-          // promise.then 永不 resolve → loader 卡死、背景动效永不出现。
-          // 设 2.5s 上限，到点无论 scramble 是否播完都强制进主画面。
-          let done = false;
           scrambler.setText('ACCESS GRANTED').then(() => {
-            if (done) return;
-            done = true;
-            setTimeout(enterMain, 800);
+            setTimeout(() => {
+              document.getElementById('loader').style.transform = 'translateY(-100%)';
+              startRingExpand();
+
+              const scrambles = document.querySelectorAll('[data-scramble]');
+              scrambles.forEach((el, index) => {
+                const targetText = el.getAttribute('data-scramble');
+                el.innerText = '';
+                const s = new TextScramble(el);
+                setTimeout(() => s.setText(targetText), 500 + index * 200);
+              });
+            }, 800);
           });
-          setTimeout(() => {
-            if (done) return;
-            done = true;
-            enterMain();
-          }, 2500);
         }
       }, 100);
     }
