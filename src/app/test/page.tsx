@@ -77,6 +77,15 @@ export default function TestPage() {
     loadQuiz();
   }, [loadQuiz]);
 
+  // X5/QQ 内置浏览器标记（2026-09-01 诊断实测答题页 2fps）：
+  // 注入 html.x5 类，globals.css 末段据此关闭 backdrop-filter/feTurbulence（软件路径）。
+  // 这些特效在 X5 上本就渲染异常，关闭零视觉损失；正常浏览器不受影响。
+  useEffect(() => {
+    if (/MQQBrowser|QQBrowser|MicroMessenger/i.test(navigator.userAgent || "")) {
+      document.documentElement.classList.add("x5");
+    }
+  }, []);
+
   // 检测 prefers-reduced-motion，供 AuroraBurst 缩短最小时长（C3）。
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");

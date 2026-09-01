@@ -38,6 +38,14 @@ interface Particle {
 /** 静态尘点数量：只作为低对比度层次，不承担主视觉。 */
 const PARTICLE_COUNT = 14;
 
+/**
+ * X5/QQ 内置浏览器（2026-09-01 诊断）：该内核 Canvas2D 软件绘制把主线程拖垮
+ * 且渲染不可见。X5 下整个 canvas 层不渲染，只保留环境底图与题号浮雕。
+ */
+const IS_X5 =
+  typeof navigator !== "undefined" &&
+  /MQQBrowser|QQBrowser|MicroMessenger/i.test(navigator.userAgent || "");
+
 export function BackgroundLayers({
   questionIndex,
   reducedMotion,
@@ -58,7 +66,7 @@ export function BackgroundLayers({
   // 桌面回滚守卫（effect 内守卫，不能提前 return——hooks 顺序必须恒定）
   useEffect(() => {
     // SSR 守卫（盲点 #11）：服务端无 window/canvas/rAF；reduced-motion 不启 rAF（盲点 #7）
-    if (typeof window === "undefined" || reducedMotion || isDesktop) return;
+    if (typeof window === "undefined" || reducedMotion || isDesktop || IS_X5) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -112,7 +120,7 @@ export function BackgroundLayers({
   return (
     <>
       <div className="mobile-ambient-backdrop" aria-hidden="true" />
-      {!reducedMotion && <canvas id="bg-canvas" ref={canvasRef} />}
+      {!reducedMotion && !IS_X5 && <canvas id="bg-canvas" ref={canvasRef} />}
       <div className="bg-typography">{questionLabel}</div>
       <div className="film-grain" />
     </>

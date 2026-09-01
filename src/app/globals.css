@@ -2298,3 +2298,21 @@
   .interjection-overlay { animation: none; opacity: 1; }
 }
 
+
+/* =========================================
+   X5 / QQ 内置浏览器定向降级（2026-09-01 隔离诊断页实测）
+   -----------------------------------------
+   实测结论（QQ X5 内核，答题页 2 FPS）：
+   - backdrop-filter 全部走软件路径（毛玻璃卡片页滑动 10fps）
+   - feTurbulence 颗粒层渲染不可见但拖垮合成
+   这些特效在 X5 上本就显示异常，关闭 = 零视觉损失、纯流畅度收益。
+   .x5 类由 /test 页面挂载时按 UA 注入 <html>；正常浏览器不受任何影响。
+   ========================================= */
+html.x5 *,
+html.x5 *::before,
+html.x5 *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.x5 .film-grain,
+html.x5 .grain-overlay-test { display: none !important; }
