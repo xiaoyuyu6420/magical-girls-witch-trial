@@ -115,21 +115,28 @@ async function main() {
   }
   console.log(`  → ${QUESTIONS.length} questions synced (${textChanges} text updates)`);
 
-  // ── 审判官批注：全量替换（表小、无关联数据；代码池为权威源，后台编辑即时生效、
-  //    下次部署随镜像刷新——与题目文案同一语义） ──
-  console.log("Syncing annotations...");
-  await prisma.annotation.deleteMany();
-  const annotationRows: { node: number; tier: string; text: string; order: number }[] = [];
-  for (const [nodeKey, tiers] of Object.entries(ANNOTATION_POOLS)) {
-    const node = Number(nodeKey);
-    for (const [tier, texts] of Object.entries(tiers as Record<string, string[]>)) {
-      (texts as string[]).forEach((text, order) => annotationRows.push({ node, tier, text, order }));
+  // ── 审判官批注：表空才填 / FORCE_RESEED=1 才重建（2026-09-02 改策）──
+  //    旧策略"每次部署全量替换"会把 admin 后台的手改冲掉，表现为"后台编辑不生效"。
+  //    新策略：DB 有数据 = 后台编辑结果，部署不动它；大改版上线走后台「重置为内置文案」
+  //    或设 FORCE_RESEED=1。内置文案池的权威源是 content/content.yaml 的 annotations 段。──
+  const annCount = await prisma.annotation.count();
+  if (force || annCount === 0) {
+    console.log(`Syncing annotations...${force ? " (FORCE_RESEED)" : " (表空，首次填充)"}`);
+    await prisma.annotation.deleteMany();
+    const annotationRows: { node: number; tier: string; text: string; order: number }[] = [];
+    for (const [nodeKey, tiers] of Object.entries(ANNOTATION_POOLS)) {
+      const node = Number(nodeKey);
+      for (const [tier, texts] of Object.entries(tiers as Record<string, string[]>)) {
+        (texts as string[]).forEach((text, order) => annotationRows.push({ node, tier, text, order }));
+      }
     }
+    if (annotationRows.length > 0) {
+      await prisma.annotation.createMany({ data: annotationRows });
+    }
+    console.log(`  → ${annotationRows.length} annotations synced`);
+  } else {
+    console.log(`  → annotations: 表中已有 ${annCount} 条（后台编辑结果），跳过`);
   }
-  if (annotationRows.length > 0) {
-    await prisma.annotation.createMany({ data: annotationRows });
-  }
-  console.log(`  → ${annotationRows.length} annotations synced`);
 }
 
 main()

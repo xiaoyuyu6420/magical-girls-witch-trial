@@ -53,6 +53,8 @@ const doc = yamlParse(fs.readFileSync(YAML_FILE, "utf8")) as {
   ui: Record<string, Record<string, unknown>>;
   home?: Record<string, Record<string, unknown>>;
   system?: Record<string, { nf?: Record<string, unknown>; err?: Record<string, unknown> }>;
+  annotations?: { _node: string; H?: string[]; M?: string[]; L?: string[] }[];
+  annotation_fallbacks?: Record<string, string>;
 };
 
 // ---- AST helpers ----
@@ -353,6 +355,98 @@ async function updateCopyDB() {
   }
 }
 
+// ---- 5) 审判官批注：yaml annotations 段 → annotations.ts 内置池 + 本地 DB ----
+// yaml 是权威源；线上 DB 以 admin 后台编辑结果为准（seed 不覆盖），大改版后走后台重置。
+type AnnPools = Record<number, Record<"H" | "M" | "L", string[]>>;
+
+function buildAnnotationPools(): { pools: AnnPools; fallbacks: Record<number, string> } {
+  const pools: AnnPools = {};
+  for (const entry of doc.annotations ?? []) {
+    const node = Number(stripLock(entry._node ?? ""));
+    if (![5, 10, 15].includes(node)) {
+      console.error(`[结构错误] annotations._node 必须是 🔒 5/10/15，实际 "${entry._node}"`);
+      process.exit(1);
+    }
+    pools[node] = {
+      H: (entry.H ?? []).map(stripEditable),
+      M: (entry.M ?? []).map(stripEditable),
+      L: (entry.L ?? []).map(stripEditable),
+    };
+  }
+  const fallbacks: Record<number, string> = {};
+  for (const [k, v] of Object.entries(doc.annotation_fallbacks ?? {})) {
+    fallbacks[Number(k)] = stripEditable(v);
+  }
+  return { pools, fallbacks };
+}
+
+function updateAnnotationsFile(pools: AnnPools, fallbacks: Record<number, string>) {
+  const file = path.join(ROOT, "src/lib/annotations.ts");
+  const sf = sfOf(file);
+  const targets: { start: number; end: number; newVal: string; name: string }[] = [];
+
+  const NODE_COMMENTS: Record<number, string> = {
+    5: "试探语气——第一阶段中段：冷眼初探，克制疏离的轻吐槽",
+    10: "逼近语气——第二阶段中段：手术刀式解剖，戳穿防御机制",
+    15: "审判前夜——第二阶段末尾：语气放软，带上一点恶魔式的低语钩子",
+  };
+  const poolsText = `{\n${Object.entries(pools)
+    .map(([node, tiers]) => {
+      const tierLines = (["H", "M", "L"] as const)
+        .filter((t) => (tiers[t] ?? []).length > 0)
+        .map((t) => `    ${t}: [\n${tiers[t].map((s) => `      ${JSON.stringify(s)},`).join("\n")}\n    ],`)
+        .join("\n");
+      return `  ${node}: {\n    // ${NODE_COMMENTS[Number(node)] ?? ""}\n${tierLines}\n  },`;
+    })
+    .join("\n")}\n}`;
+  const fallbacksText = `{\n${[5, 10, 15]
+    .filter((n) => fallbacks[n])
+    .map((n) => `  ${n}: ${JSON.stringify(fallbacks[n])},`)
+    .join("\n")}\n}`;
+
+  for (const stmt of sf.statements) {
+    if (!ts.isVariableStatement(stmt)) continue;
+    for (const decl of stmt.declarationList.declarations) {
+      const name = decl.name.getText();
+      if ((name === "POOLS" || name === "ANNOTATION_FALLBACKS") && decl.initializer) {
+        targets.push({
+          start: decl.initializer.getStart(sf),
+          end: decl.initializer.getEnd(),
+          newVal: name === "POOLS" ? poolsText : fallbacksText,
+          name,
+        });
+      }
+    }
+  }
+  if (targets.length !== 2) {
+    console.error(`[结构错误] annotations.ts 中应找到 POOLS 与 ANNOTATION_FALLBACKS 两个声明，实际 ${targets.length} 个`);
+    process.exit(1);
+  }
+  targets.sort((a, b) => b.start - a.start);
+  let src = fs.readFileSync(file, "utf8");
+  for (const t of targets) src = src.slice(0, t.start) + t.newVal + src.slice(t.end);
+  fs.writeFileSync(file, src);
+  console.log(`  ✓ ${path.relative(ROOT, file)}: 批注内置池更新（${targets.map((t) => t.name).join(" + ")}）`);
+}
+
+async function updateAnnotationsDB(pools: AnnPools) {
+  const prisma = new PrismaClient();
+  try {
+    const rows: { node: number; tier: string; text: string; order: number }[] = [];
+    for (const [nodeKey, tiers] of Object.entries(pools)) {
+      const node = Number(nodeKey);
+      for (const tier of ["H", "M", "L"] as const) {
+        (tiers[tier] ?? []).forEach((text, order) => rows.push({ node, tier, text, order }));
+      }
+    }
+    await prisma.annotation.deleteMany();
+    if (rows.length > 0) await prisma.annotation.createMany({ data: rows });
+    console.log(`  ✓ DB Annotation: ${rows.length} 条批注重建（本地权威源同步）`);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
 // ---- main ----
 (async () => {
   console.log("=== sync-content: yaml → 项目 ===");
@@ -367,6 +461,10 @@ async function updateCopyDB() {
   await updateDB();
   console.log("\n3) 全站文案入库（CopyEntry 调配中心）");
   await updateCopyDB();
+  console.log("\n4) 审判官批注（内置池 + 本地 DB）");
+  const { pools: annPools, fallbacks: annFallbacks } = buildAnnotationPools();
+  updateAnnotationsFile(annPools, annFallbacks);
+  await updateAnnotationsDB(annPools);
   console.log("\n✓ sync 完成。项目 http://localhost:3010 已是最新文案。");
 })().catch((e) => {
   console.error("sync 失败:", e);

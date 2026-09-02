@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { checkAdminAuth } from "@/lib/admin-auth";
 import { apiError } from "@/lib/utils";
+import { ANNOTATION_POOLS } from "@/lib/annotations";
 
 export const dynamic = "force-dynamic";
 
@@ -72,5 +73,33 @@ export async function PUT(req: NextRequest) {
   } catch (e) {
     console.error(e);
     return apiError("Failed to save annotations", 500, e);
+  }
+}
+
+/**
+ * POST：重置为镜像内置文案池（annotations.ts 的 POOLS）。
+ * 部署不再自动覆盖后台手改（seed 表空才填），大改版上线后在这里一键取回新内置文案。
+ */
+export async function POST(req: NextRequest) {
+  const authErr = checkAdminAuth(req);
+  if (authErr) return authErr;
+  try {
+    const rows: AnnotationRow[] = [];
+    for (const [nodeKey, tiers] of Object.entries(ANNOTATION_POOLS)) {
+      const node = Number(nodeKey);
+      for (const [tier, texts] of Object.entries(tiers as Record<string, string[]>)) {
+        (texts as string[]).forEach((text, order) => rows.push({ node, tier, text, order }));
+      }
+    }
+    await db.$transaction(async (tx) => {
+      await tx.annotation.deleteMany();
+      await tx.annotation.createMany({
+        data: rows.map((r) => ({ node: r.node, tier: r.tier, text: r.text, order: r.order })),
+      });
+    });
+    return NextResponse.json({ ok: true, count: rows.length });
+  } catch (e) {
+    console.error(e);
+    return apiError("Failed to reset annotations", 500, e);
   }
 }

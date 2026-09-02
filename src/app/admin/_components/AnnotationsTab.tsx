@@ -78,6 +78,22 @@ export default function AnnotationsTab({ api }: { api: (path: string, opts?: Req
     } finally { setSaving(false); }
   };
 
+  // 大改版上线后取回镜像内置文案：清空后台手改，整表重建为当前版本内置池
+  const resetToBuiltin = async () => {
+    if (!window.confirm("重置将清空当前全部批注（含手改），恢复为代码内置文案池。确定？")) return;
+    setSaving(true);
+    setMsg(null);
+    try {
+      const res = await api("/annotations", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "重置失败");
+      setMsg({ text: `已重置为内置文案（${data.count} 条）`, ok: true });
+      fetchRows();
+    } catch (err) {
+      setMsg({ text: err instanceof Error ? err.message : "重置失败", ok: false });
+    } finally { setSaving(false); }
+  };
+
   if (loading) return <div style={{ color: "rgba(255,255,255,0.3)" }}>加载中...</div>;
 
   return (
@@ -114,6 +130,7 @@ export default function AnnotationsTab({ api }: { api: (path: string, opts?: Req
       ))}
       <div className="admin-savebar">
         <button className="admin-btn-primary" onClick={save} disabled={saving}>{saving ? "保存中..." : "保存全部"}</button>
+        <button className="admin-btn-ghost" onClick={resetToBuiltin} disabled={saving}>重置为内置文案</button>
         {msg && <span style={{ fontSize: "0.75rem", color: msg.ok ? "#4ade80" : "#ef4444" }}>{msg.text}</span>}
       </div>
     </div>
