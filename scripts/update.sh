@@ -10,6 +10,15 @@ cd "$DEPLOY_DIR"
 
 echo "=== 更新 Magical Girls Witch Trial ==="
 
+# 0. 磁盘自清理（2026-09-02 线上事故：频繁部署把磁盘塞满，cp backup 直接 No space）
+#    - compose 备份只留最近 1 份（每次部署都会生成一个）
+#    - 清掉未被运行容器使用的 Docker 镜像/构建缓存（运行中的容器与数据卷不受影响）
+ls -t docker-compose.yml.backup.* 2>/dev/null | tail -n +2 | xargs -r rm -f
+docker image prune -af >/dev/null 2>&1 || true
+docker builder prune -af >/dev/null 2>&1 || true
+docker system prune -f >/dev/null 2>&1 || true
+echo "磁盘清理后：$(df -h / | tail -1 | awk '{print $4 " 可用"}')"
+
 # 1. 检查 .env
 if [ ! -f .env ] || ! grep -q "^ADMIN_PASSWORD=.\+" .env; then
   echo ""
