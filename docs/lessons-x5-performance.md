@@ -149,7 +149,19 @@ Next.js 对 `public/` 只按精确路径匹配：`/x5` ≠ `/x5/index.html`（�
 用户在 admin 后台改过的线上数据，**发布前必须先同步回本地源码**，否则被旧版覆盖丢失。
 同步路径：公开 `/api/quiz` 可拿题目+角色文案（无需密码）；admin API 需要密码，拿不到的要找用户确认。
 
-### 6. 边改边发的大改动要切成可回退的最小单元
+### 6. 频繁部署会塞满服务器磁盘（No space on device 事故）
+
+现象：连续十几次部署后，deploy 报 `cp: docker-compose.yml.backup.*: No space left on device`。
+根因：每次部署产生一个 compose 备份 + 一个新镜像层，旧的从不清理，磁盘被吃光。
+修复（双保险）：
+- `scripts/update.sh` 部署最前自清理（compose 备份留 1 份 + image/builder prune）——长期机制；
+- `.github/workflows/deploy.yml` 把清理内联进 SSH script——因为服务器从 GitHub raw 拉 update.sh，
+  **raw CDN 有约 5 分钟缓存**，刚 push 的修复拉不到（第一版修复因此又失败了一次）。
+
+**教训**：①高频部署的项目，部署脚本必须自带磁盘自清理；②修"部署脚本"本身时，
+注意执行路径上有没有 CDN 缓存（raw → 服务器），紧急修复要内联到 workflow 里立即生效。
+
+### 7. 边改边发的大改动要切成可回退的最小单元
 
 本次节奏是：性能修复 → 全回退 → 根因修复 → 又发现混入文件。如果每次都是巨大 commit，
 回退会伤及无辜。教训：特效回退 / 功能 / 文案同步分开 commit，回退时才能精准。
