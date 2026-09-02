@@ -66,5 +66,13 @@ jobs:
             # 部署目录若为 root 所有，SSH 用户写不进（备份/下载 compose 均需写权限）
             sudo -n chown -R "$(whoami)":"$(whoami)" /home/magical-girls || echo "[warn] sudo -n 不可用，继续尝试"
             cd /home/magical-girls
+            # 磁盘急救（内联，不依赖 raw CDN 缓存——2026-09-02 No space 事故）：
+            # 清 compose 备份（留最近1份）+ 未被运行容器使用的镜像/构建缓存。
+            # 数据库在 bind mount 数据卷里，不受影响。
+            ls -t docker-compose.yml.backup.* 2>/dev/null | tail -n +2 | xargs -r rm -f
+            docker image prune -af >/dev/null 2>&1 || true
+            docker builder prune -af >/dev/null 2>&1 || true
+            docker system prune -f >/dev/null 2>&1 || true
+            echo "磁盘清理后：$(df -h / | tail -1 | awk '{print $4 " 可用"}')"
             curl -sSL https://raw.githubusercontent.com/xiaoyuyu6420/magical-girls-witch-trial/main/scripts/update.sh | bash
             docker compose ps
