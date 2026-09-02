@@ -1,10 +1,16 @@
-# 排查教训：QQ X5 内核全站卡顿（2026-09-01 ~ 09-02）
+# 排查教训：QQ X5 内核全站卡顿（2026-09-01 ~ 09-02，已结案）
 
-一次持续两天的性能排查复盘。起因：用户在 QQ 内置浏览器（X5 内核）里全站极卡——首页乱码动画"一个字一个字变"、答题页 2 FPS；Edge 手机版正常。最终通过**隔离诊断页实测**定位根因并定向降级。
+一次持续两天的性能排查复盘。起因：用户在 QQ 内置浏览器（X5 内核）里全站极卡——首页乱码动画"一个字一个字变"、答题页 2 FPS；Edge 手机版正常。最终通过**隔离诊断页实测**逐步定位。
 
-> 结论先行：X5 对 backdrop-filter / mix-blend-mode / feTurbulence / Canvas2D 走软件路径；
-> 这些特效在 X5 上**渲染不可见但吃满主线程**（看不见 ≠ 没开销）。
-> 解法是 UA 检测加 `html.x5` 类做定向降级（正常浏览器零影响）。
+> **最终定案（09-02）**：v3 诊断页实测显示该设备 QQ WebView 为软件渲染——
+> 纯文本零特效滚动只有 8 FPS；用户随后发现**百度和自己的另一个网站在同一 QQ 里同样卡**。
+> 主因是用户设备的 QQ 应用（X5 WebView 组件）处于降级/软件渲染状态，与任何网站代码无关。
+> 自救路径：更新 QQ / 关省电模式 / 清内核缓存 / 用系统浏览器打开。
+>
+> 代码侧的最终产出：
+> 1. UA 定向降级（`html.x5`）：关 backdrop-filter / feTurbulence / 粒子 canvas——对真正的 X5 设备仍是净收益；
+> 2. **低帧率兜底提示条**（不依赖 UA）：首页就绪 3s 后采样 2s 实际帧率，<15fps 提示"在浏览器中打开"（localStorage 记住关闭）——任何烂内核环境都能触发，这是环境问题的唯一正解；
+> 3. 过程中拔掉的真问题：iframe 衔接预热（双份动画）、光标折射 backdrop-filter: url()、被覆盖仍空转的 rAF——对所有低端安卓机是实打实的性能收益。
 
 ---
 
@@ -160,9 +166,13 @@ Next.js 对 `public/` 只按精确路径匹配：`/x5` ≠ `/x5/index.html`（�
 
 ---
 
-## 附：线上诊断设施（保留复用）
+## 附：诊断设施处置（已按需移除）
 
-- `https://magical.jadeai.icu/x5/index.html` — 诊断页目录（含 FPS 探针方案，可复制到任何项目）
-- `html.x5` 类注入位置：首页 `public/index.html`（head 内联脚本）+ 答题页 `src/app/test/page.tsx`
+`public/x5/` 诊断页目录**已于 09-02 结案后移除**（连同 next.config.ts 的 /x5 rewrite）。
+需要再做内核诊断时从 git 历史找回：`b8c03f1`（v3 最终版，含 ua / minimal / live / scroll / css-anim + FPS 探针方案）。
+
+仍在生产环境保留的 X5 相关设施：
+- `html.x5` 类注入：首页 `public/index.html`（head 内联脚本）+ 答题页 `src/app/test/page.tsx`
 - X5 覆盖段：`src/app/globals.css` 末尾（通配关 backdrop-filter / 藏颗粒层）
 - 首页动画开关：`public/index.html` 的 `IS_X5 / homeAnimStopped / stopHomeAnim()`
+- 低帧率兜底提示条：`public/index.html`（采样 2s 实际帧率 <15fps 触发）
