@@ -1509,6 +1509,39 @@
       setTimeout(startBootSequence, 100);
     }
 
+    /* ── 低帧率兜底（2026-09-02）：不依赖 UA——任何内核实际跑不动就提示引导。
+       首页就绪 3s 后采样 2s 实际帧率，<15fps 弹一条轻量提示条
+       （纯文本+关闭钮，零动画零滤镜，不给烂环境加负担）。
+       用户关过一次就 localStorage 记住不再打扰。 ── */
+    (function () {
+      try { if (localStorage.getItem('wt-perf-dismissed')) return; } catch (e) {}
+      setTimeout(function () {
+        var frames = 0, t0 = performance.now();
+        function count() {
+          frames++;
+          if (performance.now() - t0 < 2000) { requestAnimationFrame(count); return; }
+          var fps = frames / 2;
+          if (fps >= 15) return; // 帧率正常，不出条
+          var b = document.createElement('div');
+          b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483000;'
+            + 'background:#171310;border-top:1px solid rgba(212,175,55,.55);padding:14px 16px 18px;'
+            + 'font:13px/1.8 monospace;color:#EFEFEF;text-align:center';
+          b.innerHTML = '当前浏览器渲染性能受限，页面可能卡顿。<br>'
+            + '建议：点右上角「⋯」菜单 → <b style="color:#d4af37">在浏览器中打开</b>';
+          var x = document.createElement('div');
+          x.textContent = '\u00d7';
+          x.style.cssText = 'position:absolute;top:2px;right:10px;font-size:20px;color:#888;padding:6px;cursor:pointer';
+          x.onclick = function () {
+            try { localStorage.setItem('wt-perf-dismissed', '1'); } catch (e) {}
+            b.parentNode && b.parentNode.removeChild(b);
+          };
+          b.appendChild(x);
+          document.body.appendChild(b);
+        }
+        requestAnimationFrame(count);
+      }, 3000);
+    })();
+
     // Fetch participant count and substitute into hero stats line.
     window.__participantCount = null;
     fetch('/api/count')
