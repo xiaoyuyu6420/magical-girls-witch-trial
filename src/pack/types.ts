@@ -20,6 +20,12 @@ export interface AlgoConfig {
   delta: number;
   /** If border and Top1 similarity below this → fallback type */
   threshold: number;
+  /**
+   * 觉醒变体（special type）解锁的母体相似度门槛（0-100，百分数）。
+   * 用户向量与变体母体角色（specialBases 映射）的相似度须 ≥ 此值才允许触发，
+   * 否则回落正常向量匹配——保证稀有款稀有。0 或缺省 = 不校验。
+   */
+  specialMinSim?: number;
 }
 
 export type OptionShuffleMode = "none" | "stable-by-question-id";
@@ -37,6 +43,12 @@ export interface PackRules {
   specialTriggers: Record<string, Record<string, string>>;
   /** Which gate values open the trigger question (client filter) */
   triggerGates: readonly string[];
+  /**
+   * 觉醒变体 code → 母体角色 code（如 homura_devil → HOMURA）。
+   * 用于 specialMinSim 稀有度校验：你得先"是"母体角色，才有资格觉醒成变体。
+   * 无映射的 special（如 YUKI 直接映射）不受门槛限制。
+   */
+  specialBases?: Record<string, string>;
   optionShuffle: OptionShuffleMode;
 }
 

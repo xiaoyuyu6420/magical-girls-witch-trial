@@ -104,6 +104,10 @@ const makeTypes = () => [
   { code: "EMMA", name: "樱羽艾玛", subtitle: null, group: "B", vector: "LHH-LLM-HHH-LLL", slogan: "s", desc: "d", keywords: null, special: false, translations: "{}" },
   { code: "SHERRY", name: "橘雪莉", subtitle: null, group: "B", vector: "MHM-LMH-HHH-LHH", slogan: "s", desc: "d", keywords: null, special: false, translations: "{}" },
   { code: "HIRO", name: "二阶堂希罗", subtitle: null, group: "F", vector: "HLL-HMH-LHH-HHM", slogan: "s", desc: "d", keywords: null, special: false, translations: "{}" },
+  { code: "HOMURA", name: "晓美焰", subtitle: null, group: "F", vector: "HHL-HLH-LHH-HHH", slogan: "s", desc: "d", keywords: null, special: false, translations: "{}" },
+  { code: "SAYAKA", name: "美树沙耶香", subtitle: null, group: "mix", vector: "HML-MHH-HHH-LHH", slogan: "s", desc: "d", keywords: null, special: false, translations: "{}" },
+  { code: "KYOKO", name: "佐仓杏子", subtitle: null, group: "mix", vector: "MHL-MMH-LMH-MMH", slogan: "s", desc: "d", keywords: null, special: false, translations: "{}" },
+  { code: "MADOKA", name: "鹿目圆", subtitle: null, group: "B", vector: "LLH-LLH-HLH-LLH", slogan: "s", desc: "d", keywords: null, special: false, translations: "{}" },
   { code: "UNSET", name: "未定之魂", subtitle: null, group: "fallback", vector: "MMM-MMM-MMM-MMM", slogan: "s", desc: "d", keywords: null, special: false, translations: "{}" },
   { code: "YUKI", name: "月代雪", subtitle: "大魔女", group: "special", vector: "HHH-LLL-LLL-LLL", slogan: "s", desc: "d", keywords: null, special: true, translations: "{}" },
   { code: "ETL", name: "不灭雪华", subtitle: "梅露露真身", group: "special", vector: "LLL-HHH-HHH-HHH", slogan: "s", desc: "d", keywords: null, special: true, translations: "{}" },
@@ -112,6 +116,21 @@ const makeTypes = () => [
   { code: "kyoko_pragmatist", name: "佐仓杏子·利己", subtitle: null, group: "special", vector: "MHL-MMH-LMH-MMH", slogan: "s", desc: "d", keywords: null, special: true, translations: "{}" },
   { code: "madoka_god", name: "鹿目圆·圆神", subtitle: null, group: "special", vector: "LLH-LLL-HHH-LLL", slogan: "s", desc: "d", keywords: null, special: true, translations: "{}" },
 ];
+
+/** 目标档位向量 → 每维两题总分（L=2, M=4, H=5, X=6） */
+const vecToDimScores = (vector: string): Record<string, number> => {
+  const vals = parseVector(vector);
+  const tierToSum = [2, 4, 5, 6];
+  const out: Record<string, number> = {};
+  DIMENSIONS.forEach((d, i) => { out[d.code] = tierToSum[vals[i]]; });
+  return out;
+};
+
+const allMidScores = (): Record<string, number> => {
+  const out: Record<string, number> = {};
+  DIMENSIONS.forEach((d) => { out[d.code] = 3; });
+  return out;
+};
 
 describe("match", () => {
   it("returns a result with valid structure", () => {
@@ -134,12 +153,9 @@ describe("match", () => {
     expect(result.similarity).toBe(100);
   });
 
-  it("resolves SPECIAL_A via explicit pack map", () => {
-    const dimScores: Record<string, number> = {};
-    DIMENSIONS.forEach((d) => { dimScores[d.code] = 3; });
-
-    const destroyResult = match({ dimScores, gateValue: "destroy", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
-    const seenResult = match({ dimScores, gateValue: "seen", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
+  it("resolves SPECIAL_A via explicit pack map (passes rarity gate with matching base)", () => {
+    const destroyResult = match({ dimScores: vecToDimScores("HHL-HLH-LHH-HHH"), gateValue: "destroy", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
+    const seenResult = match({ dimScores: vecToDimScores("HML-MHH-HHH-LHH"), gateValue: "seen", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
 
     expect(destroyResult.special).toBe(true);
     expect(destroyResult.code).toBe("homura_devil");
@@ -147,17 +163,29 @@ describe("match", () => {
     expect(seenResult.code).toBe("sayaka_siren");
   });
 
-  it("resolves SPECIAL_B via explicit pack map", () => {
-    const dimScores: Record<string, number> = {};
-    DIMENSIONS.forEach((d) => { dimScores[d.code] = 3; });
-
-    const destroyResult = match({ dimScores, gateValue: "destroy", triggerFired: "SPECIAL_B" }, makeTypes(), pack);
-    const seenResult = match({ dimScores, gateValue: "seen", triggerFired: "SPECIAL_B" }, makeTypes(), pack);
+  it("resolves SPECIAL_B via explicit pack map (passes rarity gate with matching base)", () => {
+    const destroyResult = match({ dimScores: vecToDimScores("MHL-MMH-LMH-MMH"), gateValue: "destroy", triggerFired: "SPECIAL_B" }, makeTypes(), pack);
+    const seenResult = match({ dimScores: vecToDimScores("LLH-LLH-HLH-LLH"), gateValue: "seen", triggerFired: "SPECIAL_B" }, makeTypes(), pack);
 
     expect(destroyResult.special).toBe(true);
     expect(destroyResult.code).toBe("kyoko_pragmatist");
     expect(seenResult.special).toBe(true);
     expect(seenResult.code).toBe("madoka_god");
+  });
+
+  it("does not trigger special when gate is outside triggerGates (peace/undecided)", () => {
+    const peaceResult = match({ dimScores: vecToDimScores("HHL-HLH-LHH-HHH"), gateValue: "peace", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
+    const undecidedResult = match({ dimScores: vecToDimScores("HHL-HLH-LHH-HHH"), gateValue: "undecided", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
+
+    expect(peaceResult.special).toBe(false);
+    expect(undecidedResult.special).toBe(false);
+  });
+
+  it("falls back to normal match when rarity gate rejects (low base similarity)", () => {
+    const result = match({ dimScores: allMidScores(), gateValue: "destroy", triggerFired: "SPECIAL_A" }, makeTypes(), pack);
+
+    expect(result.special).toBe(false);
+    expect(result.group).not.toBe("special");
   });
 
   it("does not trigger special without gateValue", () => {

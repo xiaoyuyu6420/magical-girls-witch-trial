@@ -169,6 +169,30 @@ function resolveSpecialCode(
   return index >= 0 ? sorted[index]?.code : undefined;
 }
 
+/**
+ * 稀有度门槛：觉醒变体要求用户向量与母体角色（specialBases 映射）足够相似，
+ * 不达标则回落正常向量匹配——防止"谁都觉醒成恶魔焰"。
+ * 无门槛配置、无母体映射或母体角色缺失时不拦截。
+ */
+function meetsSpecialBaseSim(
+  specialCode: string,
+  scored: Record<string, number>,
+  types: PersonalityTypeInput[],
+  pack: QuizPack,
+): boolean {
+  const minSim = pack.algo.specialMinSim ?? 0;
+  if (minSim <= 0) return true;
+  const baseCode = pack.rules.specialBases?.[specialCode];
+  if (!baseCode) return true;
+  const base = types.find((t) => t.code === baseCode);
+  if (!base) return true;
+
+  const userValues = buildUserValues(scored, pack);
+  const baseValues = parseVector(base.vector, pack.dimensions.length);
+  const dist = weightedManhattan(userValues, baseValues, pack);
+  return similarity(dist, pack) >= minSim;
+}
+
 export function match(
   input: MatchInput,
   types: PersonalityTypeInput[],
@@ -189,39 +213,40 @@ export function match(
 
   const dimLen = pack.dimensions.length;
 
-  // ① 特殊触发
+  // ① 特殊触发：仅当 gate 在 triggerGates 白名单内（destroy/seen）才允许觉醒，
+  //    且变体须通过母体相似度门槛（specialMinSim），否则回落正常匹配。
   if (input.triggerFired && input.gateValue) {
-    const specialCode = resolveSpecialCode(
-      input.triggerFired,
-      input.gateValue,
-      specialTypes,
-      pack,
-    );
+    const gateAllowed = pack.rules.triggerGates.includes(input.gateValue);
+    const specialCode = gateAllowed
+      ? resolveSpecialCode(input.triggerFired, input.gateValue, specialTypes, pack)
+      : undefined;
     if (specialCode) {
-      const t = allTypes.find((p) => p.code === specialCode);
-      if (!t) {
-        throw new Error(`Missing special personality type ${specialCode} in database`);
-      }
       const scored = applyGateBonus(input.dimScores, input.gateValue, pack);
-      const specialUserVec = formatVector(buildUserValues(scored, pack));
+      if (meetsSpecialBaseSim(specialCode, scored, allTypes, pack)) {
+        const t = allTypes.find((p) => p.code === specialCode);
+        if (!t) {
+          throw new Error(`Missing special personality type ${specialCode} in database`);
+        }
+        const specialUserVec = formatVector(buildUserValues(scored, pack));
 
-      return {
-        code: t.code,
-        name: t.name,
-        subtitle: t.subtitle,
-        slogan: t.slogan,
-        desc: t.desc,
-        keywords: t.keywords,
-        similarity: 100,
-        userVector: specialUserVec,
-        templateVector: t.vector,
-        top3: [{ code: t.code, name: t.name, similarity: 100, translations: t.translations }],
-        group: "special",
-        borderType: false,
-        special: true,
-        translations: t.translations,
-        ipCode: t.ipCode ?? undefined,
-      };
+        return {
+          code: t.code,
+          name: t.name,
+          subtitle: t.subtitle,
+          slogan: t.slogan,
+          desc: t.desc,
+          keywords: t.keywords,
+          similarity: 100,
+          userVector: specialUserVec,
+          templateVector: t.vector,
+          top3: [{ code: t.code, name: t.name, similarity: 100, translations: t.translations }],
+          group: "special",
+          borderType: false,
+          special: true,
+          translations: t.translations,
+          ipCode: t.ipCode ?? undefined,
+        };
+      }
     }
   }
 

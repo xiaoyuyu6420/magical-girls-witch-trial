@@ -15,6 +15,8 @@ export const witchTrialPack: QuizPack = {
     tiers: ALGO_CONFIG.tiers,
     delta: ALGO_CONFIG.delta,
     threshold: ALGO_CONFIG.threshold,
+    // 觉醒变体稀有度门槛：用户向量须与母体角色相似度 ≥75% 才解锁（模拟验证：恶魔焰 ~2%）
+    specialMinSim: 75,
   },
   rules: {
     gateValues: ["destroy", "seen", "peace", "undecided"],
@@ -28,6 +30,13 @@ export const witchTrialPack: QuizPack = {
       SPECIAL_B: { destroy: "kyoko_pragmatist", seen: "madoka_god" },
     },
     triggerGates: ["destroy", "seen"],
+    // 觉醒变体 → 母体角色（稀有度校验用）
+    specialBases: {
+      homura_devil: "HOMURA",
+      sayaka_siren: "SAYAKA",
+      kyoko_pragmatist: "KYOKO",
+      madoka_god: "MADOKA",
+    },
     optionShuffle: "stable-by-question-id",
   },
   presentation: {
